@@ -250,3 +250,17 @@ textarea.gp-notes{background:transparent;border:0;outline:0;font-family:'Fraunce
 .gp-shop-row{display:flex;align-items:center;gap:12px;padding:12px}
 
 .gp-icon{display:inline-block;width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
+
+/* Transient toast for backup / share feedback */
+.gp-toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:60;background:#2d4a2e;color:#f4ecd8;padding:10px 18px;border-radius:9999px;font-size:14px;box-shadow:0 6px 20px rgba(45,74,46,.3);animation:gpRise 200ms ease both;max-width:90vw;text-align:center}
+
+/* Print: drop the interactive chrome and the textured background so the garden
+   map (or the active list) prints cleanly on white. */
+@media print{
+  .gp-no-print,.gp-banner{display:none !important}
+  .gp-paper{background:#fff !important;min-height:0}
+  .gp-grain::before{display:none !important}
+  .gp-wrap{max-width:none;padding:0}
+  .gp-canvas{break-inside:avoid}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}

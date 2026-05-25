@@ -43,6 +43,13 @@ Then open the printed URL.
 
 **Notes & tasks** — notes and a task list per bed.
 
+**Backup, share & offline** — from the *Backup & share* panel above the tabs you can:
+- **Export** your whole plan to a `.json` backup file, and **Import** it back on any device — the proper way to move a garden between browsers.
+- Copy a **share link** that encodes the entire plan in the URL, to send to someone else (no server involved).
+- Download a **calendar** (`.ics`) of yearly *sow* and *plant-out* reminders for everything you've planted — import it into any calendar app.
+- **Print** the current view (the garden map, or the shopping list) to paper or PDF.
+- The app is also a **PWA**: a service worker caches it so it keeps working with no connection, and it can be installed to a phone home screen.
+
 ## Architecture
 
 The app is plain ES modules (no UI framework) bundled by [Vite](https://vitejs.dev/). The build output in `dist/` is a static site Netlify serves directly. Rendering is a full `#root.innerHTML` rewrite on each state change, with focus/scroll restoration so text inputs keep their cursor; drags suppress re-renders and mutate the dragged node's style directly, committing on pointer-up.
@@ -85,7 +92,7 @@ The drag, spline and snap maths are the app's real complexity and work well as p
 
 ## Storage
 
-Everything saves to `localStorage` under `garden-planner:v4`, per-browser and per-device (no sync). Legacy keys `:v1`–`:v3` are migrated automatically on first load. To move a plan between devices, copy the value of `garden-planner:v4` in DevTools and paste it into the same key on the other device.
+Everything saves to `localStorage` under `garden-planner:v4`, per-browser and per-device (no sync). Legacy keys `:v1`–`:v3` are migrated automatically on first load. To move a plan between devices, use **Export backup** / **Import backup** (or a **share link**) from the *Backup & share* panel — all client-side, no account. Opening a share link asks before replacing the plan in the current browser.
 
 ## Deployment (Netlify)
 

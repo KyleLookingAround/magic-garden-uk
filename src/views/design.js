@@ -36,7 +36,7 @@ export function designViewHTML() {
   }
 
   const settingsPanel = S.gardenSettingsOpen ? `
-    <div class="gp-rise mb-4 p-4 rounded-lg" style="background:rgba(45,74,46,.05);border:1px dashed rgba(45,74,46,.2)">
+    <div class="gp-no-print gp-rise mb-4 p-4 rounded-lg" style="background:rgba(45,74,46,.05);border:1px dashed rgba(45,74,46,.2)">
       <div class="row items-center gap-4 flex-wrap text-sm">
         <label class="row items-center gap-2">
           <span style="color:#6b5d4f">Garden length</span>
@@ -78,7 +78,7 @@ export function designViewHTML() {
   ` : '');
 
   const monthBar = `
-    <div class="gp-month-bar gp-rise">
+    <div class="gp-no-print gp-month-bar gp-rise">
       ${ICON.caldays('gp-icon w4', 'flex-shrink-0')}
       <span class="text-sm font-semibold" style="color:#2d4a2e;min-width:64px">${S.viewMonth === 0 ? 'All year' : MONTHS[S.viewMonth - 1]}</span>
       <input type="range" min="0" max="12" step="1" value="${S.viewMonth}" class="gp-range" data-action="set-month">
@@ -200,7 +200,7 @@ export function designViewHTML() {
 
   return `
     <div class="gp-rise">
-      <div class="row items-center gap-2 mb-4 flex-wrap">
+      <div class="gp-no-print row items-center gap-2 mb-4 flex-wrap">
         <button class="gp-btn-ghost" data-action="add-bed">${ICON.plus('gp-icon w3-5', '')}Add bed</button>
         <button class="gp-btn-ghost ${S.pathDraftId ? 'active-draft' : ''}" data-action="start-path-draft" data-style="gravel" ${S.pathDraftId ? 'disabled' : ''}>${ICON.plus('gp-icon w3-5', '')}Draw path</button>
         <button class="gp-btn-ghost" data-action="toggle-garden-settings">${ICON.settings('gp-icon w3-5', '')}Garden size</button>
@@ -218,7 +218,7 @@ export function designViewHTML() {
           ${canvasInner}
         </div>
       </div>
-      <div class="text-center mt-3 mb-5 text-sm gp-italic" style="color:#6b5d4f">
+      <div class="gp-no-print text-center mt-3 mb-5 text-sm gp-italic" style="color:#6b5d4f">
         ${S.selectedPlant
           ? 'Tap in the garden to plant — keep tapping to plant more.'
           : S.selectedItem
@@ -226,7 +226,7 @@ export function designViewHTML() {
             : 'Drag beds, plants and objects to rearrange · they snap to edges as you go'}
       </div>
       ${editPanel}
-      <div class="gp-divider"></div>
+      <div class="gp-no-print gp-divider"></div>
       ${pickerHTML()}
       ${stats.length > 0 ? whatsPlantedHTML(stats) : ''}
     </div>
@@ -258,7 +258,7 @@ export function pickerHTML() {
   const cats = S.pickerMode === 'plants' ? PLANT_CATEGORIES : OBJECT_CATEGORIES;
   const active = S.pickerMode === 'plants' ? S.plantCategory : S.objectCategory;
   return `
-    <div class="mb-6">
+    <div class="gp-no-print mb-6">
       <div class="row items-center justify-between mb-3 flex-wrap gap-2">
         <div class="row items-center gap-2">
           <button class="gp-tab ${S.pickerMode === 'plants' ? 'active' : ''}" data-action="set-picker" data-picker="plants">${ICON.sprout('gp-icon w3', '')}Plants</button>
@@ -323,7 +323,7 @@ function objectsGridHTML(objs) {
 function editPanelHTML(p) {
   const crowded = p.capacity && p.capacity.planted > p.capacity.cap;
   return `
-    <div class="mb-6 p-4 rounded-xl gp-rise" style="background:#fbf6ea;border:1px solid rgba(107,93,79,.25)">
+    <div class="gp-no-print mb-6 p-4 rounded-xl gp-rise" style="background:#fbf6ea;border:1px solid rgba(107,93,79,.25)">
       <div class="row items-center justify-between mb-3 flex-wrap gap-2">
         <div class="row items-center gap-2 flex-1 min-w-0">
           ${p.icon ? `<span class="text-xl">${p.icon}</span>` : ''}
