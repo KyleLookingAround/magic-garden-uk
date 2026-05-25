@@ -1,16 +1,27 @@
-# Garden Planner
+# Magic Garden — UK Garden Planner
 
-A single-file, offline-first garden planner. Drag beds, plants, objects and curvy paths onto a top-down map of your garden; track companion planting, pollinator value, a shopping list, and per-bed notes. Designed for UK gardens.
+An offline-first garden planner. Drag beds, plants, objects and curvy paths onto a top-down map of your garden; track companion planting, pollinator value, a shopping list, and per-bed notes. Designed for UK gardens.
 
-Open `index.html` in any modern browser and it just works. No build step, no server, no account.
+Everything runs in the browser — no server, no account. State lives in `localStorage`.
 
-## Live demo
+## Quick start
 
-If you've published this to GitHub Pages, point folks at:
-
+```bash
+npm install
+npm run dev      # local dev server with hot reload
 ```
-https://<your-username>.github.io/<repo-name>/
-```
+
+Then open the printed URL.
+
+## Scripts
+
+| Command | What it does |
+| --- | --- |
+| `npm run dev` | Vite dev server with hot-module reload |
+| `npm run build` | Production build to `dist/` (what Netlify publishes) |
+| `npm run preview` | Serve the production build locally |
+| `npm test` | Run the Vitest unit + integration suite |
+| `npm run typecheck` | Type-check the JS with `tsc --checkJs` |
 
 ## Features
 
@@ -19,61 +30,70 @@ https://<your-username>.github.io/<repo-name>/
 - Resizable, rotatable beds with snap-to-edge
 - 17 illustrated objects: trees, shrubs, hedges, lawn, patio, decking, pond, shed, greenhouse, compost, bench, water butt, fence, arch, and more
 - Draw curvy paths between waypoints — gravel, paving, mown grass, stepping stones, bark/mulch
-- Pick a plant from the picker, then tap the garden to place it; companion neighbours show a green ring, ones to keep apart show amber
+- Pick a plant, then tap the garden to place it; companion neighbours show a green ring, ones to keep apart show amber
 - Drill into any bed for a focused view with absolute placement of each plant
 - Month slider to see what's actually visible through the year
 - 50-step undo
 
-**Plant library**
-- 30 vegetables, herbs, flowers and fruit chosen for UK climate
-- Each plant has sowing/planting/harvest months, sun & water needs, spacing, companion lists, pollinator value, and a one-line journal tip
+**Plant library** — 30 UK-climate plants, each with sowing/planting/harvest months, sun & water needs, spacing, companion lists, pollinator value, and a journal tip.
 
-**Pollinators tab**
-- Counts of how many plants feed bees, butterflies and hoverflies
-- Seasonal forage chart: a bar per month showing when your garden is actually in bloom
-- "Quieter months" callout suggesting where you have gaps
-- Suggestions for top-value plants you haven't yet planted
-- Link out to [Pollinator Pathmaker](https://pollinator.art/) by Alexandra Daisy Ginsberg for fully algorithm-designed pollinator gardens
+**Pollinators tab** — counts of plants feeding bees, butterflies and hoverflies, a seasonal forage chart, a "quieter months" callout, and suggestions for top-value plants you haven't planted. Links out to [Pollinator Pathmaker](https://pollinator.art/).
 
-**Shopping list**
-- Auto-built from your plan
-- Persistent check-off across visits
+**Shopping list** — auto-built from your plan, with persistent check-off.
 
-**Notes & tasks**
-- Notes per bed (lined paper styling)
-- Task list per bed with check-off
+**Notes & tasks** — notes and a task list per bed.
 
-## Storage
+## Architecture
 
-Everything saves to `localStorage` under the key `garden-planner:v4`. It's per-browser, per-device — there's no sync. To move a plan between devices, open DevTools, copy the value of `garden-planner:v4`, and paste it into the same key on the other device.
+The app is plain ES modules (no UI framework) bundled by [Vite](https://vitejs.dev/). The build output in `dist/` is a static site Netlify serves directly. Rendering is a full `#root.innerHTML` rewrite on each state change, with focus/scroll restoration so text inputs keep their cursor; drags suppress re-renders and mutate the dragged node's style directly, committing on pointer-up.
 
-Legacy keys `garden-planner:v1`, `:v2`, `:v3` are automatically migrated on first load.
+```
+index.html              # shell: loads src/main.js
+src/
+  main.js               # entry: load state, render, bind events
+  store.js              # the single mutable state object `S` + localStorage persistence
+  history.js            # undo stack
+  render.js             # render loop with focus/scroll restoration
+  selectors.js          # derived, read-only computations (stats, shopping, capacity)
+  actions.js            # all state mutations
+  drag.js               # pointer-driven drag/resize/rotate system
+  events.js             # delegated data-action event handling
+  styles.css            # all styles
+  data/
+    plants.js           # PLANTS, COMPANIONS, POLLINATORS + lookups
+    objects.js          # OBJECTS and PATH_STYLES
+    icons.js            # inline SVG icon set
+  lib/
+    util.js             # esc, clamp, newId, month helpers
+    geometry.js         # bed local/world transforms, rotation, hit-testing
+    splines.js          # Catmull-Rom curvy-path maths
+    factory.js          # state constructors + the default starter garden
+    migrate.js          # normalise/migrate persisted state across versions
+  views/                # one module per screen + canvas item renderers
+tests/                  # Vitest: geometry, splines, data/migration, integration
+```
 
-## Mobile
+### Why no framework?
 
-Optimised for mobile from the start. Drags use direct DOM mutation instead of full re-renders, so it stays smooth on touch. To install it as a home-screen app on iOS, open in Safari → Share → Add to Home Screen.
-
-## Architecture (one-paragraph version)
-
-It's one HTML file with inline CSS and JS, no dependencies and no build. UI re-renders by rewriting `#root.innerHTML` on every state change, with focus restoration so text inputs don't lose their cursor. Drag operations suppress re-renders and mutate the dragged element's style directly, then trigger a full render on pointer-up. Path curves are smooth Catmull-Rom splines through user-placed waypoints, rendered as a single SVG overlay on the canvas. Object visuals are inline SVGs per object type. State is JSON, saved to `localStorage` on a 300ms debounce.
-
-## Files
-
-- `index.html` — the entire app (~156 KB)
-- `README.md` — this file
-- `LICENSE` — MIT
+The drag, spline and snap maths are the app's real complexity and work well as plain functions, so the rewrite kept them framework-free. The `views/` modules are pure functions of state that return HTML strings, which makes them easy to read and test without a render runtime.
 
 ## Customising
 
-The plant data lives near the top of `index.html` as a const `PLANTS` (with parallel `COMPANIONS` and `POLLINATORS` maps). Add or change a plant by editing those arrays — no build step needed.
+- **Plants** live in `src/data/plants.js` as `PLANTS`, with parallel `COMPANIONS` and `POLLINATORS` maps. Add or change a plant by editing those.
+- **Objects** (trees, structures, ground cover) live in `src/data/objects.js` as `OBJECTS`; path styles are `PATH_STYLES` in the same file.
+- **Object visuals** are inline SVGs in `src/views/objectVisual.js`.
 
-The object visuals are in the `objectVisualSVG` function. Each object type gets its own inline SVG.
+## Storage
 
-Path styles are in `PATH_STYLES`.
+Everything saves to `localStorage` under `garden-planner:v4`, per-browser and per-device (no sync). Legacy keys `:v1`–`:v3` are migrated automatically on first load. To move a plan between devices, copy the value of `garden-planner:v4` in DevTools and paste it into the same key on the other device.
+
+## Deployment (Netlify)
+
+`netlify.toml` sets the build command to `npm run build` and publishes `dist/`. It also sets a strict Content-Security-Policy, long-lived caching for hashed assets, and security headers.
 
 ## Browser support
 
-Modern Chrome, Safari, Firefox, Edge. Uses `localStorage`, CSS grid, `ResizeObserver`, and pointer events. Google Fonts loads from the web; if offline, falls back to Georgia and system sans cleanly.
+Modern Chrome, Safari, Firefox, Edge. Uses `localStorage`, CSS grid, `ResizeObserver`, and pointer events. Google Fonts load from the web; if offline, it falls back to Georgia and a system sans cleanly.
 
 ## License
 
