@@ -1,0 +1,2851 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f4ecd8">
+<title>Garden Planner</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..700&family=Manrope:wght@300..700&display=swap" rel="stylesheet">
+<style>
+/* ── reset / utilities ─────────────────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:'Manrope',system-ui,sans-serif;color:#2a2419;line-height:1.45;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+button{background:none;border:0;font:inherit;color:inherit;cursor:pointer;padding:0;line-height:inherit}
+input,textarea{font:inherit;color:inherit}
+img,svg{display:block;max-width:100%}
+.sr{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+
+/* layout */
+.row{display:flex}
+.col{display:flex;flex-direction:column}
+.items-center{align-items:center}
+.items-start{align-items:flex-start}
+.items-baseline{align-items:baseline}
+.items-end{align-items:flex-end}
+.justify-center{justify-content:center}
+.justify-between{justify-content:space-between}
+.justify-end{justify-content:flex-end}
+.flex-1{flex:1 1 0%}
+.flex-wrap{flex-wrap:wrap}
+.flex-shrink-0{flex-shrink:0}
+.grid{display:grid}
+.gap-1{gap:.25rem}.gap-1\.5{gap:.375rem}.gap-2{gap:.5rem}.gap-3{gap:.75rem}.gap-4{gap:1rem}.gap-5{gap:1.25rem}.gap-6{gap:1.5rem}
+.cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.cols-4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.cols-1{grid-template-columns:repeat(1,minmax(0,1fr))}
+.relative{position:relative}.absolute{position:absolute}.fixed{position:fixed}
+.inset-0{inset:0}
+.z-10{z-index:10}.z-20{z-index:20}.z-50{z-index:50}
+.block{display:block}.inline-block{display:inline-block}.inline-flex{display:inline-flex}
+.hidden{display:none}
+.w-full{width:100%}.h-full{height:100%}
+.min-w-0{min-width:0}
+.text-center{text-align:center}.text-left{text-align:left}
+.uppercase{text-transform:uppercase}
+.truncate{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.nowrap{white-space:nowrap}
+.cursor-pointer{cursor:pointer}.cursor-grab{cursor:grab}
+.select-none{user-select:none;-webkit-user-select:none}
+.pointer-none{pointer-events:none}
+.overflow-x-auto{overflow-x:auto}.overflow-y-auto{overflow-y:auto}.overflow-hidden{overflow:hidden}
+.rounded-sm{border-radius:4px}.rounded{border-radius:6px}.rounded-md{border-radius:8px}.rounded-lg{border-radius:10px}.rounded-xl{border-radius:14px}.rounded-2xl{border-radius:18px}.rounded-3xl{border-radius:24px}.rounded-full{border-radius:9999px}
+.shadow-sm{box-shadow:0 1px 2px rgba(0,0,0,.04)}.shadow{box-shadow:0 2px 6px rgba(0,0,0,.08)}.shadow-lg{box-shadow:0 10px 30px rgba(45,74,46,.2)}
+
+/* size helpers */
+.w2{width:.5rem}.w2-5{width:.625rem}.w3{width:.75rem}.w3-5{width:.875rem}.w4{width:1rem}.w5{width:1.25rem}.w6{width:1.5rem}.w8{width:2rem}.w10{width:2.5rem}.w12{width:3rem}.w16{width:4rem}.w20{width:5rem}.w24{width:6rem}
+.h2{height:.5rem}.h2-5{height:.625rem}.h3{height:.75rem}.h3-5{height:.875rem}.h4{height:1rem}.h5{height:1.25rem}.h6{height:1.5rem}.h8{height:2rem}.h10{height:2.5rem}.h12{height:3rem}.h16{height:4rem}
+
+/* spacing */
+.p-1{padding:.25rem}.p-1\.5{padding:.375rem}.p-2{padding:.5rem}.p-3{padding:.75rem}.p-4{padding:1rem}.p-5{padding:1.25rem}.p-6{padding:1.5rem}.p-7{padding:1.75rem}
+.px-2{padding-left:.5rem;padding-right:.5rem}.px-3{padding-left:.75rem;padding-right:.75rem}.px-4{padding-left:1rem;padding-right:1rem}.px-6{padding-left:1.5rem;padding-right:1.5rem}
+.py-1{padding-top:.25rem;padding-bottom:.25rem}.py-1\.5{padding-top:.375rem;padding-bottom:.375rem}.py-2{padding-top:.5rem;padding-bottom:.5rem}.py-3{padding-top:.75rem;padding-bottom:.75rem}.py-6{padding-top:1.5rem;padding-bottom:1.5rem}.py-10{padding-top:2.5rem;padding-bottom:2.5rem}
+.pt-3{padding-top:.75rem}.pt-6{padding-top:1.5rem}
+.pb-2{padding-bottom:.5rem}
+.m-0{margin:0}.mx-auto{margin-left:auto;margin-right:auto}
+.mt-0\.5{margin-top:.125rem}.mt-1{margin-top:.25rem}.mt-2{margin-top:.5rem}.mt-3{margin-top:.75rem}.mt-5{margin-top:1.25rem}.mt-6{margin-top:1.5rem}.mt-12{margin-top:3rem}
+.mb-1\.5{margin-bottom:.375rem}.mb-2{margin-bottom:.5rem}.mb-3{margin-bottom:.75rem}.mb-4{margin-bottom:1rem}.mb-5{margin-bottom:1.25rem}.mb-6{margin-bottom:1.5rem}.mb-7{margin-bottom:1.75rem}.mb-10{margin-bottom:2.5rem}
+.ml-1{margin-left:.25rem}.ml-2{margin-left:.5rem}.mr-1{margin-right:.25rem}.mr-1\.5{margin-right:.375rem}
+.space-y-1\.5>*+*{margin-top:.375rem}
+.space-y-3>*+*{margin-top:.75rem}
+.space-y-5>*+*{margin-top:1.25rem}
+.space-y-6>*+*{margin-top:1.5rem}
+
+/* type */
+.text-xs{font-size:11px}
+.text-sm{font-size:13px}
+.text-base{font-size:15px}
+.text-lg{font-size:18px}
+.text-xl{font-size:22px}
+.text-2xl{font-size:26px}
+.text-3xl{font-size:32px}
+.text-4xl{font-size:38px}
+.text-5xl{font-size:46px}
+.text-6xl{font-size:54px}
+.text-10{font-size:10px}
+.leading-tight{line-height:1.2}.leading-none{line-height:1}
+.tracking-wider{letter-spacing:.05em}.tracking-widest{letter-spacing:.1em}
+.font-semibold{font-weight:600}.font-bold{font-weight:700}
+.opacity-50{opacity:.5}.opacity-70{opacity:.7}.opacity-75{opacity:.75}.opacity-80{opacity:.8}
+
+/* responsive cols */
+@media(min-width:640px){
+  .sm\:cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .sm\:cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .sm\:text-5xl{font-size:50px}
+  .sm\:py-10{padding-top:2.5rem;padding-bottom:2.5rem}
+  .sm\:px-6{padding-left:1.5rem;padding-right:1.5rem}
+  .sm\:p-7{padding:1.75rem}
+  .sm\:mb-10{margin-bottom:2.5rem}
+  .sm\:mt-16{margin-top:4rem}
+  .sm\:rounded-3xl{border-radius:24px}
+  .sm\:max-w-md{max-width:28rem}
+  .sm\:flex{display:flex}
+  .sm\:items-center{align-items:center}
+  .sm\:text-3xl{font-size:34px}
+}
+@media(min-width:768px){
+  .md\:cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .md\:cols-4{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .md\:text-6xl{font-size:60px}
+}
+@media(min-width:1024px){
+  .lg\:cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+
+/* ── Garden Planner skin ───────────────────────────────────────────────── */
+.gp-paper{
+  background-color:#f4ecd8;
+  background-image:
+    radial-gradient(at 20% 30%, rgba(135,168,120,.08) 0px, transparent 50%),
+    radial-gradient(at 80% 70%, rgba(200,116,84,.06) 0px, transparent 50%),
+    radial-gradient(at 50% 100%, rgba(45,74,46,.05) 0px, transparent 50%);
+  min-height:100vh; position:relative;
+}
+.gp-grain::before{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0.16 0 0 0 0 0.14 0 0 0 0 0.10 0 0 0 0.15 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity:.35;mix-blend-mode:multiply;
+}
+.gp-wrap{max-width:1100px;margin:0 auto;padding:24px 16px 80px;position:relative}
+@media(min-width:640px){.gp-wrap{padding:40px 24px 80px}}
+
+.gp-display{font-family:'Fraunces',Georgia,serif;font-variation-settings:'opsz' 96;letter-spacing:-.01em}
+.gp-italic{font-family:'Fraunces',Georgia,serif;font-style:italic}
+.gp-body{font-family:'Manrope',system-ui,sans-serif}
+
+.gp-btn-ghost{background:transparent;color:#2d4a2e;border:1px solid rgba(45,74,46,.3);padding:6px 12px;border-radius:9999px;font-size:13px;display:inline-flex;align-items:center;gap:6px;transition:all 180ms ease}
+.gp-btn-ghost:disabled{opacity:.4;cursor:not-allowed}
+
+.gp-btn{background:#2d4a2e;color:#f4ecd8;border:1px solid #2d4a2e;letter-spacing:.02em;padding:8px 16px;border-radius:10px;font-size:13px;display:inline-flex;align-items:center;gap:6px;transition:all 200ms ease}
+
+/* Entrance animations: only the modal genuinely mounts/unmounts. */
+/* The gp-fade-in / gp-rise classes are kept inert so they don't re-fire on every render. */
+.gp-modal{animation:gpRise 220ms ease both}
+@keyframes gpRise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+/* Hover styles only on devices that truly hover. On touch, :hover sticks after a tap. */
+@media (hover:hover){
+  .gp-btn-ghost:hover:not(:disabled){background:rgba(45,74,46,.06);border-color:#2d4a2e}
+  .gp-btn:hover:not(:disabled){background:#3a5d3b;transform:translateY(-1px);box-shadow:0 4px 10px rgba(45,74,46,.2)}
+}
+
+.gp-divider{height:1px;background-image:linear-gradient(to right,transparent,rgba(107,93,79,.4),transparent);margin:24px 0}
+
+.gp-tab{letter-spacing:.05em;text-transform:uppercase;font-size:11px;font-weight:600;padding:8px 14px;border-radius:9999px;cursor:pointer;transition:all 180ms ease;color:#6b5d4f;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.gp-tab.active{background:#2d4a2e;color:#f4ecd8}
+@media (hover:hover){
+  .gp-tab:hover{color:#2d4a2e}
+}
+
+.gp-input{background:transparent;border:0;outline:0;border-bottom:1px dashed rgba(107,93,79,.5);font-family:'Fraunces',serif;color:#2a2419;padding:4px 2px;width:100%}
+.gp-input:focus{border-bottom-color:#2d4a2e;border-bottom-style:solid}
+
+.gp-number{background:#fbf6ea;border:1px solid rgba(107,93,79,.25);font-family:'Manrope',sans-serif;padding:4px 8px;border-radius:4px;outline:0;width:80px;font-size:13px}
+.gp-number:focus{border-color:#2d4a2e}
+
+.gp-text{background:#fbf6ea;border:1px solid rgba(107,93,79,.25);font-family:'Manrope',sans-serif;padding:8px 10px;border-radius:6px;outline:0;width:100%;font-size:13px}
+.gp-text:focus{border-color:#2d4a2e}
+
+.gp-scroll::-webkit-scrollbar{height:6px;width:6px}
+.gp-scroll::-webkit-scrollbar-track{background:transparent}
+.gp-scroll::-webkit-scrollbar-thumb{background:rgba(107,93,79,.3);border-radius:3px}
+
+.gp-canvas{
+  position:relative;background-color:#e6dec5;
+  background-image:radial-gradient(rgba(45,74,46,.09) 1px,transparent 1.5px),radial-gradient(rgba(45,74,46,.05) 1px,transparent 1.2px);
+  background-size:32px 32px,11px 11px;background-position:0 0,5px 5px;
+  border:1px solid rgba(107,93,79,.4);border-radius:14px;
+  box-shadow:inset 0 2px 14px rgba(107,93,79,.18);
+  overflow:hidden;touch-action:none;user-select:none;
+}
+.gp-canvas.planting-mode{cursor:crosshair}
+.gp-detail-canvas{
+  position:relative;background-color:#efe3c8;
+  background-image:radial-gradient(rgba(45,74,46,.10) 1px,transparent 1.6px),radial-gradient(rgba(45,74,46,.06) 1px,transparent 1.3px);
+  background-size:26px 26px,9px 9px;background-position:0 0,4px 4px;
+  border:2px dashed rgba(107,93,79,.6);border-radius:12px;
+  box-shadow:inset 0 2px 16px rgba(107,93,79,.22);
+  overflow:hidden;touch-action:none;user-select:none;
+}
+.gp-detail-canvas.planting-mode{cursor:crosshair}
+
+.gp-rect{position:absolute;cursor:grab;transition:box-shadow 200ms;touch-action:none;overflow:hidden}
+.gp-rect:active{cursor:grabbing}
+.gp-rect-label{position:absolute;top:4px;left:6px;font-family:'Fraunces',serif;font-style:italic;font-size:11px;line-height:1;color:rgba(74,56,38,.85);pointer-events:none;letter-spacing:.02em;background:rgba(244,236,216,.7);padding:2px 6px;border-radius:3px;backdrop-filter:blur(2px);white-space:nowrap;max-width:calc(100% - 12px);overflow:hidden;text-overflow:ellipsis;z-index:2}
+.gp-obj-svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;display:block}
+
+/* Curvy paths */
+.gp-paths-svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:2;overflow:visible}
+.gp-paths-svg .gp-path-stroke{pointer-events:auto;cursor:grab;touch-action:none}
+.gp-paths-svg .gp-path-stroke:active{cursor:grabbing}
+.gp-path-handle{pointer-events:auto;cursor:grab;touch-action:none}
+.gp-path-handle:active{cursor:grabbing}
+.gp-path-add{pointer-events:auto;cursor:pointer;touch-action:none}
+.gp-resize-handle{position:absolute;bottom:-10px;right:-10px;width:20px;height:20px;background:#2d4a2e;border:2px solid #f4ecd8;border-radius:50%;cursor:nwse-resize;z-index:40;touch-action:none;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,.2)}
+.gp-rotate-handle{position:absolute;top:-34px;left:50%;width:24px;height:24px;margin-left:-12px;background:#87a878;border:2px solid #f4ecd8;border-radius:50%;cursor:grab;z-index:40;touch-action:none;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,.2)}
+.gp-rotate-handle:active{cursor:grabbing}
+.gp-rotate-stem{position:absolute;top:-14px;left:50%;width:2px;height:14px;margin-left:-1px;background:rgba(135,168,120,.7);z-index:39;pointer-events:none}
+
+.gp-planting{position:absolute;border-radius:50%;border:2px solid;transform:translate(-50%,-50%);display:flex;align-items:center;justify-content:center;cursor:grab;transition:box-shadow 180ms,opacity 200ms,filter 200ms;z-index:12;line-height:1;touch-action:none}
+.gp-planting:active{cursor:grabbing}
+.gp-planting.selected{box-shadow:0 0 0 3px rgba(45,74,46,.55),0 6px 14px rgba(45,74,46,.28);z-index:30}
+.gp-planting.dimmed{opacity:.22;filter:grayscale(.6)}
+
+.gp-scale-bar{position:absolute;bottom:10px;left:10px;height:3px;background:rgba(45,74,46,.45);border-radius:2px;pointer-events:none}
+.gp-scale-bar::before,.gp-scale-bar::after{content:"";position:absolute;top:-3px;width:1px;height:9px;background:rgba(45,74,46,.45)}
+.gp-scale-bar::before{left:0}.gp-scale-bar::after{right:0}
+.gp-scale-label{position:absolute;bottom:14px;font-size:10px;font-family:'Manrope',sans-serif;color:rgba(74,56,38,.7);letter-spacing:.05em;pointer-events:none}
+
+.gp-plant-card{background:#fbf6ea;border:1px solid rgba(107,93,79,.18);transition:all 200ms ease;cursor:pointer;border-radius:14px;padding:12px;text-align:left;width:100%}
+.gp-plant-card.selected{border-color:#2d4a2e;background:#eee5cf;box-shadow:inset 0 0 0 1px #2d4a2e,0 4px 12px rgba(45,74,46,.15)}
+@media (hover:hover){
+  .gp-plant-card:hover{border-color:rgba(45,74,46,.5);transform:translateY(-2px);box-shadow:0 6px 14px rgba(45,74,46,.08)}
+}
+
+.gp-banner{background:#2d4a2e;color:#f4ecd8;padding:12px 16px;border-radius:10px;display:flex;align-items:center;gap:12px;margin-bottom:12px;box-shadow:0 4px 14px rgba(45,74,46,.25);flex-wrap:wrap}
+.gp-banner-strong{font-family:'Fraunces',serif;letter-spacing:-.01em}
+
+.gp-month-bar{background:#fbf6ea;border:1px solid rgba(107,93,79,.22);border-radius:10px;padding:10px 14px;margin-bottom:12px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.gp-range{-webkit-appearance:none;appearance:none;height:4px;border-radius:2px;background:linear-gradient(to right,#87a878,#2d4a2e);outline:0;flex:1;min-width:140px}
+.gp-range::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:18px;height:18px;border-radius:50%;background:#2d4a2e;border:2px solid #f4ecd8;cursor:pointer;box-shadow:0 2px 5px rgba(0,0,0,.25)}
+.gp-range::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:#2d4a2e;border:2px solid #f4ecd8;cursor:pointer}
+
+.gp-chip{display:inline-flex;align-items:center;gap:5px;font-size:12px;padding:4px 10px;border-radius:9999px}
+.gp-check{width:22px;height:22px;border-radius:6px;border:1.5px solid rgba(107,93,79,.5);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:all 150ms ease;background:#fbf6ea}
+.gp-check.done{background:#2d4a2e;border-color:#2d4a2e}
+
+/* Pollinator forage chart */
+.gp-pol-chart{display:grid;grid-template-columns:repeat(12,1fr);gap:4px;align-items:end;min-height:120px}
+.gp-pol-col{display:flex;flex-direction:column;align-items:stretch;gap:6px;min-width:0}
+.gp-pol-bar-wrap{height:100px;display:flex;align-items:flex-end;background:rgba(107,93,79,.08);border-radius:4px;overflow:hidden}
+.gp-pol-bar{width:100%;border-radius:4px 4px 0 0;transition:height 300ms ease}
+.gp-pol-month{font-size:10px;text-align:center;color:#6b5d4f;letter-spacing:.02em;text-transform:uppercase;font-weight:600}
+.gp-pol-month.current{color:#2d4a2e;text-decoration:underline;text-decoration-thickness:1.5px;text-underline-offset:3px}
+
+textarea.gp-notes{background:transparent;border:0;outline:0;font-family:'Fraunces',serif;color:#2a2419;font-size:16px;line-height:1.65em;width:100%;resize:none;background-image:linear-gradient(transparent calc(1.65em - 1px),rgba(107,93,79,.18) calc(1.65em - 1px),rgba(107,93,79,.18) 1.65em,transparent 1.65em);background-size:100% 1.65em}
+
+@media (hover:hover){
+  .gp-soft-hover:hover{background:rgba(0,0,0,.04)}
+  .gp-soft-hover-red:hover{background:rgba(255,200,200,.3)}
+}
+.gp-tag-row{display:flex;flex-wrap:wrap;gap:8px}
+.gp-modal-back{position:fixed;inset:0;z-index:50;background:rgba(42,36,25,.4);backdrop-filter:blur(4px);display:flex;align-items:flex-end;justify-content:center;padding:0}
+@media(min-width:640px){.gp-modal-back{align-items:center;padding:1rem}}
+.gp-modal{width:100%;background:#f4ecd8;border:1px solid rgba(107,93,79,.25);border-radius:24px 24px 0 0;padding:24px;max-height:90vh;overflow-y:auto;position:relative}
+@media(min-width:640px){.gp-modal{max-width:28rem;border-radius:24px;padding:28px}}
+
+.gp-shop-row{display:flex;align-items:center;gap:12px;padding:12px}
+
+.gp-icon{display:inline-block;width:1em;height:1em;vertical-align:-.125em;flex-shrink:0}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+(function(){
+"use strict";
+
+// ── tiny helpers ────────────────────────────────────────────────────────
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
+const newId = (prefix) => `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2,7)}`;
+
+const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const mrange = (a, b) => {
+  const out = [];
+  let m = a;
+  for (let i = 0; i < 12; i++) {
+    out.push(m);
+    if (m === b) break;
+    m = m === 12 ? 1 : m + 1;
+  }
+  return out;
+};
+
+// ── PLANT LIBRARY ───────────────────────────────────────────────────────
+const PLANTS = [
+  {id:'tomato',name:'Tomato',icon:'🍅',cat:'veg',sun:'Full sun',water:'Regular',space:'45–60 cm',sow:'Mar–Apr indoors',plant:'Late May–Jun',harvest:'Jul–Oct',color:'#c0392b',months:mrange(5,10),tip:'Stake well. Pinch out side shoots on cordon varieties.'},
+  {id:'courgette',name:'Courgette',icon:'🥒',cat:'veg',sun:'Full sun',water:'High',space:'90 cm',sow:'Apr–May indoors',plant:'Late May–Jun',harvest:'Jul–Sep',color:'#3a7d44',months:mrange(5,9),tip:'Hungry plant — feed weekly. Pick young for best flavour.'},
+  {id:'lettuce',name:'Lettuce',icon:'🥬',cat:'veg',sun:'Part shade',water:'Regular',space:'20–30 cm',sow:'Mar–Aug direct',plant:'Apr–Sep',harvest:'May–Oct',color:'#8fbc4d',months:mrange(3,11),tip:'Sow little and often for a continuous supply.'},
+  {id:'beans',name:'Runner Beans',icon:'🫛',cat:'veg',sun:'Full sun',water:'Regular',space:'15 cm',sow:'Apr–May indoors',plant:'Jun',harvest:'Jul–Oct',color:'#d24d57',months:mrange(5,10),tip:'Needs tall canes or a wigwam. Romantic in flower.'},
+  {id:'carrot',name:'Carrot',icon:'🥕',cat:'veg',sun:'Full sun',water:'Light',space:'5–8 cm',sow:'Mar–Jul direct',plant:'—',harvest:'Jun–Oct',color:'#e67e22',months:mrange(3,11),tip:'Stone-free soil. Thin seedlings to avoid carrot fly.'},
+  {id:'potato',name:'Potato',icon:'🥔',cat:'veg',sun:'Full sun',water:'Regular',space:'30–40 cm',sow:'—',plant:'Mar–Apr',harvest:'Jun–Sep',color:'#8b6f47',months:mrange(3,9),tip:'Earth up as shoots emerge to boost yield.'},
+  {id:'onion',name:'Onion',icon:'🧅',cat:'veg',sun:'Full sun',water:'Light',space:'10 cm',sow:'—',plant:'Mar–Apr (sets)',harvest:'Jul–Aug',color:'#b8956a',months:mrange(3,8),tip:'Plant sets pointed-end up, tips just showing.'},
+  {id:'garlic',name:'Garlic',icon:'🧄',cat:'veg',sun:'Full sun',water:'Light',space:'15 cm',sow:'—',plant:'Oct–Nov',harvest:'Jun–Jul',color:'#e8dcc4',months:mrange(10,7),tip:'Plant in autumn — needs a cold spell to bulb up.'},
+  {id:'kale',name:'Kale',icon:'🥬',cat:'veg',sun:'Full sun',water:'Regular',space:'45 cm',sow:'Apr–Jun direct',plant:'Jun–Jul',harvest:'Aug–Mar',color:'#2d5e3a',months:mrange(6,4),tip:'Wonderfully hardy — sweetens after a frost.'},
+  {id:'chard',name:'Rainbow Chard',icon:'🌿',cat:'veg',sun:'Full / part',water:'Regular',space:'30 cm',sow:'Apr–Jul direct',plant:'—',harvest:'Jun–Oct',color:'#d63384',months:mrange(4,11),tip:'Pretty stems in pink, yellow, orange — productive too.'},
+  {id:'beetroot',name:'Beetroot',icon:'🍠',cat:'veg',sun:'Full sun',water:'Regular',space:'10 cm',sow:'Mar–Jul direct',plant:'—',harvest:'Jun–Oct',color:'#7d1d3f',months:mrange(3,11),tip:'Eat leaves too — taste like spinach.'},
+  {id:'pea',name:'Garden Pea',icon:'🟢',cat:'veg',sun:'Full sun',water:'Regular',space:'5–8 cm',sow:'Mar–Jun direct',plant:'—',harvest:'Jun–Aug',color:'#7cb342',months:mrange(3,8),tip:'Pick often to keep them producing.'},
+  {id:'rosemary',name:'Rosemary',icon:'🌿',cat:'herb',sun:'Full sun',water:'Low',space:'60 cm',sow:'—',plant:'Apr–May',harvest:'Year-round',color:'#6b8e6b',months:mrange(1,12),tip:'Likes free-draining soil. Evergreen perennial.'},
+  {id:'thyme',name:'Thyme',icon:'🌱',cat:'herb',sun:'Full sun',water:'Low',space:'30 cm',sow:'—',plant:'Apr–May',harvest:'May–Oct',color:'#8a9a5b',months:mrange(1,12),tip:'Loves a sunny dry spot. Bees adore it.'},
+  {id:'mint',name:'Mint',icon:'🌿',cat:'herb',sun:'Part shade',water:'High',space:'30 cm',sow:'—',plant:'Apr–Jun',harvest:'May–Oct',color:'#4caf50',months:mrange(4,11),tip:'Plant in a pot — spreads aggressively otherwise!'},
+  {id:'basil',name:'Basil',icon:'🌿',cat:'herb',sun:'Full sun',water:'Regular',space:'25 cm',sow:'Apr–Jun indoors',plant:'Jun (warm)',harvest:'Jul–Sep',color:'#7ba05b',months:mrange(6,9),tip:'Tender — keep in a warm spot. Pinch tops to bush up.'},
+  {id:'parsley',name:'Parsley',icon:'🌱',cat:'herb',sun:'Full / part',water:'Regular',space:'20 cm',sow:'Mar–Aug direct',plant:'—',harvest:'May–Nov',color:'#5d8a3a',months:mrange(3,11),tip:'Slow to germinate — pre-soak seeds in warm water.'},
+  {id:'chives',name:'Chives',icon:'🌱',cat:'herb',sun:'Full sun',water:'Regular',space:'20 cm',sow:'Mar–Jul direct',plant:'—',harvest:'May–Oct',color:'#9c7fb8',months:mrange(3,11),tip:'Pretty pink flowers — edible too.'},
+  {id:'sage',name:'Sage',icon:'🌿',cat:'herb',sun:'Full sun',water:'Low',space:'45 cm',sow:'—',plant:'Apr–May',harvest:'Year-round',color:'#9caa88',months:mrange(1,12),tip:'Mediterranean — hates wet feet. Lovely silvery foliage.'},
+  {id:'lavender',name:'Lavender',icon:'💜',cat:'flower',sun:'Full sun',water:'Low',space:'45–60 cm',sow:'—',plant:'Apr–May',harvest:'Jun–Aug bloom',color:'#9874bf',months:mrange(1,12),tip:'Free-draining soil. Trim after flowering to keep shape.'},
+  {id:'sunflower',name:'Sunflower',icon:'🌻',cat:'flower',sun:'Full sun',water:'Regular',space:'45 cm',sow:'Apr–May indoors',plant:'May–Jun',harvest:'Aug–Sep bloom',color:'#f1c40f',months:mrange(5,9),tip:'Pick the right height for the spot — some hit 3m!'},
+  {id:'sweetpea',name:'Sweet Pea',icon:'🌸',cat:'flower',sun:'Full sun',water:'Regular',space:'15–20 cm',sow:'Oct or Feb–Mar',plant:'Apr–May',harvest:'Jun–Sep bloom',color:'#e84393',months:mrange(4,9),tip:'Pick blooms regularly to keep them flowering.'},
+  {id:'foxglove',name:'Foxglove',icon:'🌷',cat:'flower',sun:'Part shade',water:'Regular',space:'45 cm',sow:'May–Jun direct',plant:'Aug–Sep',harvest:'Jun–Jul (yr2)',color:'#b56fb1',months:mrange(3,9),tip:'Biennial — flowers in its second year. Loved by bees.'},
+  {id:'marigold',name:'Marigold',icon:'🌼',cat:'flower',sun:'Full sun',water:'Regular',space:'20 cm',sow:'Mar–Apr indoors',plant:'May–Jun',harvest:'Jun–Oct bloom',color:'#ff8c42',months:mrange(5,10),tip:'Brilliant companion plant — deters aphids near tomatoes.'},
+  {id:'cosmos',name:'Cosmos',icon:'🌸',cat:'flower',sun:'Full sun',water:'Regular',space:'30–45 cm',sow:'Mar–Apr indoors',plant:'May–Jun',harvest:'Jul–Oct bloom',color:'#f7a4c4',months:mrange(6,10),tip:'Cut-and-come-again. Pollinators love them.'},
+  {id:'dahlia',name:'Dahlia',icon:'🌺',cat:'flower',sun:'Full sun',water:'Regular',space:'45–60 cm',sow:'—',plant:'May (tubers)',harvest:'Jul–Oct bloom',color:'#c2185b',months:mrange(6,10),tip:'Lift tubers after frost in cold winters — or mulch heavily.'},
+  {id:'nasturtium',name:'Nasturtium',icon:'🌼',cat:'flower',sun:'Full sun',water:'Light',space:'30 cm',sow:'Apr–May direct',plant:'—',harvest:'Jun–Oct bloom',color:'#ff6b35',months:mrange(5,10),tip:'Edible flowers and leaves — peppery in salads.'},
+  {id:'strawberry',name:'Strawberry',icon:'🍓',cat:'fruit',sun:'Full sun',water:'Regular',space:'30–45 cm',sow:'—',plant:'Mar–Apr / Aug–Sep',harvest:'Jun–Aug',color:'#e63946',months:mrange(1,12),tip:'Mulch with straw to keep fruit clean and slugs off.'},
+  {id:'raspberry',name:'Raspberry',icon:'🫐',cat:'fruit',sun:'Full sun',water:'Regular',space:'45 cm',sow:'—',plant:'Nov–Mar',harvest:'Jun–Oct',color:'#a8324e',months:mrange(1,12),tip:"Summer types fruit on last year's canes; autumn on new."},
+  {id:'rhubarb',name:'Rhubarb',icon:'🌱',cat:'fruit',sun:'Full / part',water:'Regular',space:'90 cm',sow:'—',plant:'Oct–Mar (crown)',harvest:'Apr–Jul',color:'#c0392b',months:mrange(3,9),tip:"Don't pick in year one — let it establish."},
+];
+
+const PLANT_CATEGORIES = [
+  {id:'all',label:'All'},
+  {id:'veg',label:'Vegetables'},
+  {id:'herb',label:'Herbs'},
+  {id:'flower',label:'Flowers'},
+  {id:'fruit',label:'Fruit'},
+];
+
+// ── COMPANION PLANTING ──────────────────────────────────────────────────
+const COMPANIONS = {
+  tomato:    {good:['basil','marigold','nasturtium','carrot','chives','parsley','lettuce'], bad:['potato','kale']},
+  courgette: {good:['nasturtium','beans','marigold','sunflower'], bad:['potato']},
+  lettuce:   {good:['carrot','strawberry','beetroot','onion','chives'], bad:[]},
+  beans:     {good:['courgette','strawberry','potato','marigold'], bad:['onion','garlic','chives']},
+  carrot:    {good:['tomato','lettuce','onion','chives','rosemary','sage','pea'], bad:[]},
+  potato:    {good:['beans','marigold','kale'], bad:['tomato','courgette','raspberry']},
+  onion:     {good:['carrot','lettuce','beetroot','strawberry'], bad:['beans','pea']},
+  garlic:    {good:['carrot','tomato','strawberry'], bad:['beans','pea']},
+  kale:      {good:['potato','onion','nasturtium'], bad:['tomato','strawberry']},
+  chard:     {good:['beans','onion','lettuce'], bad:[]},
+  beetroot:  {good:['lettuce','onion','kale'], bad:['beans']},
+  pea:       {good:['carrot','beans','chard'], bad:['onion','garlic','chives']},
+  rosemary:  {good:['carrot','beans','sage'], bad:[]},
+  thyme:     {good:['tomato','courgette','kale'], bad:[]},
+  mint:      {good:['kale','tomato'], bad:[]},
+  basil:     {good:['tomato','lettuce'], bad:[]},
+  parsley:   {good:['tomato','carrot'], bad:[]},
+  chives:    {good:['carrot','tomato','lettuce'], bad:['beans','pea']},
+  sage:      {good:['rosemary','carrot','kale'], bad:[]},
+  lavender:  {good:['rosemary','sage'], bad:[]},
+  sunflower: {good:['courgette'], bad:['potato']},
+  sweetpea:  {good:[], bad:[]},
+  foxglove:  {good:[], bad:[]},
+  marigold:  {good:['tomato','courgette','potato','beans'], bad:[]},
+  cosmos:    {good:['tomato'], bad:[]},
+  dahlia:    {good:[], bad:[]},
+  nasturtium:{good:['tomato','courgette','kale'], bad:[]},
+  strawberry:{good:['lettuce','onion','beans'], bad:['kale']},
+  raspberry: {good:[], bad:['potato']},
+  rhubarb:   {good:[], bad:[]},
+};
+
+const companionRel = (a, b) => {
+  if (!a || !b || a === b) return null;
+  const ca = COMPANIONS[a], cb = COMPANIONS[b];
+  if ((ca && ca.bad.includes(b)) || (cb && cb.bad.includes(a))) return 'bad';
+  if ((ca && ca.good.includes(b)) || (cb && cb.good.includes(a))) return 'good';
+  return null;
+};
+
+// ── POLLINATORS ─────────────────────────────────────────────────────────
+// value: 0 (none) – 3 (excellent). bloomMonths: 1-indexed months providing forage.
+const POLLINATORS = {
+  // veg
+  tomato:    {value:2, bloomMonths:[6,7,8,9],     pollinators:['bees'],                              note:'Bumblebees buzz-pollinate for better fruit set.'},
+  courgette: {value:3, bloomMonths:[6,7,8,9],     pollinators:['bees'],                              note:'Big yellow flowers — a magnet for bees.'},
+  lettuce:   {value:1, bloomMonths:[7,8],         pollinators:['bees','hoverflies'],                 note:'Only when left to bolt.'},
+  beans:     {value:3, bloomMonths:[7,8,9],       pollinators:['bees'],                              note:'Bumblebees especially love the red flowers.'},
+  carrot:    {value:2, bloomMonths:[7,8],         pollinators:['hoverflies','bees'],                 note:'Umbels in year 2 — let some go to seed.'},
+  potato:    {value:1, bloomMonths:[6,7],         pollinators:['bees'],                              note:'Modest forage value.'},
+  onion:     {value:1, bloomMonths:[6,7],         pollinators:['bees','hoverflies'],                 note:'Only if left to bolt.'},
+  garlic:    {value:0, bloomMonths:[],            pollinators:[],                                    note:'Rarely flowers in cultivation.'},
+  kale:      {value:2, bloomMonths:[4,5],         pollinators:['bees','hoverflies'],                 note:'Lovely yellow brassica flowers in year 2.'},
+  chard:     {value:1, bloomMonths:[7,8],         pollinators:['bees'],                              note:'Mostly if you let it bolt.'},
+  beetroot:  {value:0, bloomMonths:[],            pollinators:[],                                    note:'Usually harvested before flowering.'},
+  pea:       {value:1, bloomMonths:[5,6,7],       pollinators:['bees'],                              note:'Mostly self-pollinating, but bees visit.'},
+  // herbs
+  rosemary:  {value:3, bloomMonths:[3,4,5],       pollinators:['bees','butterflies'],                note:'A vital early-spring nectar source.'},
+  thyme:     {value:3, bloomMonths:[6,7,8],       pollinators:['bees','butterflies'],                note:'Honeybees and solitary bees adore it.'},
+  mint:      {value:3, bloomMonths:[7,8,9],       pollinators:['bees','butterflies','hoverflies'],   note:'A late-summer all-rounder.'},
+  basil:     {value:2, bloomMonths:[7,8,9],       pollinators:['bees'],                              note:'Let one or two flower for the bees.'},
+  parsley:   {value:2, bloomMonths:[6,7],         pollinators:['hoverflies','bees'],                 note:'Year-2 umbels are hoverfly magnets.'},
+  chives:    {value:3, bloomMonths:[5,6,7],       pollinators:['bees','butterflies'],                note:'Pink globes the bees adore.'},
+  sage:      {value:3, bloomMonths:[5,6,7],       pollinators:['bees','butterflies'],                note:'Bumblebees especially.'},
+  // flowers
+  lavender:  {value:3, bloomMonths:[6,7,8],       pollinators:['bees','butterflies'],                note:'The classic pollinator plant.'},
+  sunflower: {value:3, bloomMonths:[7,8,9,10],    pollinators:['bees','butterflies','hoverflies'],   note:'Choose single-flowered varieties.'},
+  sweetpea:  {value:2, bloomMonths:[6,7,8,9],     pollinators:['bees'],                              note:'Bumblebees especially.'},
+  foxglove:  {value:3, bloomMonths:[6,7,8],       pollinators:['bees'],                              note:'A bumblebee specialist plant.'},
+  marigold:  {value:3, bloomMonths:[6,7,8,9,10],  pollinators:['bees','butterflies','hoverflies'],   note:'Open flowers — easy nectar access.'},
+  cosmos:    {value:3, bloomMonths:[7,8,9,10],    pollinators:['bees','butterflies','hoverflies'],   note:'Single varieties best.'},
+  dahlia:    {value:2, bloomMonths:[7,8,9,10],    pollinators:['bees','butterflies'],                note:'Choose single or open-centred varieties.'},
+  nasturtium:{value:2, bloomMonths:[6,7,8,9,10],  pollinators:['bees','butterflies'],                note:'Spurred flowers — mostly bumblebees.'},
+  // fruit
+  strawberry:{value:2, bloomMonths:[4,5,6],       pollinators:['bees','hoverflies'],                 note:'Bee pollination means better fruit.'},
+  raspberry: {value:3, bloomMonths:[5,6],         pollinators:['bees'],                              note:'Critical pollinator forage in early summer.'},
+  rhubarb:   {value:1, bloomMonths:[5,6],         pollinators:['bees'],                              note:'Better if you let some flower.'},
+};
+
+const POLLINATOR_TYPES = [
+  {id:'bees',        label:'Bees',        icon:'🐝', color:'#d4a017'},
+  {id:'butterflies', label:'Butterflies', icon:'🦋', color:'#7a4ea3'},
+  {id:'hoverflies',  label:'Hoverflies',  icon:'🪰', color:'#3a7d44'},
+];
+const POLLINATOR_TYPE_BY_ID = Object.fromEntries(POLLINATOR_TYPES.map(t => [t.id, t]));
+const pollinatorInfo = (plantId) => POLLINATORS[plantId] || {value:0, bloomMonths:[], pollinators:[], note:''};
+
+// ── OBJECT LIBRARY ──────────────────────────────────────────────────────
+const OBJECTS = [
+  {id:'apple-tree',name:'Apple Tree',icon:'🍎',cat:'green',L:3.5,W:3.5,color:'#7c9b5c',shape:'circle',tip:'Allow 3–4 m for a mature dwarf apple.'},
+  {id:'cherry-tree',name:'Cherry Tree',icon:'🌳',cat:'green',L:4.0,W:4.0,color:'#5c8b4c',shape:'circle',tip:'Lovely blossom in spring — needs sun.'},
+  {id:'ornamental-tree',name:'Small Tree',icon:'🌲',cat:'green',L:2.5,W:2.5,color:'#6b8e6b',shape:'circle',tip:'Acer, magnolia, or similar small ornamental.'},
+  {id:'shrub',name:'Shrub',icon:'🌿',cat:'green',L:1.2,W:1.2,color:'#87a878',shape:'circle',tip:'Buddleia, hydrangea, viburnum, etc.'},
+  {id:'hedge',name:'Hedge',icon:'🌳',cat:'green',L:4.0,W:0.5,color:'#4a6b4a',shape:'rect',tip:'Beech, yew, or privet — long and narrow.'},
+  {id:'lawn',name:'Lawn',icon:'🌱',cat:'ground',L:4.0,W:3.0,color:'#a8c878',shape:'rect',tip:'Soft green ground cover.'},
+  {id:'patio',name:'Patio',icon:'⬜',cat:'ground',L:3.0,W:2.5,color:'#b5a890',shape:'rect',tip:'Paved area for sitting out.'},
+  {id:'path',name:'Straight path',icon:'🛤️',cat:'ground',L:3.0,W:0.6,color:'#c4b89e',shape:'rect',tip:'Short straight stretch. For curved paths, use Draw path above the canvas.'},
+  {id:'decking',name:'Decking',icon:'🟫',cat:'ground',L:3.0,W:2.5,color:'#a08768',shape:'rect',tip:'Timber deck.'},
+  {id:'pond',name:'Pond',icon:'💧',cat:'feature',L:1.8,W:1.2,color:'#7eb6c4',shape:'circle',tip:'Wildlife magnet — frogs love it.'},
+  {id:'shed',name:'Shed',icon:'🏚️',cat:'feature',L:2.4,W:1.8,color:'#8b6f47',shape:'rect',tip:'Standard 8×6 garden shed.'},
+  {id:'greenhouse',name:'Greenhouse',icon:'🏡',cat:'feature',L:2.5,W:1.8,color:'#a8c8b5',shape:'rect',tip:'Glass or polycarbonate.'},
+  {id:'compost',name:'Compost Bin',icon:'♻️',cat:'feature',L:0.9,W:0.9,color:'#5d4e3a',shape:'rect',tip:'Tuck away in a corner.'},
+  {id:'bench',name:'Bench',icon:'🪑',cat:'feature',L:1.5,W:0.5,color:'#94785a',shape:'rect',tip:'A spot to sit and admire your work.'},
+  {id:'water-butt',name:'Water Butt',icon:'🛢️',cat:'feature',L:0.6,W:0.6,color:'#3a5a6b',shape:'circle',tip:'Collect rainwater off the shed roof.'},
+  {id:'fence',name:'Fence',icon:'🟫',cat:'feature',L:3.0,W:0.1,color:'#7a6448',shape:'rect',tip:'Standard timber panel fence.'},
+  {id:'arch',name:'Arch',icon:'🌸',cat:'feature',L:1.2,W:0.5,color:'#b8a47e',shape:'rect',tip:'Lovely with climbing roses or sweet peas.'},
+];
+const OBJECT_BY_ID = Object.fromEntries(OBJECTS.map(o => [o.id, o]));
+const OBJECT_CATEGORIES = [
+  {id:'all',label:'All'},
+  {id:'green',label:'Trees & Shrubs'},
+  {id:'ground',label:'Lawn & Paths'},
+  {id:'feature',label:'Features'},
+];
+
+// ── PATH STYLES (for curvy paths drawn through waypoints) ──────────────
+const PATH_STYLES = [
+  {id:'gravel',  name:'Gravel',         fill:'#c8bb9e', edge:'#8a7860', icon:'·∴·'},
+  {id:'paving',  name:'Paving',         fill:'#bdab92', edge:'#8a7860', icon:'▥'},
+  {id:'grass',   name:'Grass / mown',   fill:'#a8c878', edge:'#7ba858', icon:'≋'},
+  {id:'stepping',name:'Stepping stones',fill:'#a8a39a', edge:'#6b6660', icon:'••'},
+  {id:'mulch',   name:'Bark / mulch',   fill:'#9e7a52', edge:'#5d4a30', icon:'~'},
+];
+const PATH_STYLES_BY_ID = Object.fromEntries(PATH_STYLES.map(s => [s.id, s]));
+
+const parseSizeCm = (s) => {
+  const m = (s || '').match(/\d+/g);
+  if (!m || !m.length) return 30;
+  return m.map(Number).reduce((a,b) => a+b, 0) / m.length;
+};
+const PLANTS_BY_ID = Object.fromEntries(PLANTS.map(p => [p.id, {...p, sizeCm: parseSizeCm(p.space)}]));
+const ENRICHED_PLANTS = Object.values(PLANTS_BY_ID);
+
+// ── State constructors ──────────────────────────────────────────────────
+const newBed = (name, x, y, lengthM=2.4, widthM=1.2) => ({
+  id:newId('bed'), name, x, y, lengthM, widthM, rotation:0, notes:'', tasks:[],
+});
+const newPlanting = (plantId, x, y) => ({id:newId('plant'), plantId, x, y});
+const newPath = (style='gravel', points=[]) => ({id:newId('path'), style, widthM:0.6, points});
+const newObjectInst = (typeId, x, y) => {
+  const tpl = OBJECT_BY_ID[typeId];
+  return {id:newId('obj'), typeId, x, y, lengthM:tpl.L, widthM:tpl.W, rotation:0, label:''};
+};
+const newTask = (text) => ({id:newId('task'), text, done:false});
+
+const DEFAULT_STATE = {
+  gardenName:'Our Garden',
+  gardenLengthM:8,
+  gardenWidthM:6,
+  beds:[
+    newBed('Veg Patch', 0.8, 1.2, 2.4, 1.2),
+    newBed('Flower Border', 4.2, 0.8, 3.0, 0.8),
+  ],
+  objects:[],
+  plantings:[],
+  paths:[],
+  shopping:{},
+};
+
+const ensureShape = (s) => ({
+  gardenName: s.gardenName || 'Our Garden',
+  gardenLengthM: s.gardenLengthM || 8,
+  gardenWidthM: s.gardenWidthM || 6,
+  beds: (s.beds || []).map(b => ({
+    id: b.id || newId('bed'),
+    name: b.name || 'Bed',
+    x: b.x ?? 0.5, y: b.y ?? 0.5,
+    lengthM: b.lengthM ?? 2.4, widthM: b.widthM ?? 1.2,
+    rotation: b.rotation || 0,
+    notes: b.notes || '',
+    tasks: Array.isArray(b.tasks) ? b.tasks : [],
+  })),
+  objects: (s.objects || []).map(o => ({
+    id: o.id || newId('obj'),
+    typeId: o.typeId,
+    x: o.x ?? 0.5, y: o.y ?? 0.5,
+    lengthM: o.lengthM ?? 1, widthM: o.widthM ?? 1,
+    rotation: o.rotation || 0,
+    label: o.label || '',
+  })).filter(o => OBJECT_BY_ID[o.typeId]),
+  plantings: (s.plantings || []).filter(p => PLANTS_BY_ID[p.plantId]),
+  paths: (s.paths || []).map(p => ({
+    id: p.id || newId('path'),
+    style: PATH_STYLES_BY_ID[p.style] ? p.style : 'gravel',
+    widthM: p.widthM ?? 0.6,
+    points: (Array.isArray(p.points) ? p.points : []).filter(pt => typeof pt?.x === 'number' && typeof pt?.y === 'number'),
+  })).filter(p => p.points.length >= 2),
+  shopping: s.shopping && typeof s.shopping === 'object' ? s.shopping : {},
+});
+
+const migrateState = (parsed) => {
+  if (parsed.gardenLengthM != null && parsed.plantings != null) return ensureShape(parsed);
+  const out = {gardenName: parsed.gardenName || 'Our Garden', gardenLengthM:8, gardenWidthM:6, beds:[], objects:[], plantings:[], shopping:{}};
+  if (parsed.beds && Array.isArray(parsed.beds)) {
+    let cursorX = 0.5;
+    parsed.beds.forEach((bed, idx) => {
+      const cellCm = bed.cellCm || 30;
+      const cellM = cellCm / 100;
+      const lengthM = bed.lengthM || (bed.cols || 8) * cellM;
+      const widthM = bed.widthM || (bed.rows || 4) * cellM;
+      const x = bed.x ?? cursorX;
+      const y = bed.y ?? 0.5;
+      cursorX += lengthM + 0.5;
+      out.beds.push({id: bed.id || newId('bed'), name: bed.name || `Bed ${idx+1}`, x, y, lengthM, widthM, rotation:0, notes: bed.notes || '', tasks:[]});
+      if (bed.plants && typeof bed.plants === 'object') {
+        Object.entries(bed.plants).forEach(([key, plantId]) => {
+          const [r, c] = key.split(',').map(Number);
+          out.plantings.push({id: newId('plant'), plantId, x: x + (c+0.5) * cellM, y: y + (r+0.5) * cellM});
+        });
+      }
+    });
+  }
+  out.beds.forEach(b => {
+    out.gardenLengthM = Math.max(out.gardenLengthM, Math.ceil(b.x + b.lengthM + 1));
+    out.gardenWidthM = Math.max(out.gardenWidthM, Math.ceil(b.y + b.widthM + 1));
+  });
+  return ensureShape(out);
+};
+
+// ── Geometry transforms ─────────────────────────────────────────────────
+const rotateVec = (dx, dy, deg) => {
+  const r = (deg * Math.PI) / 180;
+  const c = Math.cos(r), s = Math.sin(r);
+  return [dx*c + dy*s, -dx*s + dy*c];
+};
+const angleBetween = (cx, cy, x, y) => (Math.atan2(y - cy, x - cx) * 180) / Math.PI;
+const bedLocalToWorld = (bed, lx, ly) => {
+  const cx = bed.x + bed.lengthM / 2;
+  const cy = bed.y + bed.widthM / 2;
+  const [wx, wy] = rotateVec(lx - bed.lengthM/2, ly - bed.widthM/2, -(bed.rotation || 0));
+  return [cx + wx, cy + wy];
+};
+const worldToBedLocal = (bed, wx, wy) => {
+  const cx = bed.x + bed.lengthM / 2;
+  const cy = bed.y + bed.widthM / 2;
+  const [lx, ly] = rotateVec(wx - cx, wy - cy, bed.rotation || 0);
+  return [lx + bed.lengthM/2, ly + bed.widthM/2];
+};
+const pointInBed = (px, py, bed) => {
+  const [lx, ly] = worldToBedLocal(bed, px, py);
+  return lx >= 0 && lx <= bed.lengthM && ly >= 0 && ly <= bed.widthM;
+};
+
+// ── Inline SVG icons (lucide-derived paths, 1em sized) ──────────────────
+// Each icon function returns an SVG string. All icons share these props.
+const _S = (paths, cls='gp-icon', extra='') => `<svg class="${cls} ${extra}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths}</svg>`;
+const ICON = {
+  plus:       (c,e)=>_S('<path d="M5 12h14"/><path d="M12 5v14"/>',c,e),
+  trash:      (c,e)=>_S('<path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/>',c,e),
+  x:          (c,e)=>_S('<path d="M18 6 6 18"/><path d="m6 6 12 12"/>',c,e),
+  settings:   (c,e)=>_S('<path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/>',c,e),
+  info:       (c,e)=>_S('<circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/>',c,e),
+  edit:       (c,e)=>_S('<path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z"/>',c,e),
+  sun:        (c,e)=>_S('<circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>',c,e),
+  droplet:    (c,e)=>_S('<path d="M12 2.69 5.64 9.05a8 8 0 1 0 12.72 0Z"/>',c,e),
+  calendar:   (c,e)=>_S('<rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>',c,e),
+  sprout:     (c,e)=>_S('<path d="M7 20h10"/><path d="M10 20c5.5-2.5.8-6.4 3-10"/><path d="M9.5 9.4c1.1.8 1.8 2.2 2.3 3.7-2 .4-3.5.4-4.8-.3-1.2-.6-2.3-1.9-3-4.2 2.8-.5 4.4 0 5.5.8z"/><path d="M14.1 6a7 7 0 0 0-1.1 4c1.9-.1 3.3-.6 4.3-1.4 1-1 1.6-2.3 1.7-4.6-2.7.1-4 1-4.9 2z"/>',c,e),
+  book:       (c,e)=>_S('<path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/>',c,e),
+  layers:     (c,e)=>_S('<polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/>',c,e),
+  undo:       (c,e)=>_S('<path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5v0a5.5 5.5 0 0 1-5.5 5.5H11"/>',c,e),
+  movediag:   (c,e)=>_S('<polyline points="13 11 22 2"/><polyline points="11 13 2 22"/><polyline points="22 8 22 2 16 2"/><polyline points="2 16 2 22 8 22"/>',c,e),
+  rotate:     (c,e)=>_S('<path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/>',c,e),
+  trees:      (c,e)=>_S('<path d="M10 10v.2A3 3 0 0 1 8.9 16v0H5v0h0a3 3 0 0 1-1-5.8V10a3 3 0 0 1 6 0Z"/><path d="M7 16v6"/><path d="M13 19h6"/><path d="M16 19v3"/><path d="M14.5 4a2 2 0 0 1 2 2v0a2.5 2.5 0 0 1-2.5 2.5h-1a2.5 2.5 0 0 1 0-5 2 2 0 0 1 1.5.5Z"/><path d="M19 14a2 2 0 0 1 2 2v0a2.5 2.5 0 0 1-2.5 2.5h-2a2.5 2.5 0 0 1 0-5Z"/>',c,e),
+  copy:       (c,e)=>_S('<rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>',c,e),
+  basket:     (c,e)=>_S('<path d="m15 11-1 9"/><path d="m19 11-4-7"/><path d="M2 11h20"/><path d="m3.5 11 1.6 7.4a2 2 0 0 0 2 1.6h9.8a2 2 0 0 0 2-1.6L20.5 11"/><path d="M4.5 15.5h15"/><path d="m5 11 4-7"/><path d="m9 11 1 9"/>',c,e),
+  caldays:    (c,e)=>_S('<path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/><path d="M8 18h.01"/><path d="M12 18h.01"/><path d="M16 18h.01"/>',c,e),
+  alert:      (c,e)=>_S('<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/>',c,e),
+  check:      (c,e)=>_S('<polyline points="20 6 9 17 4 12"/>',c,e),
+  leaf:       (c,e)=>_S('<path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19.2 2.96c1.42 3.87-.32 7.4-4.2 9.9-2.3 1.5-5 2.14-7 2.14"/><path d="M2 21c0-3 1.85-5.36 5.08-6"/>',c,e),
+  sparkles:   (c,e)=>_S('<path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/>',c,e),
+  maximize:   (c,e)=>_S('<polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/>',c,e),
+  arrowleft:  (c,e)=>_S('<line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>',c,e),
+};
+
+// ── State ───────────────────────────────────────────────────────────────
+const STORAGE_KEY = 'garden-planner:v4';
+const LEGACY_KEYS = ['garden-planner:v3','garden-planner:v2','garden-planner:v1'];
+
+let state = null;
+let history = [];
+let view = 'design';
+let pickerMode = 'plants';
+let selectedPlant = null;
+let selectedItem = null;
+let plantCategory = 'all';
+let objectCategory = 'all';
+let editingName = false;
+let gardenSettingsOpen = false;
+let infoPlantId = null;
+let notesBedId = null;
+let viewMonth = 0;
+let newTaskText = '';
+let bedDetailId = null;
+let canvasWidthPx = 800;
+let detailCanvasWidthPx = 800;
+let drag = null;
+let saveTimer = null;
+let resizeObs = null;
+let detailResizeObs = null;
+let pathDraftId = null;     // id of path currently being drawn (tap-to-add waypoints)
+let pathDraftStyle = 'gravel';
+
+// ── Persistence ─────────────────────────────────────────────────────────
+function load() {
+  let raw = null;
+  try { raw = localStorage.getItem(STORAGE_KEY); } catch {}
+  if (!raw) {
+    for (const k of LEGACY_KEYS) {
+      try { const r = localStorage.getItem(k); if (r) { raw = r; break; } } catch {}
+    }
+  }
+  try {
+    state = raw ? migrateState(JSON.parse(raw)) : structuredClone(DEFAULT_STATE);
+  } catch {
+    state = structuredClone(DEFAULT_STATE);
+  }
+}
+function saveSoon() {
+  if (saveTimer) clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch {}
+  }, 300);
+}
+
+// ── History ─────────────────────────────────────────────────────────────
+function pushHistory(snapshot) {
+  history.push(JSON.parse(JSON.stringify(snapshot)));
+  if (history.length > 50) history.shift();
+}
+function undo() {
+  if (!history.length) return;
+  state = history.pop();
+  selectedItem = null;
+  saveSoon();
+  scheduleRender();
+}
+
+// ── Render orchestration (with focus restoration) ───────────────────────
+let renderQueued = false;
+let renderSuppressed = false; // true while a drag is in progress
+function scheduleRender() {
+  if (renderSuppressed) return;
+  if (renderQueued) return;
+  renderQueued = true;
+  requestAnimationFrame(() => { renderQueued = false; render(); });
+}
+function render() {
+  const root = document.getElementById('root');
+  const active = document.activeElement;
+  let focusInfo = null;
+  if (active && active.dataset && active.dataset.focusKey && root.contains(active)) {
+    focusInfo = {
+      key: active.dataset.focusKey,
+      start: active.selectionStart ?? null,
+      end: active.selectionEnd ?? null,
+      scrollTop: active.scrollTop || 0,
+    };
+  }
+  // Preserve scroll positions of scrollable horizontal lists
+  const scrollers = {};
+  root.querySelectorAll('[data-scroll-key]').forEach(el => { scrollers[el.dataset.scrollKey] = el.scrollLeft; });
+
+  root.innerHTML = buildAppHTML();
+
+  // Restore scroll
+  root.querySelectorAll('[data-scroll-key]').forEach(el => {
+    const v = scrollers[el.dataset.scrollKey];
+    if (typeof v === 'number') el.scrollLeft = v;
+  });
+  // Restore focus
+  if (focusInfo) {
+    const el = root.querySelector(`[data-focus-key="${CSS.escape(focusInfo.key)}"]`);
+    if (el) {
+      el.focus({preventScroll:true});
+      if (focusInfo.start !== null) {
+        try { el.setSelectionRange(focusInfo.start, focusInfo.end); } catch {}
+      }
+      if (focusInfo.scrollTop) el.scrollTop = focusInfo.scrollTop;
+    }
+  }
+
+  // Hook up canvas resize observers (they get torn down with innerHTML).
+  // Don't sync-update canvasWidthPx here — that would suppress the observer's
+  // initial-fire re-render. Let the observer detect the mismatch and recover.
+  if (resizeObs) { resizeObs.disconnect(); resizeObs = null; }
+  if (detailResizeObs) { detailResizeObs.disconnect(); detailResizeObs = null; }
+  const canvas = root.querySelector('#gp-canvas');
+  if (canvas) {
+    resizeObs = new ResizeObserver(() => {
+      const w = canvas.getBoundingClientRect().width;
+      if (w > 0 && Math.abs(w - canvasWidthPx) > 2) { canvasWidthPx = w; scheduleRender(); }
+    });
+    resizeObs.observe(canvas);
+  }
+  const detail = root.querySelector('#gp-detail-canvas');
+  if (detail) {
+    detailResizeObs = new ResizeObserver(() => {
+      const w = detail.getBoundingClientRect().width;
+      if (w > 0 && Math.abs(w - detailCanvasWidthPx) > 2) { detailCanvasWidthPx = w; scheduleRender(); }
+    });
+    detailResizeObs.observe(detail);
+  }
+}
+
+// ── Mutations ───────────────────────────────────────────────────────────
+function snap() { pushHistory(state); }
+
+function setView(v) { bedDetailId = null; view = v; scheduleRender(); }
+function setSelectedPlant(id) { selectedPlant = id; scheduleRender(); }
+function setSelectedItem(it) { selectedItem = it; scheduleRender(); }
+
+function placePlantAt(clientX, clientY) {
+  if (!selectedPlant) return;
+  const canvas = document.getElementById('gp-canvas');
+  if (!canvas) return;
+  const rect = canvas.getBoundingClientRect();
+  const x = (clientX - rect.left) / rect.width * state.gardenLengthM;
+  const y = (clientY - rect.top) / rect.height * state.gardenWidthM;
+  if (x < 0 || x > state.gardenLengthM || y < 0 || y > state.gardenWidthM) return;
+  snap();
+  state.plantings.push(newPlanting(selectedPlant, x, y));
+  saveSoon();
+  scheduleRender();
+}
+function placePlantInBedAt(clientX, clientY) {
+  if (!selectedPlant || !bedDetailId) return;
+  const bed = state.beds.find(b => b.id === bedDetailId);
+  const canvas = document.getElementById('gp-detail-canvas');
+  if (!bed || !canvas) return;
+  const rect = canvas.getBoundingClientRect();
+  const lx = clamp((clientX - rect.left) / rect.width * bed.lengthM, 0, bed.lengthM);
+  const ly = clamp((clientY - rect.top) / rect.height * bed.widthM, 0, bed.widthM);
+  const [wx, wy] = bedLocalToWorld(bed, lx, ly);
+  snap();
+  state.plantings.push(newPlanting(selectedPlant, wx, wy));
+  saveSoon();
+  scheduleRender();
+}
+
+function addBed() {
+  snap();
+  const bed = newBed(
+    `Bed ${state.beds.length + 1}`,
+    Math.max(0.3, state.gardenLengthM/2 - 1.2),
+    Math.max(0.3, state.gardenWidthM/2 - 0.6),
+    Math.min(2.4, state.gardenLengthM - 1),
+    Math.min(1.2, state.gardenWidthM - 1),
+  );
+  state.beds.push(bed);
+  selectedItem = {type:'bed', id: bed.id};
+  saveSoon();
+  scheduleRender();
+}
+function addObject(typeId) {
+  snap();
+  const tpl = OBJECT_BY_ID[typeId];
+  const obj = newObjectInst(
+    typeId,
+    Math.max(tpl.L/2, state.gardenLengthM/2 - tpl.L/2),
+    Math.max(tpl.W/2, state.gardenWidthM/2 - tpl.W/2),
+  );
+  state.objects.push(obj);
+  selectedItem = {type:'object', id: obj.id};
+  saveSoon();
+  scheduleRender();
+}
+function deleteSelected() {
+  if (!selectedItem) return;
+  snap();
+  if (selectedItem.type === 'bed')      state.beds      = state.beds.filter(b => b.id !== selectedItem.id);
+  else if (selectedItem.type === 'object')   state.objects   = state.objects.filter(o => o.id !== selectedItem.id);
+  else if (selectedItem.type === 'planting') state.plantings = state.plantings.filter(p => p.id !== selectedItem.id);
+  else if (selectedItem.type === 'path')     state.paths     = state.paths.filter(p => p.id !== selectedItem.id);
+  selectedItem = null;
+  saveSoon();
+  scheduleRender();
+}
+function duplicateSelected() {
+  if (!selectedItem) return;
+  snap();
+  if (selectedItem.type === 'bed') {
+    const b = state.beds.find(x => x.id === selectedItem.id);
+    if (!b) return;
+    const copy = {...b, id:newId('bed'), name:`${b.name} copy`, x:b.x+0.3, y:b.y+0.3, tasks: b.tasks.map(t => ({...t, id:newId('task')}))};
+    state.beds.push(copy);
+    selectedItem = {type:'bed', id: copy.id};
+  } else if (selectedItem.type === 'object') {
+    const o = state.objects.find(x => x.id === selectedItem.id);
+    if (!o) return;
+    const copy = {...o, id:newId('obj'), x:o.x+0.3, y:o.y+0.3};
+    state.objects.push(copy);
+    selectedItem = {type:'object', id: copy.id};
+  } else if (selectedItem.type === 'planting') {
+    const p = state.plantings.find(x => x.id === selectedItem.id);
+    if (!p) return;
+    const copy = {...p, id:newId('plant'), x:p.x+0.25, y:p.y+0.25};
+    state.plantings.push(copy);
+    selectedItem = {type:'planting', id: copy.id};
+  }
+  saveSoon();
+  scheduleRender();
+}
+function updateBed(id, patch) {
+  const b = state.beds.find(b => b.id === id);
+  if (!b) return;
+  Object.assign(b, patch);
+  saveSoon();
+}
+function updateObject(id, patch) {
+  const o = state.objects.find(o => o.id === id);
+  if (!o) return;
+  Object.assign(o, patch);
+  saveSoon();
+}
+function updatePlanting(id, patch) {
+  const p = state.plantings.find(p => p.id === id);
+  if (!p) return;
+  Object.assign(p, patch);
+  saveSoon();
+}
+function updatePath(id, patch) {
+  const p = state.paths.find(p => p.id === id);
+  if (!p) return;
+  Object.assign(p, patch);
+  saveSoon();
+}
+function updatePathPoint(id, idx, pctX, pctY) {
+  const p = state.paths.find(p => p.id === id);
+  if (!p || !p.points[idx]) return;
+  p.points[idx].x = clamp(pctX, 0, 100);
+  p.points[idx].y = clamp(pctY, 0, 100);
+  saveSoon();
+}
+
+// Start a new path-draw session — every subsequent canvas tap adds a waypoint.
+// First call adds the path with two points so the user immediately sees something on tap.
+function startPathDraft(style = 'gravel') {
+  snap();
+  pathDraftStyle = style;
+  const id = newId('path');
+  state.paths.push({id, style, widthM: 0.6, points: []});
+  pathDraftId = id;
+  selectedItem = null;
+  saveSoon();
+  scheduleRender();
+}
+// Add a waypoint to the in-progress path (called from canvas tap when pathDraftId set).
+function appendPathPoint(pctX, pctY) {
+  if (!pathDraftId) return;
+  const p = state.paths.find(p => p.id === pathDraftId);
+  if (!p) return;
+  p.points.push({x: clamp(pctX, 0, 100), y: clamp(pctY, 0, 100)});
+  saveSoon();
+  scheduleRender();
+}
+// Finish drawing — keep the path if it has at least 2 points, otherwise discard.
+function finishPathDraft() {
+  if (!pathDraftId) return;
+  const p = state.paths.find(p => p.id === pathDraftId);
+  const id = pathDraftId;
+  pathDraftId = null;
+  if (!p || p.points.length < 2) {
+    state.paths = state.paths.filter(x => x.id !== id);
+  } else {
+    selectedItem = {type:'path', id};
+  }
+  saveSoon();
+  scheduleRender();
+}
+function insertPathPoint(pathId, afterIndex) {
+  const p = state.paths.find(p => p.id === pathId);
+  if (!p) return;
+  const a = p.points[afterIndex];
+  const b = p.points[afterIndex + 1];
+  if (!a || !b) return;
+  snap();
+  // Insert at the curve midpoint between the two waypoints (Bezier mid, not Euclidean)
+  const mid = curveSegmentMid(p.points[afterIndex-1], a, b, p.points[afterIndex+2]);
+  p.points.splice(afterIndex + 1, 0, {x: mid.x, y: mid.y});
+  saveSoon();
+  scheduleRender();
+}
+function updateGarden(patch) { Object.assign(state, patch); saveSoon(); scheduleRender(); }
+function setGardenName(v) { state.gardenName = v; saveSoon(); }
+
+function addBedTask(bedId, text) {
+  const t = text.trim();
+  if (!t) return;
+  snap();
+  const b = state.beds.find(b => b.id === bedId);
+  if (b) b.tasks.push(newTask(t));
+  newTaskText = '';
+  saveSoon();
+  scheduleRender();
+}
+function toggleBedTask(bedId, taskId) {
+  const b = state.beds.find(b => b.id === bedId);
+  const t = b && b.tasks.find(t => t.id === taskId);
+  if (t) { t.done = !t.done; saveSoon(); scheduleRender(); }
+}
+function deleteBedTask(bedId, taskId) {
+  snap();
+  const b = state.beds.find(b => b.id === bedId);
+  if (b) b.tasks = b.tasks.filter(t => t.id !== taskId);
+  saveSoon();
+  scheduleRender();
+}
+function toggleShopping(key) {
+  state.shopping = {...state.shopping, [key]: !state.shopping[key]};
+  saveSoon();
+  scheduleRender();
+}
+function setBedNotes(bedId, notes) {
+  const b = state.beds.find(b => b.id === bedId);
+  if (b) { b.notes = notes; saveSoon(); }
+}
+
+// ── Derived computations ────────────────────────────────────────────────
+function computeStats() {
+  const counts = {};
+  state.plantings.forEach(p => { counts[p.plantId] = (counts[p.plantId] || 0) + 1; });
+  return Object.entries(counts)
+    .map(([id, n]) => ({plant: PLANTS_BY_ID[id], n}))
+    .filter(x => x.plant)
+    .sort((a,b) => b.n - a.n);
+}
+function computeShoppingList() {
+  const pCounts = {};
+  state.plantings.forEach(p => { pCounts[p.plantId] = (pCounts[p.plantId] || 0) + 1; });
+  const plants = Object.entries(pCounts)
+    .map(([id, n]) => ({plant: PLANTS_BY_ID[id], n, key: `plant:${id}`}))
+    .filter(x => x.plant)
+    .sort((a,b) => Math.min(...a.plant.months) - Math.min(...b.plant.months));
+  const oCounts = {};
+  state.objects.forEach(o => { oCounts[o.typeId] = (oCounts[o.typeId] || 0) + 1; });
+  const materials = Object.entries(oCounts)
+    .map(([typeId, n]) => ({obj: OBJECT_BY_ID[typeId], n, key: `obj:${typeId}`}))
+    .filter(x => x.obj)
+    .sort((a,b) => a.obj.name.localeCompare(b.obj.name));
+  return {plants, materials};
+}
+function bedCapacity(bed) {
+  const area = bed.lengthM * bed.widthM;
+  const inside = state.plantings.filter(p => pointInBed(p.x, p.y, bed));
+  let avgCell = 0.09;
+  if (inside.length) {
+    const avgCm = inside.reduce((sum, p) => sum + (PLANTS_BY_ID[p.plantId]?.sizeCm || 30), 0) / inside.length;
+    avgCell = Math.max(0.01, Math.pow(avgCm / 100, 2));
+  }
+  return {cap: Math.max(1, Math.floor(area / avgCell)), planted: inside.length};
+}
+function filteredPlants() {
+  return plantCategory === 'all' ? ENRICHED_PLANTS : ENRICHED_PLANTS.filter(p => p.cat === plantCategory);
+}
+function filteredObjects() {
+  return objectCategory === 'all' ? OBJECTS : OBJECTS.filter(o => o.cat === objectCategory);
+}
+
+// ── Drag system ─────────────────────────────────────────────────────────
+// Find the DOM element being dragged so we can mutate its style directly
+// instead of re-rendering the entire app on every pointer move.
+function findDragEl() {
+  if (!drag) return null;
+  const root = document.getElementById('root');
+  if (drag.type === 'bed' || drag.type === 'object') {
+    return root.querySelector('.gp-rect[data-type="' + drag.type + '"][data-id="' + drag.id + '"]');
+  } else if (drag.type === 'planting') {
+    return root.querySelector('#gp-canvas .gp-planting[data-id="' + drag.id + '"]');
+  } else if (drag.type === 'detail-planting') {
+    return root.querySelector('#gp-detail-canvas .gp-planting[data-id="' + drag.id + '"]');
+  }
+  return null;
+}
+
+// Apply the current state of the dragged item directly to its DOM node.
+// Cheap, no full re-render, no animations, no focus-restoration overhead.
+function updateDragVisual() {
+  const el = findDragEl();
+  if (!el) return;
+  if (drag.type === 'bed' || drag.type === 'object') {
+    const item = (drag.type === 'bed' ? state.beds : state.objects).find(x => x.id === drag.id);
+    if (!item) return;
+    const scale = canvasWidthPx / state.gardenLengthM;
+    el.style.left = ((item.x + item.lengthM / 2) / state.gardenLengthM) * 100 + '%';
+    el.style.top  = ((item.y + item.widthM  / 2) / state.gardenWidthM)  * 100 + '%';
+    el.style.width  = (item.lengthM * scale) + 'px';
+    el.style.height = (item.widthM  * scale) + 'px';
+    el.style.transform = 'translate(-50%,-50%) rotate(' + (item.rotation || 0) + 'deg)';
+  } else if (drag.type === 'planting') {
+    const p = state.plantings.find(x => x.id === drag.id);
+    if (!p) return;
+    el.style.left = (p.x / state.gardenLengthM) * 100 + '%';
+    el.style.top  = (p.y / state.gardenWidthM)  * 100 + '%';
+  } else if (drag.type === 'detail-planting') {
+    const bed = state.beds.find(b => b.id === drag.bedId);
+    const p = state.plantings.find(x => x.id === drag.id);
+    if (!bed || !p) return;
+    const [lx, ly] = worldToBedLocal(bed, p.x, p.y);
+    el.style.left = (lx / bed.lengthM) * 100 + '%';
+    el.style.top  = (ly / bed.widthM)  * 100 + '%';
+  }
+}
+
+function startDrag(e, type, id, mode, targetEl) {
+  mode = mode || 'move';
+  e.stopPropagation();
+  if ((type === 'bed' || type === 'object') && mode === 'move' && selectedPlant) {
+    placePlantAt(e.clientX, e.clientY);
+    return;
+  }
+  const canvas = document.getElementById('gp-canvas');
+  if (!canvas) return;
+  const rect = canvas.getBoundingClientRect();
+  const scalePx = rect.width / state.gardenLengthM;
+  let initial;
+  if (type === 'bed' || type === 'object') {
+    const item = (type === 'bed' ? state.beds : state.objects).find(x => x.id === id);
+    if (!item) return;
+    initial = {x:item.x, y:item.y, lengthM:item.lengthM, widthM:item.widthM, rotation:item.rotation || 0};
+    if (mode === 'rotate') {
+      const cxM = item.x + item.lengthM/2;
+      const cyM = item.y + item.widthM/2;
+      const cxPx = rect.left + (cxM / state.gardenLengthM) * rect.width;
+      const cyPx = rect.top + (cyM / state.gardenWidthM) * rect.height;
+      initial.startAngle = angleBetween(cxPx, cyPx, e.clientX, e.clientY);
+    }
+  } else if (type === 'planting') {
+    const p = state.plantings.find(p => p.id === id);
+    if (!p) return;
+    initial = {x:p.x, y:p.y};
+  }
+  drag = {type, id, mode, startX:e.clientX, startY:e.clientY, scalePx, initial, preDragState: JSON.parse(JSON.stringify(state)), moved:false};
+  selectedItem = {type, id};
+  // Suppress re-renders for the duration of the drag — the dragged element gets updated
+  // in place by updateDragVisual instead of being destroyed and recreated each frame.
+  // Because we no longer re-render mid-drag, the touched element stays in the DOM and
+  // the browser's implicit pointer capture handles touch tracking correctly.
+  renderSuppressed = true;
+  e.preventDefault();
+}
+
+function startPathPointDrag(e, pathId, pointIndex, targetEl) {
+  e.stopPropagation();
+  const canvas = document.getElementById('gp-canvas');
+  if (!canvas) return;
+  const path = state.paths.find(p => p.id === pathId);
+  if (!path || !path.points[pointIndex]) return;
+  drag = {
+    type: 'path-point',
+    pathId,
+    pointIndex,
+    startX: e.clientX,
+    startY: e.clientY,
+    initial: {...path.points[pointIndex]},
+    preDragState: JSON.parse(JSON.stringify(state)),
+    moved: false,
+  };
+  selectedItem = {type:'path', id: pathId};
+  renderSuppressed = true;
+  e.preventDefault();
+}
+
+function startDetailDrag(e, plantingId, targetEl) {
+  e.stopPropagation();
+  if (!bedDetailId) return;
+  const bed = state.beds.find(b => b.id === bedDetailId);
+  const p = state.plantings.find(p => p.id === plantingId);
+  const canvas = document.getElementById('gp-detail-canvas');
+  if (!bed || !p || !canvas) return;
+  const rect = canvas.getBoundingClientRect();
+  const scalePx = rect.width / bed.lengthM;
+  const [lx, ly] = worldToBedLocal(bed, p.x, p.y);
+  drag = {type:'detail-planting', id:plantingId, bedId:bed.id, startX:e.clientX, startY:e.clientY, scalePx, initialLocal:[lx, ly], preDragState: JSON.parse(JSON.stringify(state)), moved:false};
+  selectedItem = {type:'planting', id:plantingId};
+  renderSuppressed = true;
+  e.preventDefault();
+}
+
+function snapPosition(nx, ny, L, W, selfId) {
+  const SNAP = 0.12;
+  const vCands = [0, state.gardenLengthM];
+  const hCands = [0, state.gardenWidthM];
+  [...state.beds, ...state.objects].forEach(it => {
+    if (it.id === selfId) return;
+    vCands.push(it.x, it.x + it.lengthM);
+    hCands.push(it.y, it.y + it.widthM);
+  });
+  let sx = nx, sy = ny;
+  for (const c of vCands) {
+    if (Math.abs(nx - c) < SNAP) { sx = c; break; }
+    if (Math.abs((nx + L) - c) < SNAP) { sx = c - L; break; }
+  }
+  for (const c of hCands) {
+    if (Math.abs(ny - c) < SNAP) { sy = c; break; }
+    if (Math.abs((ny + W) - c) < SNAP) { sy = c - W; break; }
+  }
+  return [sx, sy];
+}
+
+function onPointerMove(e) {
+  if (!drag) return;
+  if (Math.abs(e.clientX - drag.startX) > 2 || Math.abs(e.clientY - drag.startY) > 2) drag.moved = true;
+  if (!drag.moved) return;
+
+  // Path-point drag uses % units. SVG re-renders are cheap, so we just
+  // bypass renderSuppressed temporarily for these.
+  if (drag.type === 'path-point') {
+    const canvas = document.getElementById('gp-canvas');
+    if (!canvas) return;
+    const rect = canvas.getBoundingClientRect();
+    const dxPct = ((e.clientX - drag.startX) / rect.width)  * 100;
+    const dyPct = ((e.clientY - drag.startY) / rect.height) * 100;
+    updatePathPoint(drag.pathId, drag.pointIndex, drag.initial.x + dxPct, drag.initial.y + dyPct);
+    renderSuppressed = false;
+    render();
+    renderSuppressed = true;
+    return;
+  }
+
+  const dxScreen = (e.clientX - drag.startX) / drag.scalePx;
+  const dyScreen = (e.clientY - drag.startY) / drag.scalePx;
+
+  if ((drag.type === 'bed' || drag.type === 'object') && drag.mode === 'move') {
+    const L = drag.initial.lengthM, W = drag.initial.widthM;
+    let nx = clamp(drag.initial.x + dxScreen, -L*0.3, state.gardenLengthM - L*0.7);
+    let ny = clamp(drag.initial.y + dyScreen, -W*0.3, state.gardenWidthM - W*0.7);
+    [nx, ny] = snapPosition(nx, ny, L, W, drag.id);
+    const patch = {x:nx, y:ny};
+    if (drag.type === 'bed') updateBed(drag.id, patch); else updateObject(drag.id, patch);
+  } else if ((drag.type === 'bed' || drag.type === 'object') && drag.mode === 'resize') {
+    const [dxLocal, dyLocal] = rotateVec(dxScreen, dyScreen, drag.initial.rotation || 0);
+    const patch = {
+      lengthM: clamp(drag.initial.lengthM + dxLocal, 0.2, 30),
+      widthM:  clamp(drag.initial.widthM  + dyLocal, 0.2, 30),
+    };
+    if (drag.type === 'bed') updateBed(drag.id, patch); else updateObject(drag.id, patch);
+  } else if ((drag.type === 'bed' || drag.type === 'object') && drag.mode === 'rotate') {
+    const item = (drag.type === 'bed' ? state.beds : state.objects).find(x => x.id === drag.id);
+    if (!item) return;
+    const cxM = item.x + item.lengthM/2;
+    const cyM = item.y + item.widthM/2;
+    const canvas = document.getElementById('gp-canvas');
+    const rect = canvas.getBoundingClientRect();
+    const cxPx = rect.left + (cxM / state.gardenLengthM) * rect.width;
+    const cyPx = rect.top + (cyM / state.gardenWidthM) * rect.height;
+    const cur = angleBetween(cxPx, cyPx, e.clientX, e.clientY);
+    let r = drag.initial.rotation + (cur - drag.initial.startAngle);
+    if (e.shiftKey) r = Math.round(r / 15) * 15;
+    else {
+      for (const s of [0,90,180,270,-90,-180,-270,360,-360]) {
+        if (Math.abs(r - s) < 4) { r = s; break; }
+      }
+    }
+    r = ((r + 180) % 360 + 360) % 360 - 180;
+    if (drag.type === 'bed') updateBed(drag.id, {rotation:r}); else updateObject(drag.id, {rotation:r});
+  } else if (drag.type === 'planting') {
+    updatePlanting(drag.id, {
+      x: clamp(drag.initial.x + dxScreen, 0, state.gardenLengthM),
+      y: clamp(drag.initial.y + dyScreen, 0, state.gardenWidthM),
+    });
+  } else if (drag.type === 'detail-planting') {
+    const bed = state.beds.find(b => b.id === drag.bedId);
+    if (!bed) return;
+    const lx = clamp(drag.initialLocal[0] + dxScreen, 0, bed.lengthM);
+    const ly = clamp(drag.initialLocal[1] + dyScreen, 0, bed.widthM);
+    const [wx, wy] = bedLocalToWorld(bed, lx, ly);
+    updatePlanting(drag.id, {x:wx, y:wy});
+  }
+  updateDragVisual();
+}
+function onPointerUp() {
+  if (!drag) return;
+  if (drag.moved) {
+    // commit history snapshot taken at drag start
+    history.push(drag.preDragState);
+    if (history.length > 50) history.shift();
+  }
+  drag = null;
+  renderSuppressed = false;
+  saveSoon();
+  scheduleRender();
+}
+
+// ── HTML builders ───────────────────────────────────────────────────────
+function buildAppHTML() {
+  return `
+    <div class="gp-paper gp-grain gp-body">
+      <div class="gp-wrap relative">
+        ${headerHTML()}
+        ${tabsHTML()}
+        ${
+          view === 'design'
+            ? (bedDetailId ? bedDetailHTML() : designViewHTML())
+            : view === 'library'     ? libraryHTML()
+            : view === 'pollinators' ? pollinatorsHTML()
+            : view === 'shopping'    ? shoppingHTML()
+            : view === 'notes'       ? notesHTML()
+            : ''
+        }
+        ${infoModalHTML()}
+        <footer class="mt-12 sm:mt-16 pt-6 text-center" style="border-top:1px dashed rgba(107,93,79,.3)">
+          <p class="gp-italic text-xs" style="color:#6b5d4f">Saved quietly in your browser · Climate notes are for the UK</p>
+        </footer>
+      </div>
+    </div>
+  `;
+}
+
+function headerHTML() {
+  const headerName = editingName
+    ? `<input class="gp-input gp-display text-4xl sm:text-5xl" data-action="garden-name-input" data-focus-key="garden-name" value="${esc(state.gardenName)}" autofocus>`
+    : `<button class="row items-baseline gap-3" data-action="edit-garden-name" style="text-align:left">
+         <span class="gp-display text-4xl sm:text-5xl md:text-6xl leading-none">${esc(state.gardenName)}</span>
+         <span class="opacity-50">${ICON.edit('gp-icon w4')}</span>
+       </button>`;
+  return `
+    <header class="gp-fade-in mb-7 sm:mb-10">
+      <div class="row items-center gap-2 mb-3" style="color:#87a878">
+        <div style="height:1px;width:24px;background:#87a878"></div>
+        <span class="text-xs uppercase" style="letter-spacing:.25em">A Garden Journal</span>
+      </div>
+      ${headerName}
+      <p class="gp-italic mt-3 text-base" style="color:#6b5d4f">
+        ${state.gardenLengthM}m × ${state.gardenWidthM}m · ${(state.gardenLengthM * state.gardenWidthM).toFixed(1)} m² of green
+      </p>
+    </header>
+  `;
+}
+
+function tabsHTML() {
+  const T = (id, label, icon) => `<button class="gp-tab ${view === id ? 'active' : ''}" data-action="set-view" data-view="${id}">${icon}${label}</button>`;
+  return `
+    <div class="row items-center gap-1 mb-6 overflow-x-auto gp-scroll" data-scroll-key="tabs">
+      ${T('design','Design', ICON.layers('gp-icon w3'))}
+      ${T('library','Plant library', ICON.book('gp-icon w3'))}
+      ${T('pollinators','Pollinators', ICON.sparkles('gp-icon w3'))}
+      ${T('shopping','Shopping list', ICON.basket('gp-icon w3'))}
+      ${T('notes','Notes & tasks', ICON.edit('gp-icon w3'))}
+    </div>
+  `;
+}
+
+// ── Object visuals (SVG illustrations per object type) ─────────────────
+function objectVisualSVG(item, obj) {
+  const uid = String(item.id).replace(/[^a-zA-Z0-9_-]/g, '');
+  const wrap = (content, preserve='none') =>
+    `<svg class="gp-obj-svg" viewBox="0 0 100 100" preserveAspectRatio="${preserve}" aria-hidden="true">${content}</svg>`;
+
+  switch (obj.id) {
+    case 'apple-tree': return wrap(`
+      <defs><radialGradient id="g${uid}" cx="50%" cy="42%" r="58%">
+        <stop offset="0%" stop-color="#b6d595"/><stop offset="100%" stop-color="#5e8a4d"/>
+      </radialGradient></defs>
+      <circle cx="50" cy="50" r="49" fill="url(#g${uid})" stroke="#3e6b36" stroke-width="1.2"/>
+      <g fill="#3e6b36" opacity=".22">
+        <circle cx="30" cy="35" r="7"/><circle cx="68" cy="30" r="8"/><circle cx="45" cy="68" r="7"/>
+        <circle cx="74" cy="62" r="6"/><circle cx="22" cy="63" r="6"/><circle cx="55" cy="50" r="5"/>
+      </g>
+      <g fill="#c0392b"><circle cx="35" cy="46" r="2.6"/><circle cx="56" cy="38" r="2.6"/>
+        <circle cx="66" cy="55" r="2.6"/><circle cx="28" cy="55" r="2.2"/><circle cx="48" cy="62" r="2.6"/>
+        <circle cx="62" cy="68" r="2.2"/></g>`);
+
+    case 'cherry-tree': return wrap(`
+      <defs><radialGradient id="g${uid}" cx="50%" cy="42%" r="58%">
+        <stop offset="0%" stop-color="#b6d595"/><stop offset="100%" stop-color="#5e8a4d"/>
+      </radialGradient></defs>
+      <circle cx="50" cy="50" r="49" fill="url(#g${uid})" stroke="#3e6b36" stroke-width="1.2"/>
+      <g fill="#3e6b36" opacity=".2">
+        <circle cx="30" cy="35" r="7"/><circle cx="68" cy="30" r="8"/><circle cx="45" cy="68" r="7"/>
+        <circle cx="74" cy="62" r="6"/><circle cx="22" cy="63" r="6"/>
+      </g>
+      <g fill="#f7c6d2"><circle cx="35" cy="46" r="3"/><circle cx="56" cy="38" r="3"/>
+        <circle cx="66" cy="55" r="3"/><circle cx="28" cy="55" r="2.5"/><circle cx="48" cy="62" r="3"/>
+        <circle cx="40" cy="30" r="2.5"/><circle cx="60" cy="68" r="2.5"/></g>`);
+
+    case 'ornamental-tree': return wrap(`
+      <defs><radialGradient id="g${uid}" cx="50%" cy="42%" r="58%">
+        <stop offset="0%" stop-color="#9bc275"/><stop offset="100%" stop-color="#4f7a3a"/>
+      </radialGradient></defs>
+      <circle cx="50" cy="50" r="49" fill="url(#g${uid})" stroke="#3a5e30" stroke-width="1.2"/>
+      <g fill="#3a5e30" opacity=".24">
+        <circle cx="30" cy="35" r="8"/><circle cx="68" cy="30" r="9"/><circle cx="45" cy="68" r="8"/>
+        <circle cx="74" cy="62" r="7"/><circle cx="22" cy="63" r="7"/><circle cx="52" cy="50" r="6"/>
+      </g>`);
+
+    case 'shrub': return wrap(`
+      <defs><radialGradient id="g${uid}" cx="50%" cy="50%" r="55%">
+        <stop offset="0%" stop-color="#a8c878"/><stop offset="100%" stop-color="#5e8a4d"/>
+      </radialGradient></defs>
+      <circle cx="50" cy="50" r="48" fill="url(#g${uid})" stroke="#3e6b36" stroke-width="1.1"/>
+      <g fill="#3e6b36" opacity=".22">
+        <circle cx="28" cy="40" r="10"/><circle cx="65" cy="32" r="11"/>
+        <circle cx="38" cy="66" r="11"/><circle cx="72" cy="65" r="9"/>
+      </g>`);
+
+    case 'hedge': return wrap(`
+      <defs><linearGradient id="g${uid}" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#6a9656"/><stop offset="100%" stop-color="#3e6b36"/>
+      </linearGradient></defs>
+      <path d="M0,18 Q5,3 10,18 Q15,3 20,18 Q25,3 30,18 Q35,3 40,18 Q45,3 50,18 Q55,3 60,18 Q65,3 70,18 Q75,3 80,18 Q85,3 90,18 Q95,3 100,18 L100,82 Q95,97 90,82 Q85,97 80,82 Q75,97 70,82 Q65,97 60,82 Q55,97 50,82 Q45,97 40,82 Q35,97 30,82 Q25,97 20,82 Q15,97 10,82 Q5,97 0,82 Z"
+            fill="url(#g${uid})" stroke="#2d4a2e" stroke-width=".7"/>
+      <g stroke="#2d4a2e" stroke-width=".4" opacity=".3">
+        <line x1="15" y1="35" x2="15" y2="65"/><line x1="35" y1="35" x2="35" y2="65"/>
+        <line x1="55" y1="35" x2="55" y2="65"/><line x1="75" y1="35" x2="75" y2="65"/>
+        <line x1="95" y1="35" x2="95" y2="65"/></g>`);
+
+    case 'lawn': return wrap(`
+      <rect width="100" height="100" fill="#a8c878"/>
+      <g stroke="#7ba858" stroke-width=".6" stroke-linecap="round" opacity=".6">
+        <line x1="10" y1="100" x2="10" y2="95"/><line x1="20" y1="100" x2="20" y2="93"/>
+        <line x1="30" y1="100" x2="30" y2="96"/><line x1="40" y1="100" x2="40" y2="94"/>
+        <line x1="50" y1="100" x2="50" y2="95"/><line x1="60" y1="100" x2="60" y2="93"/>
+        <line x1="70" y1="100" x2="70" y2="96"/><line x1="80" y1="100" x2="80" y2="94"/>
+        <line x1="90" y1="100" x2="90" y2="95"/>
+        <line x1="15" y1="65" x2="15" y2="60"/><line x1="35" y1="65" x2="35" y2="61"/>
+        <line x1="55" y1="65" x2="55" y2="59"/><line x1="75" y1="65" x2="75" y2="60"/>
+        <line x1="25" y1="30" x2="25" y2="24"/><line x1="65" y1="30" x2="65" y2="25"/>
+        <line x1="85" y1="30" x2="85" y2="24"/><line x1="45" y1="30" x2="45" y2="25"/>
+      </g>`);
+
+    case 'patio': return wrap(`
+      <rect width="100" height="100" fill="#bdab92"/>
+      <g stroke="#8a7860" stroke-width=".6" fill="none" opacity=".75">
+        <line x1="0" y1="33" x2="100" y2="33"/><line x1="0" y1="66" x2="100" y2="66"/>
+        <line x1="33" y1="0" x2="33" y2="100"/><line x1="66" y1="0" x2="66" y2="100"/>
+      </g>
+      <g fill="#7d6b53" opacity=".18">
+        <circle cx="20" cy="20" r="1"/><circle cx="50" cy="48" r="1"/>
+        <circle cx="80" cy="20" r="1"/><circle cx="48" cy="78" r="1"/></g>`);
+
+    case 'path': return wrap(`
+      <rect width="100" height="100" fill="#c8bb9e"/>
+      <g fill="#8a7860" opacity=".55">
+        <circle cx="12" cy="20" r="1.5"/><circle cx="30" cy="35" r="1.2"/>
+        <circle cx="50" cy="25" r="1.5"/><circle cx="70" cy="40" r="1.2"/>
+        <circle cx="85" cy="20" r="1.5"/><circle cx="20" cy="55" r="1.2"/>
+        <circle cx="40" cy="65" r="1.5"/><circle cx="60" cy="55" r="1.2"/>
+        <circle cx="80" cy="65" r="1.5"/><circle cx="15" cy="80" r="1.2"/>
+        <circle cx="45" cy="85" r="1.5"/><circle cx="75" cy="80" r="1.2"/>
+      </g>`);
+
+    case 'decking': return wrap(`
+      <rect width="100" height="100" fill="#a08768"/>
+      <g stroke="#6e573a" stroke-width=".7" fill="none">
+        <line x1="0" y1="20" x2="100" y2="20"/><line x1="0" y1="40" x2="100" y2="40"/>
+        <line x1="0" y1="60" x2="100" y2="60"/><line x1="0" y1="80" x2="100" y2="80"/>
+      </g>
+      <g stroke="#6e573a" stroke-width=".4" opacity=".4">
+        <line x1="30" y1="0" x2="30" y2="20"/><line x1="70" y1="20" x2="70" y2="40"/>
+        <line x1="40" y1="40" x2="40" y2="60"/><line x1="60" y1="60" x2="60" y2="80"/>
+        <line x1="25" y1="80" x2="25" y2="100"/></g>`);
+
+    case 'pond': return wrap(`
+      <defs><radialGradient id="g${uid}" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#b8dde8"/><stop offset="100%" stop-color="#5a8fa3"/>
+      </radialGradient></defs>
+      <ellipse cx="50" cy="50" rx="48" ry="48" fill="url(#g${uid})" stroke="#3e7388" stroke-width="1.2"/>
+      <g fill="none" stroke="#ffffff" stroke-width=".7" opacity=".5">
+        <ellipse cx="50" cy="50" rx="18" ry="18"/><ellipse cx="50" cy="50" rx="30" ry="30"/>
+        <ellipse cx="50" cy="50" rx="40" ry="40"/></g>
+      <g transform="translate(28 28)">
+        <ellipse cx="0" cy="0" rx="9" ry="8" fill="#4a7d4a" opacity=".9"/>
+        <path d="M0,0 L0,8" stroke="#3a5e30" stroke-width="1.3"/></g>
+      <g transform="translate(72 65)">
+        <ellipse cx="0" cy="0" rx="6" ry="5.5" fill="#4a7d4a" opacity=".8"/></g>`);
+
+    case 'shed': return wrap(`
+      <rect x="2" y="28" width="96" height="70" fill="#8b6f47" stroke="#5d4a30" stroke-width="1.2"/>
+      <polygon points="0,30 50,4 100,30" fill="#6d533a" stroke="#3a2a18" stroke-width="1"/>
+      <line x1="50" y1="4" x2="50" y2="30" stroke="#3a2a18" stroke-width=".5" opacity=".4"/>
+      <rect x="40" y="52" width="20" height="46" fill="#5d4a30"/>
+      <line x1="50" y1="52" x2="50" y2="98" stroke="#3a2a18" stroke-width=".5"/>
+      <circle cx="56" cy="76" r="1.5" fill="#fbd96a"/>
+      <rect x="14" y="50" width="14" height="14" fill="#c8e0e8" stroke="#3a2a18" stroke-width=".7"/>
+      <line x1="21" y1="50" x2="21" y2="64" stroke="#3a2a18" stroke-width=".4"/>
+      <line x1="14" y1="57" x2="28" y2="57" stroke="#3a2a18" stroke-width=".4"/>`);
+
+    case 'greenhouse': return wrap(`
+      <polygon points="2,98 2,30 50,4 98,30 98,98" fill="#d8eae0" stroke="#5a8a73" stroke-width="1.2" opacity=".85"/>
+      <g stroke="#5a8a73" stroke-width=".6" fill="none">
+        <line x1="33" y1="22" x2="33" y2="98"/><line x1="66" y1="22" x2="66" y2="98"/>
+        <line x1="2" y1="55" x2="98" y2="55"/><line x1="2" y1="78" x2="98" y2="78"/>
+        <line x1="50" y1="4" x2="50" y2="30"/></g>
+      <rect x="42" y="65" width="16" height="33" fill="#a8c8b5" stroke="#5a8a73" stroke-width=".7"/>`);
+
+    case 'compost': return wrap(`
+      <rect width="100" height="100" fill="#6e5a44" stroke="#3a2e22" stroke-width="1.2"/>
+      <g stroke="#3a2e22" stroke-width=".9" fill="none">
+        <line x1="0" y1="25" x2="100" y2="25"/><line x1="0" y1="50" x2="100" y2="50"/>
+        <line x1="0" y1="75" x2="100" y2="75"/>
+      </g>
+      <g stroke="#3a2e22" stroke-width=".5" opacity=".35">
+        <line x1="25" y1="0" x2="25" y2="100"/><line x1="50" y1="0" x2="50" y2="100"/>
+        <line x1="75" y1="0" x2="75" y2="100"/></g>`);
+
+    case 'bench': return wrap(`
+      <rect width="100" height="100" fill="#a08664" stroke="#5d4a30" stroke-width="1"/>
+      <g stroke="#5d4a30" stroke-width=".7" fill="none">
+        <line x1="0" y1="28" x2="100" y2="28"/><line x1="0" y1="55" x2="100" y2="55"/>
+        <line x1="0" y1="82" x2="100" y2="82"/>
+      </g>
+      <g fill="#5d4a30">
+        <rect x="8" y="0" width="3" height="100" opacity=".5"/>
+        <rect x="89" y="0" width="3" height="100" opacity=".5"/></g>`);
+
+    case 'water-butt': return wrap(`
+      <defs><radialGradient id="g${uid}" cx="50%" cy="40%" r="50%">
+        <stop offset="0%" stop-color="#6a8ea0"/><stop offset="100%" stop-color="#2e5468"/>
+      </radialGradient></defs>
+      <circle cx="50" cy="50" r="48" fill="url(#g${uid})" stroke="#1f3e50" stroke-width="1.2"/>
+      <g fill="none" stroke="#1f3e50" stroke-width="1.5" opacity=".7">
+        <ellipse cx="50" cy="32" rx="46" ry="6"/><ellipse cx="50" cy="68" rx="46" ry="6"/></g>
+      <ellipse cx="50" cy="50" rx="38" ry="6" fill="#1f3e50" opacity=".25"/>`);
+
+    case 'fence': return wrap(`
+      <rect width="100" height="100" fill="#8a7458"/>
+      <g stroke="#5d4a30" stroke-width="1">
+        <line x1="6" y1="0" x2="6" y2="100"/><line x1="16" y1="0" x2="16" y2="100"/>
+        <line x1="26" y1="0" x2="26" y2="100"/><line x1="36" y1="0" x2="36" y2="100"/>
+        <line x1="46" y1="0" x2="46" y2="100"/><line x1="56" y1="0" x2="56" y2="100"/>
+        <line x1="66" y1="0" x2="66" y2="100"/><line x1="76" y1="0" x2="76" y2="100"/>
+        <line x1="86" y1="0" x2="86" y2="100"/><line x1="96" y1="0" x2="96" y2="100"/>
+      </g>
+      <line x1="0" y1="20" x2="100" y2="20" stroke="#5d4a30" stroke-width="1.5"/>
+      <line x1="0" y1="80" x2="100" y2="80" stroke="#5d4a30" stroke-width="1.5"/>`);
+
+    case 'arch': return wrap(`
+      <path d="M8,98 L8,42 Q8,6 50,6 Q92,6 92,42 L92,98 L82,98 L82,42 Q82,16 50,16 Q18,16 18,42 L18,98 Z"
+            fill="#b8a47e" stroke="#7a6448" stroke-width="1"/>
+      <g fill="#e84393" opacity=".85">
+        <circle cx="20" cy="24" r="3.5"/><circle cx="35" cy="14" r="3.5"/>
+        <circle cx="50" cy="10" r="3.5"/><circle cx="65" cy="14" r="3.5"/>
+        <circle cx="80" cy="24" r="3.5"/></g>
+      <g fill="#3e6b36" opacity=".75">
+        <circle cx="22" cy="35" r="2.5"/><circle cx="40" cy="22" r="2.5"/>
+        <circle cx="60" cy="22" r="2.5"/><circle cx="78" cy="35" r="2.5"/>
+        <circle cx="50" cy="20" r="2"/></g>`);
+
+    default: return '';
+  }
+}
+
+// ── Curvy paths ─────────────────────────────────────────────────────────
+// Convert a list of waypoints (in % units) to a smooth SVG path "d" attribute.
+// Uses Catmull-Rom-to-cubic-Bezier conversion with closed-loop=false.
+function smoothPathD(points) {
+  if (!points || points.length === 0) return '';
+  if (points.length === 1) return `M ${points[0].x} ${points[0].y}`;
+  if (points.length === 2) return `M ${points[0].x} ${points[0].y} L ${points[1].x} ${points[1].y}`;
+  const tension = 0.5; // 0 = linear, 1 = very smooth
+  let d = `M ${points[0].x} ${points[0].y}`;
+  for (let i = 0; i < points.length - 1; i++) {
+    const p0 = points[i - 1] || points[i];
+    const p1 = points[i];
+    const p2 = points[i + 1];
+    const p3 = points[i + 2] || p2;
+    const c1x = p1.x + (p2.x - p0.x) * tension / 3;
+    const c1y = p1.y + (p2.y - p0.y) * tension / 3;
+    const c2x = p2.x - (p3.x - p1.x) * tension / 3;
+    const c2y = p2.y - (p3.y - p1.y) * tension / 3;
+    d += ` C ${c1x} ${c1y}, ${c2x} ${c2y}, ${p2.x} ${p2.y}`;
+  }
+  return d;
+}
+
+// Estimate the midpoint of a smooth curve between two waypoints, given neighbours,
+// by evaluating the Bezier at t=0.5. Used to position "+ insert here" handles.
+function curveSegmentMid(prev, p1, p2, next) {
+  const p0 = prev || p1;
+  const p3 = next || p2;
+  const t = 0.5, tension = 0.5;
+  const c1x = p1.x + (p2.x - p0.x) * tension / 3;
+  const c1y = p1.y + (p2.y - p0.y) * tension / 3;
+  const c2x = p2.x - (p3.x - p1.x) * tension / 3;
+  const c2y = p2.y - (p3.y - p1.y) * tension / 3;
+  const omt = 1 - t;
+  const x = omt*omt*omt*p1.x + 3*omt*omt*t*c1x + 3*omt*t*t*c2x + t*t*t*p2.x;
+  const y = omt*omt*omt*p1.y + 3*omt*omt*t*c1y + 3*omt*t*t*c2y + t*t*t*p2.y;
+  return {x, y};
+}
+
+// Render all paths as a single SVG overlay. Paths are stored in % units (0-100 of
+// garden length/width), so the SVG sizes to the canvas naturally.
+function pathsSVG() {
+  if (!state.paths || state.paths.length === 0 && !pathDraftId) return '';
+  const items = state.paths || [];
+  return `
+    <svg class="gp-paths-svg" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="false">
+      ${items.map(path => {
+        const style = PATH_STYLES_BY_ID[path.style] || PATH_STYLES_BY_ID.gravel;
+        const isSelected = selectedItem && selectedItem.type === 'path' && selectedItem.id === path.id;
+        // Scale path width from metres to % (relative to garden length axis only —
+        // we'll use the longer dimension to keep it visually consistent)
+        const pctW = (path.widthM / state.gardenLengthM) * 100;
+        const d = smoothPathD(path.points);
+        if (!d) return '';
+        const strokeWidth = Math.max(0.4, pctW);
+
+        const isStepping = path.style === 'stepping';
+        const isPaving = path.style === 'paving';
+
+        // Visible layers (style-dependent)
+        let visibleLayers;
+        if (isStepping) {
+          // Spaced stones - no continuous line
+          let stones = path.points.map(p => `<circle cx="${p.x}" cy="${p.y}" r="${strokeWidth*0.42}" fill="${style.fill}" stroke="${style.edge}" stroke-width=".3" vector-effect="non-scaling-stroke"/>`).join('');
+          for (let i = 0; i < path.points.length - 1; i++) {
+            const mid = curveSegmentMid(path.points[i-1], path.points[i], path.points[i+1], path.points[i+2]);
+            stones += `<circle cx="${mid.x}" cy="${mid.y}" r="${strokeWidth*0.42}" fill="${style.fill}" stroke="${style.edge}" stroke-width=".3" vector-effect="non-scaling-stroke"/>`;
+          }
+          visibleLayers = stones;
+        } else {
+          visibleLayers = `
+            <path d="${d}" fill="none" stroke="${style.edge}" stroke-width="${strokeWidth + 0.3}" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke" opacity=".75" pointer-events="none"/>
+            <path d="${d}" fill="none" stroke="${style.fill}" stroke-width="${strokeWidth}" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke" pointer-events="none"/>
+            ${isPaving ? (() => {
+              // tick marks across the path for paving slab look — every ~1/4 of the path
+              let ticks = '';
+              for (let i = 0; i < path.points.length - 1; i++) {
+                const mid = curveSegmentMid(path.points[i-1], path.points[i], path.points[i+1], path.points[i+2]);
+                ticks += `<circle cx="${mid.x}" cy="${mid.y}" r="${strokeWidth*0.08}" fill="${style.edge}" opacity=".6"/>`;
+              }
+              return ticks;
+            })() : ''}
+          `;
+        }
+
+        const selectionHalo = isSelected ? (isStepping
+          ? path.points.map(p => `<circle cx="${p.x}" cy="${p.y}" r="${strokeWidth*0.55}" fill="none" stroke="rgba(45,74,46,.55)" stroke-width=".6" vector-effect="non-scaling-stroke" pointer-events="none"/>`).join('')
+          : `<path d="${d}" fill="none" stroke="rgba(45,74,46,.55)" stroke-width="${strokeWidth + 1.2}" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke" pointer-events="none"/>`
+        ) : '';
+
+        return `
+          ${selectionHalo}
+          ${visibleLayers}
+          <path class="gp-path-stroke" d="${d}" fill="none" stroke="transparent" stroke-width="${Math.max(strokeWidth, 2.5)}" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke" data-action="select-path" data-id="${path.id}"/>
+          ${isSelected ? pathHandlesSVG(path) : ''}
+        `;
+      }).join('')}
+
+      ${pathDraftId ? (() => {
+        const draft = state.paths.find(p => p.id === pathDraftId);
+        if (!draft) return '';
+        const style = PATH_STYLES_BY_ID[draft.style] || PATH_STYLES_BY_ID.gravel;
+        const pctW = (draft.widthM / state.gardenLengthM) * 100;
+        return draft.points.map((p, i) => `
+          <circle cx="${p.x}" cy="${p.y}" r="${Math.max(.8, pctW*0.5)}" fill="#2d4a2e" stroke="#f4ecd8" stroke-width=".4" vector-effect="non-scaling-stroke"/>
+        `).join('');
+      })() : ''}
+    </svg>
+  `;
+}
+
+function pathHandlesSVG(path) {
+  const pts = path.points;
+  let html = '';
+  // Insert "+" markers between each pair of waypoints
+  for (let i = 0; i < pts.length - 1; i++) {
+    const mid = curveSegmentMid(pts[i-1], pts[i], pts[i+1], pts[i+2]);
+    html += `
+      <g class="gp-path-add" data-action="insert-path-point" data-path-id="${path.id}" data-after-index="${i}">
+        <circle cx="${mid.x}" cy="${mid.y}" r="1.1" fill="#f4ecd8" stroke="#2d4a2e" stroke-width=".4" vector-effect="non-scaling-stroke"/>
+        <line x1="${mid.x-.55}" y1="${mid.y}" x2="${mid.x+.55}" y2="${mid.y}" stroke="#2d4a2e" stroke-width=".3" vector-effect="non-scaling-stroke"/>
+        <line x1="${mid.x}" y1="${mid.y-.55}" x2="${mid.x}" y2="${mid.y+.55}" stroke="#2d4a2e" stroke-width=".3" vector-effect="non-scaling-stroke"/>
+      </g>
+    `;
+  }
+  // Waypoint handles
+  pts.forEach((p, i) => {
+    html += `
+      <g class="gp-path-handle" data-action="path-point-drag-start" data-path-id="${path.id}" data-point-index="${i}">
+        <circle cx="${p.x}" cy="${p.y}" r="1.7" fill="#2d4a2e" stroke="#f4ecd8" stroke-width=".5" vector-effect="non-scaling-stroke"/>
+      </g>
+    `;
+  });
+  return html;
+}
+
+
+function rectHTML(item, kind) {
+  const isSelected = selectedItem && selectedItem.type === kind && selectedItem.id === item.id;
+  const obj = kind === 'object' ? OBJECT_BY_ID[item.typeId] : null;
+  const isCircle = obj && obj.shape === 'circle';
+  const scale = canvasWidthPx / state.gardenLengthM;
+  const lengthPx = item.lengthM * scale;
+  const widthPx = item.widthM * scale;
+  const cxPctX = ((item.x + item.lengthM/2) / state.gardenLengthM) * 100;
+  const cxPctY = ((item.y + item.widthM /2) / state.gardenWidthM ) * 100;
+
+  let bg, border;
+  if (kind === 'bed') {
+    bg = 'rgba(139,111,71,.18)'; border = '2px dashed rgba(107,93,79,.55)';
+  } else if (obj.cat === 'ground') {
+    bg = 'transparent'; border = 'none';
+  } else {
+    bg = 'transparent'; border = 'none';
+  }
+  const sel = isSelected ? 'box-shadow:0 0 0 3px rgba(45,74,46,.55),0 6px 24px rgba(45,74,46,.18);' : '';
+  const z = isSelected ? 20 : (kind === 'object' && obj.cat === 'ground') ? 1 : kind === 'bed' ? 4 : 8;
+  const handles = isSelected ? `
+    <div class="gp-rotate-handle" data-action="drag-start" data-type="${kind}" data-id="${item.id}" data-mode="rotate" title="Drag to rotate">${ICON.rotate('gp-icon w3', '')}</div>
+    <div class="gp-rotate-stem"></div>
+    <div class="gp-resize-handle" data-action="drag-start" data-type="${kind}" data-id="${item.id}" data-mode="resize" title="Drag to resize">${ICON.movediag('gp-icon w2-5', '')}</div>
+  ` : '';
+  const labelTxt = kind === 'object'
+    ? esc(item.label || obj.name)
+    : esc(item.name);
+  const showLabel = kind === 'bed' || isSelected || (item.label && item.label !== obj?.name);
+  const svgVisual = kind === 'object' ? objectVisualSVG(item, obj) : '';
+
+  return `
+    <div class="gp-rect ${isSelected ? 'selected':''}"
+         data-action="drag-start" data-type="${kind}" data-id="${item.id}" data-mode="move"
+         style="left:${cxPctX}%;top:${cxPctY}%;width:${lengthPx}px;height:${widthPx}px;transform:translate(-50%,-50%) rotate(${item.rotation || 0}deg);border-radius:${isCircle ? '50%' : '4px'};z-index:${z};background:${bg};border:${border};${sel}">
+      ${svgVisual}
+      ${showLabel ? `<span class="gp-rect-label">${labelTxt}</span>` : ''}
+      ${handles}
+    </div>
+  `;
+}
+
+function plantingHTML(p, opts) {
+  const plant = PLANTS_BY_ID[p.plantId];
+  if (!plant) return '';
+  const {scale, leftPct, topPct, dim, dragAction, dragData} = opts;
+  const isSelected = selectedItem && selectedItem.type === 'planting' && selectedItem.id === p.id;
+  const sizePx = Math.max(28, plant.sizeCm * scale / 100);
+  const emoji = clamp(sizePx * 0.55, 13, 26);
+
+  const focusId = selectedPlant || (selectedItem?.type === 'planting' ? state.plantings.find(x => x.id === selectedItem.id)?.plantId : null);
+  let ring = null;
+  if (focusId && !isSelected) {
+    const rel = companionRel(focusId, p.plantId);
+    if (rel === 'good') ring = 'rgba(90,143,78,.9)';
+    else if (rel === 'bad') ring = 'rgba(217,138,61,.95)';
+  }
+  const sel = isSelected
+    ? '0 0 0 3px rgba(45,74,46,.55),0 6px 14px rgba(45,74,46,.28)'
+    : ring ? `0 0 0 3px ${ring}` : 'none';
+  const dimmed = dim ? ' dimmed' : '';
+
+  return `
+    <div class="gp-planting${isSelected ? ' selected' : ''}${dimmed}"
+         ${dragAction} ${dragData}
+         style="left:${leftPct}%;top:${topPct}%;width:${sizePx}px;height:${sizePx}px;background:${plant.color}66;border-color:${plant.color};font-size:${emoji}px;box-shadow:${sel}"
+         title="${esc(plant.name)}">
+      <span style="pointer-events:none">${plant.icon}</span>
+    </div>
+  `;
+}
+
+function designViewHTML() {
+  const maxCanvasHeight = 540;
+  const maxCanvasWidth = (maxCanvasHeight * state.gardenLengthM) / state.gardenWidthM;
+  const scale = canvasWidthPx / state.gardenLengthM;
+  const isGround = (typeId) => OBJECT_BY_ID[typeId]?.cat === 'ground';
+  const groundObjects = state.objects.filter(o => isGround(o.typeId));
+  const featureObjects = state.objects.filter(o => !isGround(o.typeId));
+  const selectedBed = selectedItem?.type === 'bed' ? state.beds.find(b => b.id === selectedItem.id) : null;
+  const selectedObject = selectedItem?.type === 'object' ? state.objects.find(o => o.id === selectedItem.id) : null;
+  const selectedPlanting = selectedItem?.type === 'planting' ? state.plantings.find(p => p.id === selectedItem.id) : null;
+  const stats = computeStats();
+
+  // Companion summary for selected planting
+  let compSummary = null;
+  if (selectedPlanting) {
+    let good = 0, bad = 0;
+    state.plantings.forEach(other => {
+      if (other.id === selectedPlanting.id) return;
+      const dist = Math.hypot(other.x - selectedPlanting.x, other.y - selectedPlanting.y);
+      if (dist > 1.5) return;
+      const rel = companionRel(selectedPlanting.plantId, other.plantId);
+      if (rel === 'good') good++; else if (rel === 'bad') bad++;
+    });
+    compSummary = {good, bad};
+  }
+
+  const settingsPanel = gardenSettingsOpen ? `
+    <div class="gp-rise mb-4 p-4 rounded-lg" style="background:rgba(45,74,46,.05);border:1px dashed rgba(45,74,46,.2)">
+      <div class="row items-center gap-4 flex-wrap text-sm">
+        <label class="row items-center gap-2">
+          <span style="color:#6b5d4f">Garden length</span>
+          <input type="number" min="1" max="30" step="0.1" value="${state.gardenLengthM}"
+            class="gp-number" data-action="update-garden" data-field="gardenLengthM" data-focus-key="g-len">
+          <span class="text-xs" style="color:#6b5d4f">m</span>
+        </label>
+        <label class="row items-center gap-2">
+          <span style="color:#6b5d4f">Garden width</span>
+          <input type="number" min="1" max="30" step="0.1" value="${state.gardenWidthM}"
+            class="gp-number" data-action="update-garden" data-field="gardenWidthM" data-focus-key="g-wid">
+          <span class="text-xs" style="color:#6b5d4f">m</span>
+        </label>
+        <span class="gp-italic text-xs" style="color:#6b5d4f">${(state.gardenLengthM * state.gardenWidthM).toFixed(2)} m² total</span>
+      </div>
+    </div>
+  ` : '';
+
+  const pathDraft = pathDraftId ? state.paths.find(p => p.id === pathDraftId) : null;
+  const banner = pathDraft ? `
+    <div class="gp-banner">
+      <span class="text-xl">🛤</span>
+      <span class="flex-1 text-sm">
+        Tap to add waypoints — the path curves smoothly through them.
+        <span style="opacity:.75"> ${pathDraft.points.length} ${pathDraft.points.length === 1 ? 'point' : 'points'} so far${pathDraft.points.length < 2 ? ' (need at least 2)' : ''}.</span>
+      </span>
+      ${pathDraft.points.length >= 2 ? `<button class="text-xs uppercase tracking-wider opacity-90" data-action="finish-path-draft" style="text-decoration:underline">Done</button>` : ''}
+      <button class="text-xs uppercase tracking-wider opacity-70" data-action="cancel-path-draft" style="text-decoration:underline">Cancel</button>
+    </div>
+  ` : (selectedPlant ? `
+    <div class="gp-banner gp-rise">
+      <span class="text-xl">${PLANTS_BY_ID[selectedPlant]?.icon}</span>
+      <span class="flex-1 text-sm">
+        Tap anywhere in the garden to plant <strong class="gp-banner-strong">${esc(PLANTS_BY_ID[selectedPlant]?.name)}</strong>.
+        <span style="opacity:.75"> Good neighbours show a green ring, ones to keep apart show amber.</span>
+      </span>
+      <button class="text-xs uppercase tracking-wider opacity-80" data-action="clear-selected-plant" style="text-decoration:underline">Done</button>
+    </div>
+  ` : '');
+
+  const monthBar = `
+    <div class="gp-month-bar gp-rise">
+      ${ICON.caldays('gp-icon w4', 'flex-shrink-0')}
+      <span class="text-sm font-semibold" style="color:#2d4a2e;min-width:64px">${viewMonth === 0 ? 'All year' : MONTHS[viewMonth-1]}</span>
+      <input type="range" min="0" max="12" step="1" value="${viewMonth}" class="gp-range" data-action="set-month">
+      ${viewMonth !== 0 ? `
+        <span class="gp-italic text-xs" style="color:#6b5d4f">
+          ${state.plantings.filter(p => PLANTS_BY_ID[p.plantId]?.months.includes(viewMonth)).length} of ${state.plantings.length} in the ground
+        </span>
+        <button class="text-xs" style="color:#2d4a2e;text-decoration:underline" data-action="set-month-zero">show all</button>` : ''}
+    </div>
+  `;
+
+  // Canvas contents
+  const canvasInner = `
+    ${groundObjects.map(o => rectHTML(o, 'object')).join('')}
+    ${pathsSVG()}
+    ${state.beds.map(b => rectHTML(b, 'bed')).join('')}
+    ${featureObjects.map(o => rectHTML(o, 'object')).join('')}
+    ${state.plantings.map(p => {
+      const plant = PLANTS_BY_ID[p.plantId];
+      if (!plant) return '';
+      const dim = viewMonth !== 0 && !plant.months.includes(viewMonth);
+      return plantingHTML(p, {
+        scale,
+        leftPct: (p.x / state.gardenLengthM) * 100,
+        topPct:  (p.y / state.gardenWidthM)  * 100,
+        dim,
+        dragAction: `data-action="drag-start"`,
+        dragData: `data-type="planting" data-id="${p.id}" data-mode="move"`,
+      });
+    }).join('')}
+    <div class="gp-scale-bar" style="width:${Math.max(20, scale)}px"></div>
+    <span class="gp-scale-label" style="left:10px">1m</span>
+  `;
+
+  // Edit panels
+  let editPanel = '';
+  const selectedPath = selectedItem?.type === 'path' ? state.paths.find(p => p.id === selectedItem.id) : null;
+  if (selectedBed) {
+    const cap = bedCapacity(selectedBed);
+    editPanel = editPanelHTML({
+      kindLabel:'Bed', name:selectedBed.name, namePlaceholder:'',
+      lengthM:selectedBed.lengthM, widthM:selectedBed.widthM,
+      rotation:selectedBed.rotation || 0, x:selectedBed.x, y:selectedBed.y,
+      id:selectedBed.id, target:'bed', open:true, capacity:cap,
+    });
+  } else if (selectedObject) {
+    const tpl = OBJECT_BY_ID[selectedObject.typeId];
+    editPanel = editPanelHTML({
+      kindLabel: tpl?.name || 'Object', name:selectedObject.label,
+      namePlaceholder: tpl?.name || '',
+      lengthM:selectedObject.lengthM, widthM:selectedObject.widthM,
+      rotation:selectedObject.rotation || 0, x:selectedObject.x, y:selectedObject.y,
+      id:selectedObject.id, target:'object', icon:tpl?.icon, open:false,
+    });
+  } else if (selectedPlanting) {
+    const plant = PLANTS_BY_ID[selectedPlanting.plantId];
+    if (plant) {
+      editPanel = `
+        <div class="mb-6 p-4 rounded-xl gp-rise" style="background:#fbf6ea;border:1px solid rgba(107,93,79,.25)">
+          <div class="row items-center gap-3 flex-wrap">
+            <div class="w12 h12 rounded-xl row items-center justify-center text-2xl flex-shrink-0" style="background:${plant.color}30">${plant.icon}</div>
+            <div class="flex-1 min-w-0">
+              <div class="gp-display text-lg leading-tight">${esc(plant.name)}</div>
+              <div class="text-xs gp-italic" style="color:#6b5d4f">
+                at ${selectedPlanting.x.toFixed(1)}m, ${selectedPlanting.y.toFixed(1)}m · canopy ~${Math.round(plant.sizeCm)} cm
+              </div>
+            </div>
+            <button class="p-2 rounded-full gp-soft-hover" data-action="duplicate-selected" title="Duplicate">${ICON.copy('gp-icon w4', '')}</button>
+            <button class="p-2 rounded-full gp-soft-hover" data-action="open-info" data-plant-id="${plant.id}" title="Plant info">${ICON.info('gp-icon w4', '')}</button>
+            <button class="p-2 rounded-full gp-soft-hover-red" data-action="delete-selected" title="Remove" style="color:#c87454">${ICON.trash('gp-icon w4', '')}</button>
+            <button class="p-2 rounded-full gp-soft-hover" data-action="clear-selected-item">${ICON.x('gp-icon w4', '')}</button>
+          </div>
+          ${compSummary && (compSummary.good > 0 || compSummary.bad > 0) ? `
+            <div class="row items-center gap-2 mt-3 flex-wrap">
+              ${compSummary.good > 0 ? `<span class="gp-chip" style="background:rgba(90,143,78,.14);color:#3e6b36">${ICON.sparkles('gp-icon w3', '')}${compSummary.good} happy neighbour${compSummary.good > 1 ? 's' : ''} close by</span>` : ''}
+              ${compSummary.bad  > 0 ? `<span class="gp-chip" style="background:rgba(217,138,61,.16);color:#9a5a1d">${ICON.alert('gp-icon w3', '')}${compSummary.bad} to move further away</span>` : ''}
+            </div>` : ''}
+        </div>
+      `;
+    }
+  } else if (selectedPath) {
+    const style = PATH_STYLES_BY_ID[selectedPath.style] || PATH_STYLES_BY_ID.gravel;
+    editPanel = `
+      <div class="mb-6 p-4 rounded-xl gp-rise" style="background:#fbf6ea;border:1px solid rgba(107,93,79,.25)">
+        <div class="row items-center gap-3 flex-wrap">
+          <div class="w12 h12 rounded-xl row items-center justify-center flex-shrink-0" style="background:${style.fill}">
+            <span style="font-size:18px;color:${style.edge}">🛤</span>
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="gp-display text-lg leading-tight">${esc(style.name)} path</div>
+            <div class="text-xs gp-italic" style="color:#6b5d4f">
+              ${selectedPath.points.length} waypoint${selectedPath.points.length === 1 ? '' : 's'} · ${selectedPath.widthM.toFixed(1)}m wide · drag the dots to reshape
+            </div>
+          </div>
+          <button class="p-2 rounded-full gp-soft-hover-red" data-action="delete-selected" title="Remove" style="color:#c87454">${ICON.trash('gp-icon w4', '')}</button>
+          <button class="p-2 rounded-full gp-soft-hover" data-action="clear-selected-item">${ICON.x('gp-icon w4', '')}</button>
+        </div>
+        <div class="mt-4 row items-center gap-2 flex-wrap">
+          <span class="text-10 uppercase tracking-widest" style="color:#6b5d4f">Style</span>
+          ${PATH_STYLES.map(s => {
+            const active = s.id === selectedPath.style;
+            return `
+            <button class="gp-chip"
+                    data-action="set-path-style" data-id="${selectedPath.id}" data-style="${s.id}"
+                    style="background:${active ? '#2d4a2e' : s.fill};color:${active ? '#f4ecd8' : '#2a2419'};border:1px solid ${active ? '#2d4a2e' : s.edge};cursor:pointer">
+              ${esc(s.name)}
+            </button>
+          `;}).join('')}
+        </div>
+        <div class="mt-3 row items-center gap-3">
+          <span class="text-10 uppercase tracking-widest" style="color:#6b5d4f;min-width:54px">Width</span>
+          <input type="range" min="0.3" max="2" step="0.1" value="${selectedPath.widthM}"
+                 class="gp-range flex-1" data-action="set-path-width" data-id="${selectedPath.id}">
+          <span class="text-sm gp-italic" style="color:#6b5d4f;min-width:42px;text-align:right">${selectedPath.widthM.toFixed(1)}m</span>
+        </div>
+      </div>
+    `;
+  }
+
+  return `
+    <div class="gp-rise">
+      <div class="row items-center gap-2 mb-4 flex-wrap">
+        <button class="gp-btn-ghost" data-action="add-bed">${ICON.plus('gp-icon w3-5', '')}Add bed</button>
+        <button class="gp-btn-ghost ${pathDraftId ? 'active-draft' : ''}" data-action="start-path-draft" data-style="gravel" ${pathDraftId ? 'disabled' : ''}>${ICON.plus('gp-icon w3-5', '')}Draw path</button>
+        <button class="gp-btn-ghost" data-action="toggle-garden-settings">${ICON.settings('gp-icon w3-5', '')}Garden size</button>
+        <div class="flex-1"></div>
+        <button class="gp-btn-ghost" data-action="undo" ${history.length === 0 ? 'disabled' : ''} title="Undo last change">
+          ${ICON.undo('gp-icon w3-5', '')}Undo ${history.length > 0 ? `<span class="gp-italic opacity-70">(${history.length})</span>` : ''}
+        </button>
+      </div>
+      ${settingsPanel}
+      ${banner}
+      ${monthBar}
+      <div class="mx-auto" style="max-width:${maxCanvasWidth}px">
+        <div id="gp-canvas" class="gp-canvas ${selectedPlant ? 'planting-mode' : ''}" data-action="canvas-tap"
+             style="width:100%;aspect-ratio:${state.gardenLengthM} / ${state.gardenWidthM}">
+          ${canvasInner}
+        </div>
+      </div>
+      <div class="text-center mt-3 mb-5 text-sm gp-italic" style="color:#6b5d4f">
+        ${selectedPlant
+          ? 'Tap in the garden to plant — keep tapping to plant more.'
+          : selectedItem
+            ? 'Drag to move · green dot rotates · brown dot resizes · edit details below'
+            : 'Drag beds, plants and objects to rearrange · they snap to edges as you go'}
+      </div>
+      ${editPanel}
+      <div class="gp-divider"></div>
+      ${pickerHTML()}
+      ${stats.length > 0 ? whatsPlantedHTML(stats) : ''}
+    </div>
+  `;
+}
+
+function whatsPlantedHTML(stats) {
+  return `
+    <div class="mb-6">
+      <div class="gp-divider"></div>
+      <div class="row items-baseline justify-between mb-3">
+        <h3 class="gp-display text-xl">What's planted</h3>
+        <span class="gp-italic text-sm" style="color:#6b5d4f">${state.plantings.length} plants in total</span>
+      </div>
+      <div class="gp-tag-row">
+        ${stats.map(({plant, n}) => `
+          <div class="row items-center gap-2 px-3 py-1.5 rounded-full text-sm"
+               style="background:${plant.color}15;border:1px solid ${plant.color}50">
+            <span>${plant.icon}</span><span>${esc(plant.name)}</span>
+            <span class="gp-italic" style="color:#6b5d4f">×${n}</span>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function pickerHTML() {
+  const cats = pickerMode === 'plants' ? PLANT_CATEGORIES : OBJECT_CATEGORIES;
+  const active = pickerMode === 'plants' ? plantCategory : objectCategory;
+  return `
+    <div class="mb-6">
+      <div class="row items-center justify-between mb-3 flex-wrap gap-2">
+        <div class="row items-center gap-2">
+          <button class="gp-tab ${pickerMode === 'plants' ? 'active' : ''}" data-action="set-picker" data-picker="plants">${ICON.sprout('gp-icon w3', '')}Plants</button>
+          <button class="gp-tab ${pickerMode === 'objects' ? 'active' : ''}" data-action="set-picker" data-picker="objects">${ICON.trees('gp-icon w3', '')}Objects</button>
+        </div>
+        <div class="row gap-1 overflow-x-auto gp-scroll" data-scroll-key="picker-cats">
+          ${cats.map(c => `<button class="gp-tab ${active === c.id ? 'active' : ''}" data-action="set-category" data-cat="${c.id}">${esc(c.label)}</button>`).join('')}
+        </div>
+      </div>
+      ${pickerMode === 'plants' ? plantsGridHTML(filteredPlants()) : objectsGridHTML(filteredObjects())}
+    </div>
+  `;
+}
+
+function plantsGridHTML(plants) {
+  const focusId = selectedPlant || (selectedItem?.type === 'planting' ? state.plantings.find(p => p.id === selectedItem.id)?.plantId : null);
+  return `
+    <div class="grid cols-2 sm:cols-3 md:cols-4 gap-3">
+      ${plants.map(p => {
+        const rel = focusId ? companionRel(focusId, p.id) : null;
+        const sel = selectedPlant === p.id ? ' selected' : '';
+        return `
+          <div class="gp-plant-card${sel}" data-action="pick-plant" data-plant-id="${p.id}" role="button" tabindex="0">
+            <div class="row items-start gap-2">
+              <div class="w10 h10 rounded-md row items-center justify-center text-xl flex-shrink-0" style="background:${p.color}1f">${p.icon}</div>
+              <div class="flex-1 min-w-0">
+                <div class="gp-display text-base leading-tight truncate">${esc(p.name)}</div>
+                <div class="text-10 mt-0.5 uppercase tracking-wider" style="color:#6b5d4f">${p.cat} · ${Math.round(p.sizeCm)}cm</div>
+                ${rel === 'good' ? `<div class="text-10 mt-1 row items-center gap-1" style="color:#3e6b36">${ICON.sparkles('gp-icon w2-5', '')}good companion</div>` : ''}
+                ${rel === 'bad'  ? `<div class="text-10 mt-1 row items-center gap-1" style="color:#9a5a1d">${ICON.alert('gp-icon w2-5', '')}keep apart</div>` : ''}
+              </div>
+              <span class="p-1 rounded-full gp-soft-hover" data-action="open-info" data-plant-id="${p.id}" role="button" tabindex="0" aria-label="More info">${ICON.info('gp-icon w3-5', '')}</span>
+            </div>
+          </div>
+        `;
+      }).join('')}
+    </div>
+  `;
+}
+
+function objectsGridHTML(objs) {
+  return `
+    <p class="text-xs gp-italic mb-3" style="color:#6b5d4f">
+      Tap to drop into the centre of the garden — then drag, resize, and rotate from there.
+    </p>
+    <div class="grid cols-2 sm:cols-3 md:cols-4 gap-3">
+      ${objs.map(o => `
+        <button class="gp-plant-card" data-action="add-object" data-object-id="${o.id}">
+          <div class="row items-start gap-2">
+            <div class="w10 h10 rounded-md row items-center justify-center text-xl flex-shrink-0" style="background:${o.color}33">${o.icon}</div>
+            <div class="flex-1 min-w-0">
+              <div class="gp-display text-base leading-tight truncate">${esc(o.name)}</div>
+              <div class="text-10 mt-0.5 uppercase tracking-wider" style="color:#6b5d4f">${o.cat} · ${o.L}×${o.W}m</div>
+            </div>
+          </div>
+        </button>
+      `).join('')}
+    </div>
+  `;
+}
+
+function editPanelHTML(p) {
+  const crowded = p.capacity && p.capacity.planted > p.capacity.cap;
+  return `
+    <div class="mb-6 p-4 rounded-xl gp-rise" style="background:#fbf6ea;border:1px solid rgba(107,93,79,.25)">
+      <div class="row items-center justify-between mb-3 flex-wrap gap-2">
+        <div class="row items-center gap-2 flex-1 min-w-0">
+          ${p.icon ? `<span class="text-xl">${p.icon}</span>` : ''}
+          <span class="text-xs uppercase tracking-widest" style="color:#87a878">${esc(p.kindLabel)}</span>
+          <input type="text" class="gp-input gp-display text-xl flex-1 min-w-0"
+            value="${esc(p.name)}" placeholder="${esc(p.namePlaceholder)}"
+            data-action="update-name" data-target="${p.target}" data-id="${p.id}"
+            data-focus-key="name-${p.target}-${p.id}">
+        </div>
+        <div class="row items-center gap-1">
+          ${p.target === 'bed' ? `<button class="gp-btn mr-1" data-action="open-bed-detail" data-id="${p.id}" title="Open this bed to plant in it">${ICON.maximize('gp-icon w3-5', '')}Plant in this bed</button>` : ''}
+          <button class="p-2 rounded-full gp-soft-hover" data-action="duplicate-selected" title="Duplicate">${ICON.copy('gp-icon w4', '')}</button>
+          <button class="p-2 rounded-full gp-soft-hover-red" data-action="delete-selected" title="Delete" style="color:#c87454">${ICON.trash('gp-icon w4', '')}</button>
+          <button class="p-2 rounded-full gp-soft-hover" data-action="clear-selected-item">${ICON.x('gp-icon w4', '')}</button>
+        </div>
+      </div>
+      <div class="row items-center gap-4 flex-wrap text-sm">
+        <label class="row items-center gap-2">
+          <span style="color:#6b5d4f">Length</span>
+          <input type="number" min="0.2" max="30" step="0.1" value="${Number(p.lengthM.toFixed(2))}"
+            class="gp-number" data-action="update-size" data-target="${p.target}" data-id="${p.id}" data-field="lengthM"
+            data-focus-key="len-${p.target}-${p.id}">
+          <span class="text-xs" style="color:#6b5d4f">m</span>
+        </label>
+        <label class="row items-center gap-2">
+          <span style="color:#6b5d4f">Width</span>
+          <input type="number" min="0.2" max="30" step="0.1" value="${Number(p.widthM.toFixed(2))}"
+            class="gp-number" data-action="update-size" data-target="${p.target}" data-id="${p.id}" data-field="widthM"
+            data-focus-key="wid-${p.target}-${p.id}">
+          <span class="text-xs" style="color:#6b5d4f">m</span>
+        </label>
+        <label class="row items-center gap-2">
+          <span style="color:#6b5d4f">Rotation</span>
+          <input type="number" min="-180" max="180" step="5" value="${Math.round(p.rotation)}"
+            class="gp-number" data-action="update-size" data-target="${p.target}" data-id="${p.id}" data-field="rotation"
+            data-focus-key="rot-${p.target}-${p.id}">
+          <span class="text-xs" style="color:#6b5d4f">°</span>
+          <button class="text-xs ml-1" style="color:#2d4a2e;text-decoration:underline" data-action="reset-rotation" data-target="${p.target}" data-id="${p.id}">reset</button>
+        </label>
+        <span class="gp-italic text-xs" style="color:#6b5d4f">
+          ${(p.lengthM * p.widthM).toFixed(2)} m² · at ${p.x.toFixed(1)}m, ${p.y.toFixed(1)}m
+        </span>
+      </div>
+      ${p.capacity ? `
+        <div class="mt-3 text-xs row items-center gap-1.5" style="color:${crowded ? '#9a5a1d' : '#6b5d4f'}">
+          ${crowded
+            ? `${ICON.alert('gp-icon w3-5', '')}${p.capacity.planted} plants here — looks crowded, around ${p.capacity.cap} would sit comfortably at their spacing.`
+            : `<span style="color:#87a878">${ICON.sprout('gp-icon w3-5', '')}</span>${p.capacity.planted} planted · room for roughly ${p.capacity.cap} at their spacing.`}
+        </div>` : ''}
+    </div>
+  `;
+}
+
+function bedDetailHTML() {
+  const bed = state.beds.find(b => b.id === bedDetailId);
+  if (!bed) return '';
+  const inside = state.plantings.filter(p => pointInBed(p.x, p.y, bed));
+  const cap = bedCapacity(bed);
+  const detailMaxW = (520 * bed.lengthM) / bed.widthM;
+  const detailScale = detailCanvasWidthPx / bed.lengthM;
+  const selectedPlanting = selectedItem?.type === 'planting' ? state.plantings.find(p => p.id === selectedItem.id) : null;
+
+  const banner = selectedPlant ? `
+    <div class="gp-banner gp-rise">
+      <span class="text-xl">${PLANTS_BY_ID[selectedPlant]?.icon}</span>
+      <span class="flex-1 text-sm">
+        Tap inside <strong class="gp-banner-strong">${esc(bed.name)}</strong> to plant <strong class="gp-banner-strong">${esc(PLANTS_BY_ID[selectedPlant]?.name)}</strong>.
+      </span>
+      <button class="text-xs uppercase tracking-wider opacity-80" data-action="clear-selected-plant" style="text-decoration:underline">Done</button>
+    </div>
+  ` : '';
+
+  let editPlant = '';
+  if (selectedPlanting && pointInBed(selectedPlanting.x, selectedPlanting.y, bed)) {
+    const plant = PLANTS_BY_ID[selectedPlanting.plantId];
+    if (plant) {
+      editPlant = `
+        <div class="mb-6 p-4 rounded-xl gp-rise row items-center gap-3" style="background:#fbf6ea;border:1px solid rgba(107,93,79,.25)">
+          <div class="w12 h12 rounded-xl row items-center justify-center text-2xl flex-shrink-0" style="background:${plant.color}30">${plant.icon}</div>
+          <div class="flex-1 min-w-0">
+            <div class="gp-display text-lg leading-tight">${esc(plant.name)}</div>
+            <div class="text-xs gp-italic" style="color:#6b5d4f">in ${esc(bed.name)} · canopy ~${Math.round(plant.sizeCm)} cm</div>
+          </div>
+          <button class="p-2 rounded-full gp-soft-hover" data-action="open-info" data-plant-id="${plant.id}" title="Plant info">${ICON.info('gp-icon w4', '')}</button>
+          <button class="p-2 rounded-full gp-soft-hover-red" data-action="delete-selected" title="Remove" style="color:#c87454">${ICON.trash('gp-icon w4', '')}</button>
+          <button class="p-2 rounded-full gp-soft-hover" data-action="clear-selected-item">${ICON.x('gp-icon w4', '')}</button>
+        </div>
+      `;
+    }
+  }
+
+  return `
+    <div class="gp-rise">
+      <div class="row items-center gap-2 mb-4 flex-wrap">
+        <button class="gp-btn-ghost" data-action="close-bed-detail">${ICON.arrowleft('gp-icon w3-5', '')}Back to garden</button>
+        <div class="flex-1"></div>
+        <button class="gp-btn-ghost" data-action="undo" ${history.length === 0 ? 'disabled' : ''} title="Undo last change">
+          ${ICON.undo('gp-icon w3-5', '')}Undo ${history.length > 0 ? `<span class="gp-italic opacity-70">(${history.length})</span>` : ''}
+        </button>
+      </div>
+      <div class="mb-4">
+        <div class="row items-baseline gap-3 flex-wrap">
+          <h2 class="gp-display text-2xl sm:text-3xl">${esc(bed.name)}</h2>
+          <span class="gp-italic text-sm" style="color:#6b5d4f">
+            ${bed.lengthM.toFixed(1)}m × ${bed.widthM.toFixed(1)}m · ${inside.length} planted
+            ${cap.planted > cap.cap ? `<span style="color:#9a5a1d"> · looks crowded (~${cap.cap} fits comfortably)</span>` : ''}
+          </span>
+        </div>
+        <p class="gp-italic text-sm mt-1" style="color:#6b5d4f">
+          Pick a plant below, then tap inside the bed to place it. Everything you add here also shows on the full garden plan.
+        </p>
+      </div>
+      ${banner}
+      <div class="mx-auto" style="max-width:${detailMaxW}px">
+        <div id="gp-detail-canvas" class="gp-detail-canvas ${selectedPlant ? 'planting-mode' : ''}" data-action="detail-canvas-tap"
+             style="width:100%;aspect-ratio:${bed.lengthM} / ${bed.widthM}">
+          ${inside.map(p => {
+            const [lx, ly] = worldToBedLocal(bed, p.x, p.y);
+            return plantingHTML(p, {
+              scale: detailScale,
+              leftPct: (lx / bed.lengthM) * 100,
+              topPct:  (ly / bed.widthM)  * 100,
+              dim: false,
+              dragAction: `data-action="detail-drag-start"`,
+              dragData: `data-id="${p.id}"`,
+            });
+          }).join('')}
+          <div class="gp-scale-bar" style="width:${Math.max(20, detailScale)}px"></div>
+          <span class="gp-scale-label" style="left:10px">1m</span>
+        </div>
+      </div>
+      <div class="text-center mt-3 mb-5 text-sm gp-italic" style="color:#6b5d4f">
+        ${selectedPlant ? 'Tap inside the bed to plant — keep tapping to add more.' : 'Drag plants to rearrange · tap a plant to select and remove it'}
+      </div>
+      ${editPlant}
+      <div class="gp-divider"></div>
+      <div class="mb-6">
+        <div class="row items-center justify-between mb-3 flex-wrap gap-2">
+          <h3 class="gp-display text-xl">Plant into this bed</h3>
+          <div class="row gap-1 overflow-x-auto gp-scroll" data-scroll-key="detail-cats">
+            ${PLANT_CATEGORIES.map(c => `<button class="gp-tab ${plantCategory === c.id ? 'active' : ''}" data-action="set-category" data-cat="${c.id}">${esc(c.label)}</button>`).join('')}
+          </div>
+        </div>
+        ${plantsGridHTML(filteredPlants())}
+      </div>
+    </div>
+  `;
+}
+
+function pollinatorsHTML() {
+  const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+  // Aggregate by planting
+  const monthly = Array(12).fill(0);          // total forage value per month
+  const monthlyTypes = Array.from({length:12}, () => new Set());
+  const typesServed = {bees:0, butterflies:0, hoverflies:0};
+  const plantedBuckets = new Map();           // plantId -> {count, info, plant}
+
+  state.plantings.forEach(pl => {
+    const plant = PLANTS_BY_ID[pl.plantId];
+    if (!plant) return;
+    const info = pollinatorInfo(pl.plantId);
+    if (!plantedBuckets.has(pl.plantId)) plantedBuckets.set(pl.plantId, {plant, info, count:0});
+    plantedBuckets.get(pl.plantId).count++;
+    info.bloomMonths.forEach(m => {
+      monthly[m-1] += info.value;
+      info.pollinators.forEach(t => monthlyTypes[m-1].add(t));
+    });
+    info.pollinators.forEach(t => { if (t in typesServed) typesServed[t]++; });
+  });
+
+  const totalScore = Object.values(monthly).reduce((a,b)=>a+b, 0);
+  const maxMonth = Math.max(1, ...monthly);
+  const plantedList = Array.from(plantedBuckets.values())
+    .filter(b => b.info.value > 0)
+    .sort((a,b) => (b.info.value*b.count) - (a.info.value*a.count));
+
+  // Suggestions: plants NOT planted yet, sorted by value, top 6
+  const plantedIds = new Set(state.plantings.map(p => p.plantId));
+  const suggestions = ENRICHED_PLANTS
+    .filter(p => !plantedIds.has(p.id) && pollinatorInfo(p.id).value === 3)
+    .sort((a,b) => {
+      // Prefer suggestions that cover the lowest-coverage months in the garden
+      const ai = pollinatorInfo(a.id), bi = pollinatorInfo(b.id);
+      const gapScore = (info) => info.bloomMonths.reduce((s,m) => s + (1 / Math.max(1, monthly[m-1] + 1)), 0);
+      return gapScore(bi) - gapScore(ai);
+    })
+    .slice(0, 6);
+
+  // Build the seasonal forage chart
+  const chartCols = monthly.map((v, i) => {
+    const pct = v === 0 ? 0 : Math.max(8, (v / maxMonth) * 100);
+    const types = Array.from(monthlyTypes[i]);
+    const fill = v === 0
+      ? 'background:rgba(107,93,79,.12)'
+      : `background:linear-gradient(to top, #2d4a2e ${100 - pct}%, #87a878 100%)`;
+    const isLow = v > 0 && v < maxMonth * 0.35;
+    return `
+      <div class="gp-pol-col" title="${monthNames[i]}: ${v} pollinator-value · ${types.join(', ') || 'no forage'}">
+        <div class="gp-pol-bar-wrap">
+          <div class="gp-pol-bar" style="height:${pct}%;${fill}"></div>
+        </div>
+        <div class="gp-pol-month ${i === new Date().getMonth() ? 'current' : ''}">${monthNames[i]}</div>
+      </div>
+    `;
+  }).join('');
+
+  // Find quietest months with at least one planting
+  const lowMonths = totalScore > 0
+    ? monthly.map((v,i) => ({v, i})).filter(x => x.v <= maxMonth * 0.35).map(x => monthNames[x.i])
+    : [];
+
+  const empty = state.plantings.length === 0;
+
+  return `
+    <div>
+      <div class="mb-6">
+        <h2 class="gp-display text-3xl mb-2">For the Pollinators</h2>
+        <p class="gp-italic" style="color:#6b5d4f">
+          A view of your garden through the eyes of bees, butterflies and hoverflies — what's in bloom, and when.
+        </p>
+      </div>
+
+      ${empty ? `
+        <div class="p-5 rounded-xl mb-6" style="background:rgba(45,74,46,.05);border:1px dashed rgba(45,74,46,.25)">
+          <p class="text-sm" style="color:#3e6b36">
+            Plant something pollinator-friendly to see your garden's value to bees, butterflies and hoverflies.
+            Lavender, rosemary, foxglove, sunflower and marigold are all excellent choices.
+          </p>
+        </div>
+      ` : `
+
+        <!-- Score summary -->
+        <div class="grid cols-3 gap-3 mb-6">
+          ${POLLINATOR_TYPES.map(t => {
+            const n = typesServed[t.id];
+            return `
+              <div class="p-4 rounded-xl" style="background:${t.color}14;border:1px solid ${t.color}33">
+                <div class="text-2xl mb-1">${t.icon}</div>
+                <div class="text-10 uppercase tracking-widest" style="color:#6b5d4f">${t.label}</div>
+                <div class="gp-display text-2xl mt-1" style="color:${t.color}">${n}</div>
+                <div class="text-10" style="color:#6b5d4f">plant${n === 1 ? '' : 's'} feeding them</div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+
+        <!-- Seasonal forage chart -->
+        <div class="mb-6 p-4 rounded-xl" style="background:#fbf6ea;border:1px solid rgba(107,93,79,.25)">
+          <div class="row items-baseline justify-between mb-1">
+            <h3 class="gp-display text-lg">Seasonal forage</h3>
+            <span class="text-xs gp-italic" style="color:#6b5d4f">when your garden's in bloom</span>
+          </div>
+          <div class="gp-pol-chart mt-3">${chartCols}</div>
+          ${lowMonths.length ? `
+            <p class="text-xs mt-3 gp-italic" style="color:#9a5a1d">
+              Quieter months for pollinators: ${lowMonths.join(', ')}. Adding plants that bloom then would help.
+            </p>` : ''}
+        </div>
+
+        <!-- Planted plants -->
+        ${plantedList.length ? `
+          <div class="mb-6">
+            <h3 class="gp-display text-lg mb-3">In your garden</h3>
+            <div class="grid cols-1 sm:cols-2 gap-2">
+              ${plantedList.map(b => {
+                const stars = '●'.repeat(b.info.value) + '○'.repeat(3 - b.info.value);
+                return `
+                  <div class="p-3 rounded-lg row items-start gap-3" style="background:#fbf6ea;border:1px solid rgba(107,93,79,.18)">
+                    <div class="w10 h10 rounded-md row items-center justify-center text-xl flex-shrink-0" style="background:${b.plant.color}1f">${b.plant.icon}</div>
+                    <div class="flex-1 min-w-0">
+                      <div class="row items-baseline gap-2">
+                        <div class="gp-display text-base">${esc(b.plant.name)}</div>
+                        <span class="text-10" style="color:#6b5d4f">×${b.count}</span>
+                      </div>
+                      <div class="text-10 mt-0.5" style="color:#6b5d4f">
+                        <span style="color:#3e6b36;letter-spacing:.05em">${stars}</span>
+                        · ${b.info.pollinators.map(t => POLLINATOR_TYPE_BY_ID[t]?.icon || '').join(' ') || '—'}
+                      </div>
+                      ${b.info.note ? `<div class="text-10 gp-italic mt-1" style="color:#6b5d4f">${esc(b.info.note)}</div>` : ''}
+                    </div>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          </div>
+        ` : ''}
+      `}
+
+      <!-- Suggestions -->
+      ${suggestions.length ? `
+        <div class="mb-6">
+          <h3 class="gp-display text-lg mb-1">Add more for pollinators</h3>
+          <p class="text-xs gp-italic mb-3" style="color:#6b5d4f">
+            ${empty ? 'Top-value plants for UK pollinators.' : `Three-star plants you haven't planted yet${lowMonths.length ? ', favouring the quiet months' : ''}.`}
+          </p>
+          <div class="grid cols-2 sm:cols-3 gap-2">
+            ${suggestions.map(p => {
+              const info = pollinatorInfo(p.id);
+              const months = info.bloomMonths.length
+                ? `${monthNames[info.bloomMonths[0]-1]}–${monthNames[info.bloomMonths[info.bloomMonths.length-1]-1]}`
+                : '';
+              return `
+                <div class="p-3 rounded-lg" style="background:#fbf6ea;border:1px solid rgba(107,93,79,.18);cursor:pointer" role="button" tabindex="0" data-action="open-info" data-plant-id="${p.id}">
+                  <div class="row items-center gap-2 mb-1">
+                    <div class="w8 h8 rounded-md row items-center justify-center text-base" style="background:${p.color}1f">${p.icon}</div>
+                    <div class="gp-display text-sm flex-1 min-w-0 truncate">${esc(p.name)}</div>
+                  </div>
+                  <div class="text-10" style="color:#6b5d4f">
+                    Blooms ${months} · ${info.pollinators.map(t => POLLINATOR_TYPE_BY_ID[t]?.icon || '').join(' ')}
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        </div>
+      ` : ''}
+
+      <!-- Pollinator Pathmaker link -->
+      <div class="mt-8 p-5 rounded-xl" style="background:rgba(122,78,163,.06);border:1px solid rgba(122,78,163,.25)">
+        <div class="row items-center gap-2 mb-2">
+          <span class="text-xl">🌸</span>
+          <span class="text-xs uppercase tracking-widest" style="color:#7a4ea3">A garden designed for pollinators</span>
+        </div>
+        <p class="text-sm mb-3" style="color:#3a2e44">
+          For a planting plan designed by an algorithm to support the maximum number of pollinator species,
+          try <span class="gp-italic">Pollinator Pathmaker</span> — a living artwork by Alexandra Daisy Ginsberg,
+          originally commissioned by the Eden Project. The tool is free to use and produces a downloadable
+          plan with plant list and certificate of authenticity.
+        </p>
+        <a href="https://pollinator.art/" target="_blank" rel="noopener" class="gp-btn" style="text-decoration:none">
+          Open pollinator.art →
+        </a>
+      </div>
+    </div>
+  `;
+}
+
+function libraryHTML() {
+  return `
+    <div class="gp-rise">
+      <div class="mb-6">
+        <h2 class="gp-display text-3xl mb-2">The Plant Library</h2>
+        <p class="gp-italic" style="color:#6b5d4f">
+          Tap any plant for its full notes — including which neighbours it likes and which to keep apart.
+        </p>
+      </div>
+      <div class="row gap-1 mb-6 overflow-x-auto gp-scroll" data-scroll-key="lib-cats">
+        ${PLANT_CATEGORIES.map(c => `<button class="gp-tab ${plantCategory === c.id ? 'active' : ''}" data-action="set-category" data-cat="${c.id}">${esc(c.label)}</button>`).join('')}
+      </div>
+      <div class="grid cols-1 sm:cols-2 lg:cols-3 gap-4">
+        ${filteredPlants().map(p => `
+          <div class="gp-plant-card" data-action="open-info" data-plant-id="${p.id}">
+            <div class="row items-start gap-3 mb-3">
+              <div class="w12 h12 rounded-md row items-center justify-center text-2xl flex-shrink-0" style="background:${p.color}1f">${p.icon}</div>
+              <div class="flex-1 min-w-0">
+                <div class="gp-display text-lg leading-tight">${esc(p.name)}</div>
+                <div class="text-10 mt-0.5 uppercase tracking-wider" style="color:#6b5d4f">${p.cat}</div>
+              </div>
+            </div>
+            <div class="space-y-1.5 text-xs" style="color:#6b5d4f">
+              <div class="row items-center gap-1.5">${ICON.sun('gp-icon w3', '')}${esc(p.sun)}</div>
+              <div class="row items-center gap-1.5">${ICON.droplet('gp-icon w3', '')}${esc(p.water)}</div>
+              <div class="row items-center gap-1.5"><span class="inline-block w3 text-center">↔</span> Spacing ${esc(p.space)}</div>
+              <div class="row items-center gap-1.5">${ICON.calendar('gp-icon w3', '')}Plant ${esc(p.plant !== '—' ? p.plant : p.sow)}</div>
+              <div class="row items-center gap-1.5">${ICON.sprout('gp-icon w3', '')}${esc(p.harvest)}</div>
+            </div>
+            <p class="gp-italic mt-3 text-sm pt-3" style="color:#2d4a2e;border-top:1px dashed rgba(107,93,79,.25)">
+              &ldquo;${esc(p.tip)}&rdquo;
+            </p>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function shoppingHTML() {
+  const {plants, materials} = computeShoppingList();
+  if (plants.length === 0 && materials.length === 0) {
+    return `
+      <div class="gp-rise">
+        <div class="mb-6">
+          <h2 class="gp-display text-3xl mb-2">Shopping List</h2>
+          <p class="gp-italic" style="color:#6b5d4f">Everything in your plan, ready for the garden centre.</p>
+        </div>
+        <div class="p-6 rounded-xl text-center gp-italic" style="background:#fbf6ea;border:1px dashed rgba(107,93,79,.3);color:#6b5d4f">
+          Nothing planted or placed yet — add some plants and objects in the Design view.
+        </div>
+      </div>
+    `;
+  }
+  const row = (key, leftIcon, title, sub, rightLabel, color, checked, i, last) => `
+    <div class="gp-shop-row" style="background:${i % 2 ? '#fbf6ea' : '#f6efdd'};${!last ? 'border-bottom:1px solid rgba(107,93,79,.12)' : ''}">
+      <div class="gp-check ${checked ? 'done' : ''}" data-action="toggle-shopping" data-key="${esc(key)}">
+        ${checked ? ICON.check('gp-icon w3-5', '') : ''}
+      </div>
+      <span class="text-xl">${leftIcon}</span>
+      <div class="flex-1 min-w-0">
+        <div class="gp-display text-base leading-tight" style="${checked ? 'text-decoration:line-through;opacity:.5' : ''}">${title}</div>
+        <div class="text-10" style="color:#6b5d4f">${sub}</div>
+      </div>
+      ${rightLabel ? `<span class="text-10 uppercase tracking-wider px-2 py-1 rounded-full" style="background:${color}1f;color:#6b5d4f">${rightLabel}</span>` : ''}
+    </div>
+  `;
+  return `
+    <div class="gp-rise">
+      <div class="mb-6">
+        <h2 class="gp-display text-3xl mb-2">Shopping List</h2>
+        <p class="gp-italic" style="color:#6b5d4f">
+          Everything in your plan, ready for the garden centre. Plants are ordered by when to sow. Ticks are saved.
+        </p>
+      </div>
+      <div class="space-y-6">
+        ${plants.length > 0 ? `
+          <div>
+            <h3 class="gp-display text-xl mb-3 row items-center gap-2"><span style="color:#87a878">${ICON.leaf('gp-icon w4', '')}</span>Plants &amp; seeds</h3>
+            <div class="rounded-xl overflow-hidden" style="border:1px solid rgba(107,93,79,.2)">
+              ${plants.map(({plant, n, key}, i) => {
+                const checked = !!state.shopping[key];
+                return row(
+                  key,
+                  plant.icon,
+                  `${esc(plant.name)} <span class="gp-italic" style="color:#6b5d4f">×${n}</span>`,
+                  `Sow ${esc(plant.sow !== '—' ? plant.sow : '—')} · Plant ${esc(plant.plant !== '—' ? plant.plant : '—')}`,
+                  esc(plant.cat),
+                  plant.color,
+                  checked, i, i === plants.length - 1
+                );
+              }).join('')}
+            </div>
+          </div>` : ''}
+        ${materials.length > 0 ? `
+          <div>
+            <h3 class="gp-display text-xl mb-3 row items-center gap-2"><span style="color:#87a878">${ICON.trees('gp-icon w4', '')}</span>Objects &amp; materials</h3>
+            <div class="rounded-xl overflow-hidden" style="border:1px solid rgba(107,93,79,.2)">
+              ${materials.map(({obj, n, key}, i) => {
+                const checked = !!state.shopping[key];
+                return row(
+                  key,
+                  obj.icon,
+                  `${esc(obj.name)} <span class="gp-italic" style="color:#6b5d4f">×${n}</span>`,
+                  esc(obj.tip),
+                  '',
+                  obj.color,
+                  checked, i, i === materials.length - 1
+                );
+              }).join('')}
+            </div>
+          </div>` : ''}
+      </div>
+    </div>
+  `;
+}
+
+function notesHTML() {
+  if (state.beds.length === 0) {
+    return `
+      <div class="gp-rise">
+        <div class="mb-6">
+          <h2 class="gp-display text-3xl mb-2">Notes &amp; Tasks</h2>
+        </div>
+        <div class="p-6 rounded-xl text-center gp-italic" style="background:#fbf6ea;border:1px dashed rgba(107,93,79,.3);color:#6b5d4f">
+          Add a bed in the Design view to start keeping notes.
+        </div>
+      </div>
+    `;
+  }
+  if (!notesBedId || !state.beds.find(b => b.id === notesBedId)) notesBedId = state.beds[0].id;
+  const bed = state.beds.find(b => b.id === notesBedId);
+  return `
+    <div class="gp-rise">
+      <div class="mb-6">
+        <h2 class="gp-display text-3xl mb-2">Notes &amp; Tasks</h2>
+        <p class="gp-italic" style="color:#6b5d4f">
+          Seed orders, what worked last year, and a running to-do list for each bed.
+        </p>
+      </div>
+      <div class="row items-center gap-2 mb-6 overflow-x-auto gp-scroll pb-2" data-scroll-key="bed-tabs">
+        ${state.beds.map(b => {
+          const active = b.id === notesBedId;
+          return `<button class="px-4 py-2 rounded-full text-sm nowrap" data-action="set-notes-bed" data-id="${b.id}"
+                   style="background:${active ? '#2d4a2e' : 'transparent'};color:${active ? '#f4ecd8' : '#2a2419'};border:1px solid ${active ? '#2d4a2e' : 'rgba(45,74,46,.25)'}">${esc(b.name)}</button>`;
+        }).join('')}
+      </div>
+      <div class="space-y-5">
+        <div class="rounded-2xl p-6" style="background:#fbf6ea;border:1px solid rgba(107,93,79,.18)">
+          <div class="gp-display text-xl mb-4">${esc(bed.name)} — tasks</div>
+          ${bed.tasks.length > 0 ? `
+            <div class="space-y-1.5 mb-4">
+              ${bed.tasks.map(t => `
+                <div class="row items-center gap-3">
+                  <div class="gp-check ${t.done ? 'done' : ''}" data-action="toggle-task" data-bed-id="${bed.id}" data-task-id="${t.id}">
+                    ${t.done ? ICON.check('gp-icon w3-5', '') : ''}
+                  </div>
+                  <span class="flex-1 text-sm" style="${t.done ? 'text-decoration:line-through;opacity:.5' : ''}">${esc(t.text)}</span>
+                  <button class="p-1 rounded-full gp-soft-hover-red" data-action="delete-task" data-bed-id="${bed.id}" data-task-id="${t.id}" style="color:#c87454">${ICON.x('gp-icon w3-5', '')}</button>
+                </div>
+              `).join('')}
+            </div>` : ''}
+          <div class="row items-center gap-2">
+            <input class="gp-text" placeholder="Add a task — e.g. put up bean canes" value="${esc(newTaskText)}"
+              data-action="task-input" data-bed-id="${bed.id}" data-focus-key="new-task-${bed.id}">
+            <button class="gp-btn flex-shrink-0" data-action="add-task" data-bed-id="${bed.id}">Add</button>
+          </div>
+        </div>
+        <div class="rounded-2xl p-6 sm:p-7" style="background:#fbf6ea;border:1px solid rgba(107,93,79,.18)">
+          <div class="gp-display text-xl mb-4">${esc(bed.name)} — notes</div>
+          <textarea class="gp-notes" rows="12" placeholder="Saturday morning — picked up tomato plants from the garden centre. Trying 'Sungold' and 'Tigerella' this year…"
+            data-action="update-notes" data-bed-id="${bed.id}" data-focus-key="notes-${bed.id}">${esc(bed.notes)}</textarea>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function infoModalHTML() {
+  if (!infoPlantId) return '';
+  const p = PLANTS_BY_ID[infoPlantId];
+  if (!p) return '';
+  const c = COMPANIONS[p.id];
+  const nameOf = (id) => PLANTS_BY_ID[id]?.name || id;
+  const detail = (icon, label, value) => `
+    <div>
+      <div class="text-10 uppercase tracking-widest mb-0.5" style="color:#6b5d4f">${label}</div>
+      <div class="row items-center gap-1.5 text-sm gp-display" style="color:#2a2419">
+        ${icon ? `<span style="color:#87a878">${icon}</span>` : ''}${esc(value)}
+      </div>
+    </div>
+  `;
+  return `
+    <div class="gp-modal-back" data-action="close-info">
+      <div class="gp-modal gp-rise" data-stop>
+        <button class="absolute p-1.5 rounded-full gp-soft-hover" style="top:16px;right:16px;color:#6b5d4f" data-action="close-info">${ICON.x('gp-icon w4', '')}</button>
+        <div class="row items-center gap-4 mb-5">
+          <div class="w16 h16 rounded-2xl row items-center justify-center" style="background:${p.color}25;font-size:36px">${p.icon}</div>
+          <div>
+            <h3 class="gp-display text-2xl leading-tight">${esc(p.name)}</h3>
+            <p class="text-xs uppercase tracking-widest mt-1" style="color:${p.color}">${p.cat}</p>
+          </div>
+        </div>
+        <div class="grid cols-2 gap-4 mb-5">
+          ${detail(ICON.sun('gp-icon w3-5', ''), 'Sun', p.sun)}
+          ${detail(ICON.droplet('gp-icon w3-5', ''), 'Water', p.water)}
+          ${detail('', 'Spacing', p.space)}
+          ${detail(ICON.calendar('gp-icon w3-5', ''), 'Sow', p.sow)}
+          ${detail(ICON.sprout('gp-icon w3-5', ''), 'Plant', p.plant)}
+          ${detail('', 'Harvest', p.harvest)}
+        </div>
+        ${c && (c.good.length || c.bad.length) ? `
+          <div class="mb-5 space-y-3">
+            ${c.good.length ? `
+              <div>
+                <p class="text-xs uppercase tracking-wider mb-1.5 row items-center gap-1.5" style="color:#3e6b36">
+                  ${ICON.sparkles('gp-icon w3', '')}Plant alongside
+                </p>
+                <div class="row flex-wrap gap-1.5">
+                  ${c.good.map(id => `<span class="gp-chip" style="background:rgba(90,143,78,.14);color:#3e6b36">${PLANTS_BY_ID[id]?.icon} ${esc(nameOf(id))}</span>`).join('')}
+                </div>
+              </div>` : ''}
+            ${c.bad.length ? `
+              <div>
+                <p class="text-xs uppercase tracking-wider mb-1.5 row items-center gap-1.5" style="color:#9a5a1d">
+                  ${ICON.alert('gp-icon w3', '')}Keep apart from
+                </p>
+                <div class="row flex-wrap gap-1.5">
+                  ${c.bad.map(id => `<span class="gp-chip" style="background:rgba(217,138,61,.16);color:#9a5a1d">${PLANTS_BY_ID[id]?.icon} ${esc(nameOf(id))}</span>`).join('')}
+                </div>
+              </div>` : ''}
+          </div>` : ''}
+
+        ${(() => {
+          const pol = pollinatorInfo(p.id);
+          if (pol.value === 0) return '';
+          const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+          const bloomLabel = pol.bloomMonths.length
+            ? `${monthNames[pol.bloomMonths[0]-1]}–${monthNames[pol.bloomMonths[pol.bloomMonths.length-1]-1]}`
+            : '';
+          const stars = '●'.repeat(pol.value) + '○'.repeat(3 - pol.value);
+          return `
+            <div class="mb-5">
+              <p class="text-xs uppercase tracking-wider mb-1.5 row items-center gap-1.5" style="color:#7a4ea3">
+                ${ICON.sparkles('gp-icon w3', '')}Loved by
+                <span style="color:#3e6b36;letter-spacing:.1em;margin-left:6px">${stars}</span>
+              </p>
+              <div class="row flex-wrap gap-1.5">
+                ${pol.pollinators.map(t => {
+                  const T = POLLINATOR_TYPE_BY_ID[t];
+                  return `<span class="gp-chip" style="background:${T.color}14;color:${T.color}">${T.icon} ${esc(T.label)}</span>`;
+                }).join('')}
+                ${bloomLabel ? `<span class="gp-chip" style="background:rgba(107,93,79,.1);color:#6b5d4f">Blooms ${bloomLabel}</span>` : ''}
+              </div>
+              ${pol.note ? `<p class="text-xs gp-italic mt-2" style="color:#6b5d4f">${esc(pol.note)}</p>` : ''}
+            </div>
+          `;
+        })()}
+        <div class="p-4 rounded-xl" style="background:rgba(45,74,46,.07)">
+          <p class="text-xs uppercase tracking-wider mb-2" style="color:#87a878">From the journal</p>
+          <p class="gp-italic text-base">&ldquo;${esc(p.tip)}&rdquo;</p>
+        </div>
+        <button class="gp-btn w-full mt-5 py-3 rounded-xl text-xs uppercase tracking-widest justify-center" data-action="plant-this" data-plant-id="${p.id}">Plant this</button>
+      </div>
+    </div>
+  `;
+}
+
+// ── Event delegation ────────────────────────────────────────────────────
+function bindEvents() {
+  const root = document.getElementById('root');
+
+  // Pointer-down (drag start, canvas tap, modal close)
+  root.addEventListener('pointerdown', (e) => {
+    // Modal: close on backdrop tap; ignore on inner content
+    if (e.target.closest('[data-stop]')) {
+      e.stopPropagation();
+    }
+
+    // PATH DRAFT MODE: any pointerdown inside the canvas adds a waypoint,
+    // regardless of what element it hits (beds, objects, existing paths, etc).
+    // This means clicks on beds/objects don't get hijacked while drawing.
+    if (pathDraftId) {
+      const canvas = document.getElementById('gp-canvas');
+      if (canvas && canvas.contains(e.target)) {
+        const rect = canvas.getBoundingClientRect();
+        const pctX = ((e.clientX - rect.left) / rect.width) * 100;
+        const pctY = ((e.clientY - rect.top)  / rect.height) * 100;
+        appendPathPoint(pctX, pctY);
+        e.stopPropagation();
+        e.preventDefault();
+        return;
+      }
+    }
+
+    const t = e.target.closest('[data-action]');
+    if (!t) return;
+    const action = t.dataset.action;
+
+    if (action === 'drag-start') {
+      const type = t.dataset.type;
+      const id = t.dataset.id;
+      const mode = t.dataset.mode || 'move';
+      startDrag(e, type, id, mode, t);
+    } else if (action === 'detail-drag-start') {
+      startDetailDrag(e, t.dataset.id, t);
+    } else if (action === 'path-point-drag-start') {
+      startPathPointDrag(e, t.dataset.pathId, parseInt(t.dataset.pointIndex, 10), t);
+    } else if (action === 'canvas-tap') {
+      // Tap directly on canvas background only
+      if (e.target.id !== 'gp-canvas') return;
+      if (pathDraftId) {
+        // Translate client coords to %-of-garden coords
+        const rect = document.getElementById('gp-canvas').getBoundingClientRect();
+        const pctX = ((e.clientX - rect.left) / rect.width) * 100;
+        const pctY = ((e.clientY - rect.top)  / rect.height) * 100;
+        appendPathPoint(pctX, pctY);
+        return;
+      }
+      if (selectedPlant) placePlantAt(e.clientX, e.clientY);
+      else { selectedItem = null; scheduleRender(); }
+    } else if (action === 'detail-canvas-tap') {
+      if (e.target.id !== 'gp-detail-canvas') return;
+      if (selectedPlant) placePlantInBedAt(e.clientX, e.clientY);
+      else { selectedItem = null; scheduleRender(); }
+    }
+  });
+
+  // Window-level pointer move/up so drags don't drop on fast moves
+  window.addEventListener('pointermove', (e) => { if (drag) { onPointerMove(e); e.preventDefault(); } }, {passive:false});
+  window.addEventListener('pointerup', () => { if (drag) onPointerUp(); });
+  window.addEventListener('pointercancel', () => { if (drag) onPointerUp(); });
+
+  // Click (most non-drag actions). Use click — fires after pointerup, won't fire mid-drag thanks to moved-check.
+  root.addEventListener('click', (e) => {
+    if (drag && drag.moved) return;
+    const t = e.target.closest('[data-action]');
+    if (!t) return;
+    const a = t.dataset.action;
+    // Skip drag and canvas tap (handled by pointerdown)
+    if (a === 'drag-start' || a === 'detail-drag-start' || a === 'path-point-drag-start' || a === 'canvas-tap' || a === 'detail-canvas-tap') return;
+
+    switch (a) {
+      case 'set-view':           setView(t.dataset.view); break;
+      case 'edit-garden-name':   editingName = true; scheduleRender(); break;
+      case 'toggle-garden-settings': gardenSettingsOpen = !gardenSettingsOpen; scheduleRender(); break;
+      case 'add-bed':            addBed(); break;
+      case 'undo':               undo(); break;
+      case 'clear-selected-plant': selectedPlant = null; scheduleRender(); break;
+      case 'clear-selected-item':  selectedItem = null;  scheduleRender(); break;
+      case 'set-month-zero':     viewMonth = 0; scheduleRender(); break;
+      case 'set-picker':         pickerMode = t.dataset.picker; scheduleRender(); break;
+      case 'set-category':
+        if (pickerMode === 'plants' || view !== 'design' || bedDetailId) plantCategory = t.dataset.cat;
+        else objectCategory = t.dataset.cat;
+        scheduleRender();
+        break;
+      case 'pick-plant':
+        selectedPlant = (selectedPlant === t.dataset.plantId) ? null : t.dataset.plantId;
+        scheduleRender();
+        break;
+      case 'add-object':         addObject(t.dataset.objectId); break;
+      case 'open-info':          e.stopPropagation(); infoPlantId = t.dataset.plantId; scheduleRender(); break;
+      case 'close-info':
+        // If t (matched action) is the backdrop AND the click started inside modal content,
+        // the user clicked non-action modal content that bubbled up — ignore.
+        // If t is inside data-stop (e.g. the X button), close as intended.
+        if (!t.closest('[data-stop]') && e.target.closest('[data-stop]')) return;
+        infoPlantId = null; scheduleRender();
+        break;
+      case 'plant-this':
+        selectedPlant = t.dataset.plantId; infoPlantId = null;
+        if (view !== 'design') view = 'design';
+        scheduleRender();
+        break;
+      case 'duplicate-selected': duplicateSelected(); break;
+      case 'delete-selected':    deleteSelected(); break;
+      case 'open-bed-detail':    bedDetailId = t.dataset.id; selectedItem = null; selectedPlant = null; scheduleRender(); break;
+      case 'close-bed-detail':   bedDetailId = null; selectedItem = null; scheduleRender(); break;
+      case 'reset-rotation': {
+        snap();
+        const tgt = t.dataset.target, id = t.dataset.id;
+        if (tgt === 'bed') updateBed(id, {rotation:0}); else updateObject(id, {rotation:0});
+        scheduleRender();
+        break;
+      }
+      case 'toggle-task':        toggleBedTask(t.dataset.bedId, t.dataset.taskId); break;
+      case 'delete-task':        deleteBedTask(t.dataset.bedId, t.dataset.taskId); break;
+      case 'add-task':           addBedTask(t.dataset.bedId, newTaskText); break;
+      case 'toggle-shopping':    toggleShopping(t.dataset.key); break;
+      case 'set-notes-bed':      notesBedId = t.dataset.id; scheduleRender(); break;
+      case 'start-path-draft':   startPathDraft(t.dataset.style || 'gravel'); break;
+      case 'finish-path-draft':  finishPathDraft(); break;
+      case 'cancel-path-draft': {
+        if (pathDraftId) {
+          state.paths = state.paths.filter(p => p.id !== pathDraftId);
+          pathDraftId = null;
+          saveSoon(); scheduleRender();
+        }
+        break;
+      }
+      case 'select-path':        selectedItem = {type:'path', id:t.dataset.id}; scheduleRender(); break;
+      case 'set-path-style':     updatePath(t.dataset.id, {style: t.dataset.style}); scheduleRender(); break;
+      case 'insert-path-point':  insertPathPoint(t.dataset.pathId, parseInt(t.dataset.afterIndex, 10)); break;
+      case 'delete-path-point': {
+        const p = state.paths.find(p => p.id === t.dataset.pathId);
+        const idx = parseInt(t.dataset.pointIndex, 10);
+        if (p && p.points.length > 2) {
+          snap();
+          p.points.splice(idx, 1);
+          saveSoon();
+          scheduleRender();
+        }
+        break;
+      }
+    }
+  });
+
+  // Inputs (oninput-style, won't lose focus thanks to render restoration)
+  root.addEventListener('input', (e) => {
+    const t = e.target.closest('[data-action]');
+    if (!t) return;
+    const a = t.dataset.action;
+    const v = t.value;
+    switch (a) {
+      case 'garden-name-input': setGardenName(v); break;
+      case 'update-garden': {
+        const field = t.dataset.field;
+        const n = clamp(+v || 1, 1, 30);
+        state[field] = n; saveSoon(); scheduleRender(); break;
+      }
+      case 'update-name': {
+        const id = t.dataset.id;
+        const target = t.dataset.target;
+        if (target === 'bed') updateBed(id, {name:v});
+        else if (target === 'object') updateObject(id, {label:v});
+        // No full render — focus stays in input; values are read fresh from state
+        break;
+      }
+      case 'update-size': {
+        const id = t.dataset.id;
+        const target = t.dataset.target;
+        const field = t.dataset.field;
+        const min = field === 'rotation' ? -180 : 0.2;
+        const max = field === 'rotation' ?  180 : 30;
+        const n = clamp(+v || (field === 'rotation' ? 0 : 0.2), min, max);
+        if (target === 'bed') updateBed(id, {[field]: n});
+        else updateObject(id, {[field]: n});
+        scheduleRender();
+        break;
+      }
+      case 'set-month':
+        viewMonth = clamp(+v || 0, 0, 12); scheduleRender(); break;
+      case 'set-path-width': {
+        const w = clamp(+v || 0.6, 0.2, 5);
+        updatePath(t.dataset.id, {widthM: w});
+        scheduleRender();
+        break;
+      }
+      case 'task-input':
+        newTaskText = v; break;
+      case 'update-notes':
+        setBedNotes(t.dataset.bedId, v); break;
+    }
+  });
+
+  // Push history on focus/click into editable fields
+  root.addEventListener('focusin', (e) => {
+    const t = e.target.closest('[data-action]');
+    if (!t) return;
+    const a = t.dataset.action;
+    if (a === 'garden-name-input' || a === 'update-garden' || a === 'update-name' || a === 'update-size' || a === 'update-notes') {
+      // Take one snapshot per focus session
+      if (!t._gpHistTaken) { snap(); t._gpHistTaken = true; }
+    }
+  });
+  root.addEventListener('focusout', (e) => {
+    const t = e.target.closest('[data-action]');
+    if (!t) return;
+    delete t._gpHistTaken;
+    if (t.dataset.action === 'garden-name-input') { editingName = false; scheduleRender(); }
+  });
+
+  // Enter key to add task / finish editing name
+  root.addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter') return;
+    const t = e.target.closest('[data-action]');
+    if (!t) return;
+    const a = t.dataset.action;
+    if (a === 'task-input') {
+      e.preventDefault();
+      addBedTask(t.dataset.bedId, newTaskText);
+    } else if (a === 'garden-name-input') {
+      t.blur();
+    }
+  });
+}
+
+// Flush any pending save before the tab is closed
+window.addEventListener('beforeunload', () => {
+  if (saveTimer) {
+    clearTimeout(saveTimer);
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch {}
+  }
+});
+
+// ── Init ────────────────────────────────────────────────────────────────
+load();
+render();
+bindEvents();
+
+})();
+</script>
+</body>
+</html>
