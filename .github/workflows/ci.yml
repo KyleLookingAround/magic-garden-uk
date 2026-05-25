@@ -1,0 +1,118 @@
+name: CI
+
+on:
+  push:
+    # ci-screenshots is a data branch written by this workflow; don't loop on it.
+    branches-ignore: ['ci-screenshots']
+  pull_request:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+        env:
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1'
+
+      - name: Type-check
+        run: npm run typecheck
+
+      - name: Unit tests
+        run: npm test
+
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps chromium
+
+      - name: End-to-end tests
+        run: npm run test:e2e
+
+      - name: Upload Playwright report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 14
+
+      - name: Upload UI screenshots
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: ui-screenshots
+          path: tmp-shots/
+          retention-days: 14
+
+      # Publish the captured screenshots to the PR as an inline, sticky comment.
+      # Images live on a dedicated ci-screenshots branch (per-PR folder), kept out
+      # of main's history. Never fails the build.
+      - name: Post screenshots to PR
+        if: ${{ !cancelled() && github.event_name == 'pull_request' }}
+        continue-on-error: true
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const dir = 'tmp-shots';
+            if (!fs.existsSync(dir)) { core.info('no screenshots to publish'); return; }
+            const files = fs.readdirSync(dir).filter(f => f.endsWith('.png')).sort();
+            if (!files.length) { core.info('no screenshots to publish'); return; }
+
+            const { owner, repo } = context.repo;
+            const prNumber = context.issue.number;
+            const headSha = context.payload.pull_request.head.sha;
+            const branch = 'ci-screenshots';
+
+            // Ensure the data branch exists (seed from the default branch head).
+            try {
+              await github.rest.repos.getBranch({ owner, repo, branch });
+            } catch (e) {
+              if (e.status !== 404) throw e;
+              const def = (await github.rest.repos.get({ owner, repo })).data.default_branch;
+              const ref = await github.rest.git.getRef({ owner, repo, ref: `heads/${def}` });
+              await github.rest.git.createRef({ owner, repo, ref: `refs/heads/${branch}`, sha: ref.data.object.sha });
+            }
+
+            // Upload each PNG to pr-<n>/<file> on the data branch.
+            for (const file of files) {
+              const path = `pr-${prNumber}/${file}`;
+              const content = fs.readFileSync(`${dir}/${file}`).toString('base64');
+              let sha;
+              try {
+                const existing = await github.rest.repos.getContent({ owner, repo, path, ref: branch });
+                sha = existing.data.sha;
+              } catch (e) { if (e.status !== 404) throw e; }
+              await github.rest.repos.createOrUpdateFileContents({
+                owner, repo, path, branch, content, sha,
+                message: `screenshots for PR #${prNumber}: ${file}`,
+              });
+            }
+
+            // Build a sticky comment with the images (sha query busts the image cache).
+            const raw = (f) => `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/pr-${prNumber}/${f}?${headSha}`;
+            const section = (label, prefix) => {
+              const group = files.filter(f => f.startsWith(prefix));
+              if (!group.length) return '';
+              return `<details${prefix === 'desktop' ? ' open' : ''}><summary><b>${label}</b></summary>\n\n` +
+                group.map(f => `**${f.replace(/^(desktop|mobile)-\d+-/, '').replace(/\.png$/, '')}**\n\n![${f}](${raw(f)})`).join('\n\n') +
+                `\n\n</details>`;
+            };
+            const marker = '<!-- pr-screenshots -->';
+            const body = `${marker}\n## UI screenshots\n_Captured by CI at \`${headSha.slice(0, 7)}\`._\n\n` +
+              [section('Desktop', 'desktop'), section('Mobile', 'mobile')].filter(Boolean).join('\n\n');
+
+            const { data: comments } = await github.rest.issues.listComments({ owner, repo, issue_number: prNumber });
+            const existing = comments.find(c => c.body && c.body.includes(marker));
+            if (existing) await github.rest.issues.updateComment({ owner, repo, comment_id: existing.id, body });
+            else await github.rest.issues.createComment({ owner, repo, issue_number: prNumber, body });

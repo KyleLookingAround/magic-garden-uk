@@ -13,6 +13,7 @@ import {
   placePlantAt, placePlantInBedAt,
 } from './actions.js';
 import { startDrag, startDetailDrag, startPathPointDrag, onPointerMove, onPointerUp } from './drag.js';
+import { exportPlan, importPlan, exportCalendar, sharePlan, printPlan } from './io.js';
 
 export function bindEvents() {
   const root = document.getElementById('root');
@@ -142,6 +143,13 @@ export function bindEvents() {
       case 'set-path-style': updatePath(t.dataset.id, { style: t.dataset.style }); scheduleRender(); break;
       case 'insert-path-point': insertPathPoint(t.dataset.pathId, parseInt(t.dataset.afterIndex, 10)); break;
       case 'delete-path-point': deletePathPoint(t.dataset.pathId, parseInt(t.dataset.pointIndex, 10)); break;
+      case 'toggle-tools': S.toolsOpen = !S.toolsOpen; scheduleRender(); break;
+      case 'share-plan': sharePlan(); break;
+      case 'export-plan': exportPlan(); break;
+      case 'import-plan': importPlan(); break;
+      case 'export-calendar': exportCalendar(); break;
+      case 'print-plan': printPlan(); break;
+      case 'apply-update': if (S.applyUpdate) S.applyUpdate(); break;
     }
   });
 

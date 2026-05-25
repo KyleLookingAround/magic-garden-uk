@@ -37,6 +37,11 @@ export const S = {
   pathDraftStyle: 'gravel',
   renderQueued: false,
   renderSuppressed: false, // true while a drag is in progress
+  toolsOpen: false,        // backup & share panel expanded
+  flash: null,             // transient toast message
+  flashTimer: null,
+  swUpdateReady: false,    // a new app version is waiting to activate
+  applyUpdate: null,       // () => void: activate the waiting service worker
 };
 
 export function load() {

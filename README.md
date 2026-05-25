@@ -21,7 +21,10 @@ Then open the printed URL.
 | `npm run build` | Production build to `dist/` (what Netlify publishes) |
 | `npm run preview` | Serve the production build locally |
 | `npm test` | Run the Vitest unit + integration suite |
+| `npm run test:e2e` | Run the Playwright end-to-end tests (builds, serves, drives a browser) |
 | `npm run typecheck` | Type-check the JS with `tsc --checkJs` |
+
+Continuous integration (`.github/workflows/ci.yml`) runs the type-check, unit tests and Playwright E2E suite on every push and pull request, and posts the captured UI screenshots as an inline PR comment.
 
 ## Features
 
@@ -43,6 +46,13 @@ Then open the printed URL.
 
 **Notes & tasks** — notes and a task list per bed.
 
+**Backup, share & offline** — from the *Backup & share* panel above the tabs you can:
+- **Export** your whole plan to a `.json` backup file, and **Import** it back on any device — the proper way to move a garden between browsers.
+- Copy a **share link** that encodes the entire plan in the URL, to send to someone else (no server involved).
+- Download a **calendar** (`.ics`) of yearly *sow* and *plant-out* reminders for everything you've planted — import it into any calendar app.
+- **Print** the current view (the garden map, or the shopping list) to paper or PDF.
+- The app is also a **PWA**: a service worker caches it so it keeps working with no connection, and it can be installed to a phone home screen.
+
 ## Architecture
 
 The app is plain ES modules (no UI framework) bundled by [Vite](https://vitejs.dev/). The build output in `dist/` is a static site Netlify serves directly. Rendering is a full `#root.innerHTML` rewrite on each state change, with focus/scroll restoration so text inputs keep their cursor; drags suppress re-renders and mutate the dragged node's style directly, committing on pointer-up.
@@ -50,7 +60,7 @@ The app is plain ES modules (no UI framework) bundled by [Vite](https://vitejs.d
 ```
 index.html              # shell: loads src/main.js
 src/
-  main.js               # entry: load state, render, bind events
+  main.js               # entry: load state, load shared plan, render, bind events, register the service worker
   store.js              # the single mutable state object `S` + localStorage persistence
   history.js            # undo stack
   render.js             # render loop with focus/scroll restoration
@@ -58,6 +68,8 @@ src/
   actions.js            # all state mutations
   drag.js               # pointer-driven drag/resize/rotate system
   events.js             # delegated data-action event handling
+  io.js                 # backup/share/print/calendar browser glue + the flash toast
+  pwa.d.ts              # type stub for the vite-plugin-pwa virtual module
   styles.css            # all styles
   data/
     plants.js           # PLANTS, COMPANIONS, POLLINATORS + lookups
@@ -69,8 +81,11 @@ src/
     splines.js          # Catmull-Rom curvy-path maths
     factory.js          # state constructors + the default starter garden
     migrate.js          # normalise/migrate persisted state across versions
+    transfer.js         # backup/share serialisation (JSON file + share-link hash)
+    calendar.js         # .ics sow/plant-out reminder builder
   views/                # one module per screen + canvas item renderers
-tests/                  # Vitest: geometry, splines, data/migration, integration
+tests/                  # Vitest: geometry, splines, data/migration, transfer, calendar, integration
+e2e/                    # Playwright end-to-end + screenshot specs
 ```
 
 ### Why no framework?
@@ -85,7 +100,7 @@ The drag, spline and snap maths are the app's real complexity and work well as p
 
 ## Storage
 
-Everything saves to `localStorage` under `garden-planner:v4`, per-browser and per-device (no sync). Legacy keys `:v1`–`:v3` are migrated automatically on first load. To move a plan between devices, copy the value of `garden-planner:v4` in DevTools and paste it into the same key on the other device.
+Everything saves to `localStorage` under `garden-planner:v4`, per-browser and per-device (no sync). Legacy keys `:v1`–`:v3` are migrated automatically on first load. To move a plan between devices, use **Export backup** / **Import backup** (or a **share link**) from the *Backup & share* panel — all client-side, no account. Opening a share link asks before replacing the plan in the current browser.
 
 ## Deployment (Netlify)
 

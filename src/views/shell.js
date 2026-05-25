@@ -16,6 +16,7 @@ export function buildAppHTML() {
       <div class="gp-wrap relative">
         ${headerHTML()}
         ${tabsHTML()}
+        ${toolsHTML()}
         ${
           S.view === 'design'
             ? (S.bedDetailId ? bedDetailHTML() : designViewHTML())
@@ -26,10 +27,45 @@ export function buildAppHTML() {
             : ''
         }
         ${infoModalHTML()}
-        <footer class="mt-12 sm:mt-16 pt-6 text-center" style="border-top:1px dashed rgba(107,93,79,.3)">
-          <p class="gp-italic text-xs" style="color:#6b5d4f">Saved quietly in your browser · Climate notes are for the UK</p>
+        <footer class="gp-no-print mt-12 sm:mt-16 pt-6 text-center" style="border-top:1px dashed rgba(107,93,79,.3)">
+          <p class="gp-italic text-xs" style="color:#6b5d4f">Saved quietly in your browser · Works offline · Climate notes are for the UK</p>
         </footer>
       </div>
+      ${S.flash ? `<div class="gp-toast gp-no-print" role="status">${esc(S.flash)}</div>` : ''}
+      ${S.swUpdateReady ? `
+        <div class="gp-toast gp-update-toast gp-no-print" role="status">
+          <span>A new version is ready.</span>
+          <button class="gp-update-btn" data-action="apply-update">Refresh</button>
+        </div>` : ''}
+    </div>
+  `;
+}
+
+function toolsHTML() {
+  const tool = (action, icon, label) =>
+    `<button class="gp-btn-ghost" data-action="${action}">${icon}${label}</button>`;
+  const panel = S.toolsOpen ? `
+    <div class="gp-rise mb-4 p-4 rounded-lg" style="background:rgba(45,74,46,.05);border:1px dashed rgba(45,74,46,.2)">
+      <div class="row items-center gap-2 flex-wrap">
+        ${tool('share-plan', ICON.share('gp-icon w3-5', ''), 'Share link')}
+        ${tool('export-plan', ICON.download('gp-icon w3-5', ''), 'Export backup')}
+        ${tool('import-plan', ICON.upload('gp-icon w3-5', ''), 'Import backup')}
+        ${tool('export-calendar', ICON.calendar('gp-icon w3-5', ''), 'Calendar (.ics)')}
+        ${tool('print-plan', ICON.printer('gp-icon w3-5', ''), 'Print')}
+      </div>
+      <p class="gp-italic text-xs mt-3" style="color:#6b5d4f">
+        Everything stays on your device. Export a <strong>backup</strong> to move your plan between devices, copy a <strong>share link</strong> to send it to someone, or download a <strong>calendar</strong> of sow &amp; plant-out reminders.
+      </p>
+    </div>` : '';
+  return `
+    <div class="gp-no-print">
+      <div class="row items-center mb-3">
+        <div class="flex-1"></div>
+        <button class="gp-btn-ghost ${S.toolsOpen ? 'active-draft' : ''}" data-action="toggle-tools" aria-expanded="${S.toolsOpen}">
+          ${ICON.share('gp-icon w3-5', '')}Backup &amp; share
+        </button>
+      </div>
+      ${panel}
     </div>
   `;
 }
@@ -58,7 +94,7 @@ function headerHTML() {
 function tabsHTML() {
   const T = (id, label, icon) => `<button class="gp-tab ${S.view === id ? 'active' : ''}" data-action="set-view" data-view="${id}">${icon}${label}</button>`;
   return `
-    <div class="row items-center gap-1 mb-6 overflow-x-auto gp-scroll" data-scroll-key="tabs">
+    <div class="gp-no-print row items-center gap-1 mb-6 overflow-x-auto gp-scroll" data-scroll-key="tabs">
       ${T('design', 'Design', ICON.layers('gp-icon w3'))}
       ${T('library', 'Plant library', ICON.book('gp-icon w3'))}
       ${T('pollinators', 'Pollinators', ICON.sparkles('gp-icon w3'))}
