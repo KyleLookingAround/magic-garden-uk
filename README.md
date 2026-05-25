@@ -21,7 +21,10 @@ Then open the printed URL.
 | `npm run build` | Production build to `dist/` (what Netlify publishes) |
 | `npm run preview` | Serve the production build locally |
 | `npm test` | Run the Vitest unit + integration suite |
+| `npm run test:e2e` | Run the Playwright end-to-end tests (builds, serves, drives a browser) |
 | `npm run typecheck` | Type-check the JS with `tsc --checkJs` |
+
+Continuous integration (`.github/workflows/ci.yml`) runs the type-check, unit tests and Playwright E2E suite on every push and pull request, and posts the captured UI screenshots as an inline PR comment.
 
 ## Features
 
@@ -57,7 +60,7 @@ The app is plain ES modules (no UI framework) bundled by [Vite](https://vitejs.d
 ```
 index.html              # shell: loads src/main.js
 src/
-  main.js               # entry: load state, render, bind events
+  main.js               # entry: load state, load shared plan, render, bind events, register the service worker
   store.js              # the single mutable state object `S` + localStorage persistence
   history.js            # undo stack
   render.js             # render loop with focus/scroll restoration
@@ -65,6 +68,8 @@ src/
   actions.js            # all state mutations
   drag.js               # pointer-driven drag/resize/rotate system
   events.js             # delegated data-action event handling
+  io.js                 # backup/share/print/calendar browser glue + the flash toast
+  pwa.d.ts              # type stub for the vite-plugin-pwa virtual module
   styles.css            # all styles
   data/
     plants.js           # PLANTS, COMPANIONS, POLLINATORS + lookups
@@ -76,8 +81,11 @@ src/
     splines.js          # Catmull-Rom curvy-path maths
     factory.js          # state constructors + the default starter garden
     migrate.js          # normalise/migrate persisted state across versions
+    transfer.js         # backup/share serialisation (JSON file + share-link hash)
+    calendar.js         # .ics sow/plant-out reminder builder
   views/                # one module per screen + canvas item renderers
-tests/                  # Vitest: geometry, splines, data/migration, integration
+tests/                  # Vitest: geometry, splines, data/migration, transfer, calendar, integration
+e2e/                    # Playwright end-to-end + screenshot specs
 ```
 
 ### Why no framework?
