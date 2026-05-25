@@ -15,3 +15,6 @@ Thumbs.db
 node_modules/
 dist/
 .vite/
+
+# Screenshot output from scripts/screenshots.mjs
+tmp-shots/

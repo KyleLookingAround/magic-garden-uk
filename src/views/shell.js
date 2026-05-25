@@ -32,6 +32,11 @@ export function buildAppHTML() {
         </footer>
       </div>
       ${S.flash ? `<div class="gp-toast gp-no-print" role="status">${esc(S.flash)}</div>` : ''}
+      ${S.swUpdateReady ? `
+        <div class="gp-toast gp-update-toast gp-no-print" role="status">
+          <span>A new version is ready.</span>
+          <button class="gp-update-btn" data-action="apply-update">Refresh</button>
+        </div>` : ''}
     </div>
   `;
 }

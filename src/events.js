@@ -149,6 +149,7 @@ export function bindEvents() {
       case 'import-plan': importPlan(); break;
       case 'export-calendar': exportCalendar(); break;
       case 'print-plan': printPlan(); break;
+      case 'apply-update': if (S.applyUpdate) S.applyUpdate(); break;
     }
   });
 

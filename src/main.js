@@ -1,7 +1,8 @@
 // Application entry point: load persisted state, render, wire up events.
 import './styles.css';
-import { load, flushSave } from './store.js';
-import { render } from './render.js';
+import { registerSW } from 'virtual:pwa-register';
+import { S, load, flushSave } from './store.js';
+import { render, scheduleRender } from './render.js';
 import { bindEvents } from './events.js';
 import { maybeLoadSharedPlan } from './io.js';
 
@@ -13,11 +14,13 @@ maybeLoadSharedPlan();
 render();
 bindEvents();
 
-// Offline support: register the service worker in production builds only
-// (skipped in dev so it never caches hot-reloaded modules).
-const env = /** @type {any} */ (import.meta).env;
-if (env && env.PROD && 'serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js').catch(() => {});
-  });
-}
+// Offline support: vite-plugin-pwa precaches the app for full offline use.
+// With registerType 'prompt' the new worker waits; we surface a refresh toast
+// (rendered by the shell) and activate it when the user accepts.
+const updateSW = registerSW({
+  onNeedRefresh() {
+    S.applyUpdate = () => updateSW(true);
+    S.swUpdateReady = true;
+    scheduleRender();
+  },
+});
