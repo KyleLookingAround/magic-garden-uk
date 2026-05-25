@@ -4,7 +4,7 @@ import { registerSW } from 'virtual:pwa-register';
 import { S, load, flushSave } from './store.js';
 import { render, scheduleRender } from './render.js';
 import { bindEvents } from './events.js';
-import { maybeLoadSharedPlan } from './io.js';
+import { flash, maybeLoadSharedPlan } from './io.js';
 
 // Flush any pending debounced save before the tab is closed.
 window.addEventListener('beforeunload', flushSave);
@@ -22,5 +22,8 @@ const updateSW = registerSW({
     S.applyUpdate = () => updateSW(true);
     S.swUpdateReady = true;
     scheduleRender();
+  },
+  onOfflineReady() {
+    flash('Ready to work offline');
   },
 });

@@ -18,6 +18,9 @@ export default defineConfig({
         globPatterns: ['**/*.{js,css,html,svg,webmanifest}'],
         navigateFallback: '/index.html',
         cleanupOutdatedCaches: true,
+        // Take control on first load so the app works offline immediately, without
+        // a second visit. Updates still wait for the refresh prompt (no skipWaiting).
+        clientsClaim: true,
       },
       devOptions: { enabled: false },
     }),

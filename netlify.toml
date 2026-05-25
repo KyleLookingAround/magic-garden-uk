@@ -2,6 +2,10 @@
   command = "npm run build"
   publish = "dist"
 
+  [build.environment]
+    # Don't fetch Playwright's browsers during deploy installs — it's CI-only.
+    PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD = "1"
+
 # Security and caching headers for all pages
 [[headers]]
   for = "/*"

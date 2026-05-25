@@ -16,5 +16,8 @@ node_modules/
 dist/
 .vite/
 
-# Screenshot output from scripts/screenshots.mjs
+# Playwright E2E output
 tmp-shots/
+playwright-report/
+test-results/
+.playwright/
