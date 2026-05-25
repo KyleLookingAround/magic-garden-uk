@@ -1,0 +1,17 @@
+{
+  "name": "Magic Garden · UK Garden Planner",
+  "short_name": "Magic Garden",
+  "description": "Plan your UK vegetable, herb and flower garden — layout, companions, seasonal calendar and more.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f4ecd8",
+  "theme_color": "#2d4a2e",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
