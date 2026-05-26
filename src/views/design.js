@@ -17,7 +17,10 @@ function focusCanvasWidth() {
   const vw = (typeof window !== 'undefined' ? window.innerWidth : 1024);
   const vh = (typeof window !== 'undefined' ? window.innerHeight : 768);
   const availW = vw - 24;
-  const availH = vh - 64 - 24; // top bar + padding
+  // Leave room for the top bar and the plant picker docked at the bottom: a slim
+  // row when collapsed, capped at ~42vh (it scrolls) when expanded for browsing.
+  const pickerH = S.pickerOpen === false ? 64 : Math.round(vh * 0.42);
+  const availH = vh - 64 - pickerH - 24; // top bar + docked picker + padding
   let w = availW;
   if (w / ratio > availH) w = availH * ratio;
   return Math.max(200, Math.round(w));
@@ -176,6 +179,7 @@ export function designViewHTML() {
       <div class="gp-canvas-focus-stage">
         <div style="width:${focusCanvasWidth()}px;max-width:100%">${canvasEl}</div>
       </div>
+      <div class="gp-focus-picker">${pickerHTML()}</div>
     </div>
   ` : `
     <div class="mx-auto relative" style="max-width:${maxCanvasWidth}px">
@@ -298,7 +302,7 @@ export function designViewHTML() {
       </div>
       ${editPanel}
       <div class="gp-no-print gp-divider"></div>
-      ${pickerHTML()}
+      ${S.canvasFocus ? '' : pickerHTML()}
       ${stats.length > 0 ? whatsPlantedHTML(stats) : ''}
     </div>
   `;
