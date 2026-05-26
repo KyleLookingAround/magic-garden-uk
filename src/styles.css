@@ -288,6 +288,10 @@ textarea.gp-notes{background:transparent;border:0;outline:0;font-family:'Fraunce
 .gp-canvas-focus{position:fixed;inset:0;z-index:56;background:#f4ecd8;display:flex;flex-direction:column}
 .gp-canvas-focus-bar{display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid rgba(107,93,79,.2);background:#f4ecd8}
 .gp-canvas-focus-stage{flex:1;display:flex;align-items:center;justify-content:center;padding:12px;overflow:auto;min-height:0}
+/* Plant/object picker docked at the bottom of the focus view so plants stay
+   selectable while placing on small screens. Slim when collapsed; scrolls when open. */
+.gp-focus-picker{flex-shrink:0;max-height:42vh;overflow-y:auto;-webkit-overflow-scrolling:touch;border-top:1px solid rgba(107,93,79,.2);background:#f4ecd8;padding:10px 14px calc(14px + env(safe-area-inset-bottom,0px))}
+.gp-focus-picker>div{margin-bottom:0}
 
 /* Print: drop the interactive chrome and the textured background so the garden
    map (or the active list) prints cleanly on white. */
