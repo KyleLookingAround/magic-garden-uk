@@ -39,18 +39,18 @@ export function designViewHTML() {
     <div class="gp-no-print gp-rise mb-4 p-4 rounded-lg" style="background:rgba(45,74,46,.05);border:1px dashed rgba(45,74,46,.2)">
       <div class="row items-center gap-4 flex-wrap text-sm">
         <label class="row items-center gap-2">
-          <span style="color:#6b5d4f">Garden length</span>
+          <span style="color:#5c4e3e">Garden length</span>
           <input type="number" min="1" max="30" step="0.1" value="${S.state.gardenLengthM}"
             class="gp-number" data-action="update-garden" data-field="gardenLengthM" data-focus-key="g-len">
-          <span class="text-xs" style="color:#6b5d4f">m</span>
+          <span class="text-xs" style="color:#5c4e3e">m</span>
         </label>
         <label class="row items-center gap-2">
-          <span style="color:#6b5d4f">Garden width</span>
+          <span style="color:#5c4e3e">Garden width</span>
           <input type="number" min="1" max="30" step="0.1" value="${S.state.gardenWidthM}"
             class="gp-number" data-action="update-garden" data-field="gardenWidthM" data-focus-key="g-wid">
-          <span class="text-xs" style="color:#6b5d4f">m</span>
+          <span class="text-xs" style="color:#5c4e3e">m</span>
         </label>
-        <span class="gp-italic text-xs" style="color:#6b5d4f">${(S.state.gardenLengthM * S.state.gardenWidthM).toFixed(2)} m² total</span>
+        <span class="gp-italic text-xs" style="color:#5c4e3e">${(S.state.gardenLengthM * S.state.gardenWidthM).toFixed(2)} m² total</span>
       </div>
     </div>
   ` : '';
@@ -83,16 +83,34 @@ export function designViewHTML() {
       <span class="text-sm font-semibold" style="color:#2d4a2e;min-width:64px">${S.viewMonth === 0 ? 'All year' : MONTHS[S.viewMonth - 1]}</span>
       <input type="range" min="0" max="12" step="1" value="${S.viewMonth}" class="gp-range" data-action="set-month">
       ${S.viewMonth !== 0 ? `
-        <span class="gp-italic text-xs" style="color:#6b5d4f">
+        <span class="gp-italic text-xs" style="color:#5c4e3e">
           ${S.state.plantings.filter(p => PLANTS_BY_ID[p.plantId]?.months.includes(S.viewMonth)).length} of ${S.state.plantings.length} in the ground
         </span>
         <button class="text-xs" style="color:#2d4a2e;text-decoration:underline" data-action="set-month-zero">show all</button>` : ''}
     </div>
   `;
 
+  // A gentle prompt drawn over an otherwise-empty plot, so the canvas never
+  // reads as broken/blank. pointer-events:none keeps canvas taps working.
+  const showEmptyHint = !S.selectedPlant && !S.pathDraftId && S.state.plantings.length === 0;
+  const emptyHint = showEmptyHint ? (() => {
+    const blank = S.state.beds.length === 0 && S.state.objects.length === 0;
+    const title = blank ? 'Your garden is a blank plot' : 'Nothing planted yet';
+    const sub = blank
+      ? 'Add a bed above, then pick a plant below to start planting.'
+      : 'Pick a plant below, then tap a bed to plant it.';
+    return `
+      <div class="pointer-none text-center" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:6;max-width:80%">
+        <div class="gp-display text-lg" style="color:#5c4e3e">${title}</div>
+        <div class="gp-italic text-sm mt-1" style="color:#5c4e3e">${sub}</div>
+      </div>
+    `;
+  })() : '';
+
   // Canvas contents
   const canvasInner = `
     ${groundObjects.map(o => rectHTML(o, 'object')).join('')}
+    ${emptyHint}
     ${pathsSVG()}
     ${S.state.beds.map(b => rectHTML(b, 'bed')).join('')}
     ${featureObjects.map(o => rectHTML(o, 'object')).join('')}
@@ -142,7 +160,7 @@ export function designViewHTML() {
             <div class="w12 h12 rounded-xl row items-center justify-center text-2xl flex-shrink-0" style="background:${plant.color}30">${plant.icon}</div>
             <div class="flex-1 min-w-0">
               <div class="gp-display text-lg leading-tight">${esc(plant.name)}</div>
-              <div class="text-xs gp-italic" style="color:#6b5d4f">
+              <div class="text-xs gp-italic" style="color:#5c4e3e">
                 at ${selectedPlanting.x.toFixed(1)}m, ${selectedPlanting.y.toFixed(1)}m · canopy ~${Math.round(plant.sizeCm)} cm
               </div>
             </div>
@@ -169,7 +187,7 @@ export function designViewHTML() {
           </div>
           <div class="flex-1 min-w-0">
             <div class="gp-display text-lg leading-tight">${esc(style.name)} path</div>
-            <div class="text-xs gp-italic" style="color:#6b5d4f">
+            <div class="text-xs gp-italic" style="color:#5c4e3e">
               ${selectedPath.points.length} waypoint${selectedPath.points.length === 1 ? '' : 's'} · ${selectedPath.widthM.toFixed(1)}m wide · drag the dots to reshape
             </div>
           </div>
@@ -177,7 +195,7 @@ export function designViewHTML() {
           <button class="p-2 rounded-full gp-soft-hover" data-action="clear-selected-item">${ICON.x('gp-icon w4', '')}</button>
         </div>
         <div class="mt-4 row items-center gap-2 flex-wrap">
-          <span class="text-10 uppercase tracking-widest" style="color:#6b5d4f">Style</span>
+          <span class="text-10 uppercase tracking-widest" style="color:#5c4e3e">Style</span>
           ${PATH_STYLES.map(s => {
             const active = s.id === selectedPath.style;
             return `
@@ -189,10 +207,10 @@ export function designViewHTML() {
           `;}).join('')}
         </div>
         <div class="mt-3 row items-center gap-3">
-          <span class="text-10 uppercase tracking-widest" style="color:#6b5d4f;min-width:54px">Width</span>
+          <span class="text-10 uppercase tracking-widest" style="color:#5c4e3e;min-width:54px">Width</span>
           <input type="range" min="0.3" max="2" step="0.1" value="${selectedPath.widthM}"
                  class="gp-range flex-1" data-action="set-path-width" data-id="${selectedPath.id}">
-          <span class="text-sm gp-italic" style="color:#6b5d4f;min-width:42px;text-align:right">${selectedPath.widthM.toFixed(1)}m</span>
+          <span class="text-sm gp-italic" style="color:#5c4e3e;min-width:42px;text-align:right">${selectedPath.widthM.toFixed(1)}m</span>
         </div>
       </div>
     `;
@@ -218,7 +236,7 @@ export function designViewHTML() {
           ${canvasInner}
         </div>
       </div>
-      <div class="gp-no-print text-center mt-3 mb-5 text-sm gp-italic" style="color:#6b5d4f">
+      <div class="gp-no-print text-center mt-3 mb-5 text-sm gp-italic" style="color:#5c4e3e">
         ${S.selectedPlant
           ? 'Tap in the garden to plant — keep tapping to plant more.'
           : S.selectedItem
@@ -239,14 +257,14 @@ function whatsPlantedHTML(stats) {
       <div class="gp-divider"></div>
       <div class="row items-baseline justify-between mb-3">
         <h3 class="gp-display text-xl">What's planted</h3>
-        <span class="gp-italic text-sm" style="color:#6b5d4f">${S.state.plantings.length} plants in total</span>
+        <span class="gp-italic text-sm" style="color:#5c4e3e">${S.state.plantings.length} plants in total</span>
       </div>
       <div class="gp-tag-row">
         ${stats.map(({ plant, n }) => `
           <div class="row items-center gap-2 px-3 py-1.5 rounded-full text-sm"
                style="background:${plant.color}15;border:1px solid ${plant.color}50">
             <span>${plant.icon}</span><span>${esc(plant.name)}</span>
-            <span class="gp-italic" style="color:#6b5d4f">×${n}</span>
+            <span class="gp-italic" style="color:#5c4e3e">×${n}</span>
           </div>
         `).join('')}
       </div>
@@ -286,7 +304,7 @@ export function plantsGridHTML(plants) {
               <div class="w10 h10 rounded-md row items-center justify-center text-xl flex-shrink-0" style="background:${p.color}1f">${p.icon}</div>
               <div class="flex-1 min-w-0">
                 <div class="gp-display text-base leading-tight truncate">${esc(p.name)}</div>
-                <div class="text-10 mt-0.5 uppercase tracking-wider" style="color:#6b5d4f">${p.cat} · ${Math.round(p.sizeCm)}cm</div>
+                <div class="text-10 mt-0.5 uppercase tracking-wider" style="color:#5c4e3e">${p.cat} · ${Math.round(p.sizeCm)}cm</div>
                 ${rel === 'good' ? `<div class="text-10 mt-1 row items-center gap-1" style="color:#3e6b36">${ICON.sparkles('gp-icon w2-5', '')}good companion</div>` : ''}
                 ${rel === 'bad' ? `<div class="text-10 mt-1 row items-center gap-1" style="color:#9a5a1d">${ICON.alert('gp-icon w2-5', '')}keep apart</div>` : ''}
               </div>
@@ -301,7 +319,7 @@ export function plantsGridHTML(plants) {
 
 function objectsGridHTML(objs) {
   return `
-    <p class="text-xs gp-italic mb-3" style="color:#6b5d4f">
+    <p class="text-xs gp-italic mb-3" style="color:#5c4e3e">
       Tap to drop into the centre of the garden — then drag, resize, and rotate from there.
     </p>
     <div class="grid cols-2 sm:cols-3 md:cols-4 gap-3">
@@ -311,7 +329,7 @@ function objectsGridHTML(objs) {
             <div class="w10 h10 rounded-md row items-center justify-center text-xl flex-shrink-0" style="background:${o.color}33">${o.icon}</div>
             <div class="flex-1 min-w-0">
               <div class="gp-display text-base leading-tight truncate">${esc(o.name)}</div>
-              <div class="text-10 mt-0.5 uppercase tracking-wider" style="color:#6b5d4f">${o.cat} · ${o.L}×${o.W}m</div>
+              <div class="text-10 mt-0.5 uppercase tracking-wider" style="color:#5c4e3e">${o.cat} · ${o.L}×${o.W}m</div>
             </div>
           </div>
         </button>
@@ -327,7 +345,7 @@ function editPanelHTML(p) {
       <div class="row items-center justify-between mb-3 flex-wrap gap-2">
         <div class="row items-center gap-2 flex-1 min-w-0">
           ${p.icon ? `<span class="text-xl">${p.icon}</span>` : ''}
-          <span class="text-xs uppercase tracking-widest" style="color:#87a878">${esc(p.kindLabel)}</span>
+          <span class="text-xs uppercase tracking-widest" style="color:#557049">${esc(p.kindLabel)}</span>
           <input type="text" class="gp-input gp-display text-xl flex-1 min-w-0"
             value="${esc(p.name)}" placeholder="${esc(p.namePlaceholder)}"
             data-action="update-name" data-target="${p.target}" data-id="${p.id}"
@@ -342,36 +360,36 @@ function editPanelHTML(p) {
       </div>
       <div class="row items-center gap-4 flex-wrap text-sm">
         <label class="row items-center gap-2">
-          <span style="color:#6b5d4f">Length</span>
+          <span style="color:#5c4e3e">Length</span>
           <input type="number" min="0.2" max="30" step="0.1" value="${Number(p.lengthM.toFixed(2))}"
             class="gp-number" data-action="update-size" data-target="${p.target}" data-id="${p.id}" data-field="lengthM"
             data-focus-key="len-${p.target}-${p.id}">
-          <span class="text-xs" style="color:#6b5d4f">m</span>
+          <span class="text-xs" style="color:#5c4e3e">m</span>
         </label>
         <label class="row items-center gap-2">
-          <span style="color:#6b5d4f">Width</span>
+          <span style="color:#5c4e3e">Width</span>
           <input type="number" min="0.2" max="30" step="0.1" value="${Number(p.widthM.toFixed(2))}"
             class="gp-number" data-action="update-size" data-target="${p.target}" data-id="${p.id}" data-field="widthM"
             data-focus-key="wid-${p.target}-${p.id}">
-          <span class="text-xs" style="color:#6b5d4f">m</span>
+          <span class="text-xs" style="color:#5c4e3e">m</span>
         </label>
         <label class="row items-center gap-2">
-          <span style="color:#6b5d4f">Rotation</span>
+          <span style="color:#5c4e3e">Rotation</span>
           <input type="number" min="-180" max="180" step="5" value="${Math.round(p.rotation)}"
             class="gp-number" data-action="update-size" data-target="${p.target}" data-id="${p.id}" data-field="rotation"
             data-focus-key="rot-${p.target}-${p.id}">
-          <span class="text-xs" style="color:#6b5d4f">°</span>
+          <span class="text-xs" style="color:#5c4e3e">°</span>
           <button class="text-xs ml-1" style="color:#2d4a2e;text-decoration:underline" data-action="reset-rotation" data-target="${p.target}" data-id="${p.id}">reset</button>
         </label>
-        <span class="gp-italic text-xs" style="color:#6b5d4f">
+        <span class="gp-italic text-xs" style="color:#5c4e3e">
           ${(p.lengthM * p.widthM).toFixed(2)} m² · at ${p.x.toFixed(1)}m, ${p.y.toFixed(1)}m
         </span>
       </div>
       ${p.capacity ? `
-        <div class="mt-3 text-xs row items-center gap-1.5" style="color:${crowded ? '#9a5a1d' : '#6b5d4f'}">
+        <div class="mt-3 text-xs row items-center gap-1.5" style="color:${crowded ? '#9a5a1d' : '#5c4e3e'}">
           ${crowded
             ? `${ICON.alert('gp-icon w3-5', '')}${p.capacity.planted} plants here — looks crowded, around ${p.capacity.cap} would sit comfortably at their spacing.`
-            : `<span style="color:#87a878">${ICON.sprout('gp-icon w3-5', '')}</span>${p.capacity.planted} planted · room for roughly ${p.capacity.cap} at their spacing.`}
+            : `<span style="color:#557049">${ICON.sprout('gp-icon w3-5', '')}</span>${p.capacity.planted} planted · room for roughly ${p.capacity.cap} at their spacing.`}
         </div>` : ''}
     </div>
   `;

@@ -36,7 +36,7 @@ export function bedDetailHTML() {
           <div class="w12 h12 rounded-xl row items-center justify-center text-2xl flex-shrink-0" style="background:${plant.color}30">${plant.icon}</div>
           <div class="flex-1 min-w-0">
             <div class="gp-display text-lg leading-tight">${esc(plant.name)}</div>
-            <div class="text-xs gp-italic" style="color:#6b5d4f">in ${esc(bed.name)} · canopy ~${Math.round(plant.sizeCm)} cm</div>
+            <div class="text-xs gp-italic" style="color:#5c4e3e">in ${esc(bed.name)} · canopy ~${Math.round(plant.sizeCm)} cm</div>
           </div>
           <button class="p-2 rounded-full gp-soft-hover" data-action="open-info" data-plant-id="${plant.id}" title="Plant info">${ICON.info('gp-icon w4', '')}</button>
           <button class="p-2 rounded-full gp-soft-hover-red" data-action="delete-selected" title="Remove" style="color:#c87454">${ICON.trash('gp-icon w4', '')}</button>
@@ -58,12 +58,12 @@ export function bedDetailHTML() {
       <div class="mb-4">
         <div class="row items-baseline gap-3 flex-wrap">
           <h2 class="gp-display text-2xl sm:text-3xl">${esc(bed.name)}</h2>
-          <span class="gp-italic text-sm" style="color:#6b5d4f">
+          <span class="gp-italic text-sm" style="color:#5c4e3e">
             ${bed.lengthM.toFixed(1)}m × ${bed.widthM.toFixed(1)}m · ${inside.length} planted
             ${cap.planted > cap.cap ? `<span style="color:#9a5a1d"> · looks crowded (~${cap.cap} fits comfortably)</span>` : ''}
           </span>
         </div>
-        <p class="gp-italic text-sm mt-1" style="color:#6b5d4f">
+        <p class="gp-italic text-sm mt-1" style="color:#5c4e3e">
           Pick a plant below, then tap inside the bed to place it. Everything you add here also shows on the full garden plan.
         </p>
       </div>
@@ -86,7 +86,7 @@ export function bedDetailHTML() {
           <span class="gp-scale-label" style="left:10px">1m</span>
         </div>
       </div>
-      <div class="text-center mt-3 mb-5 text-sm gp-italic" style="color:#6b5d4f">
+      <div class="text-center mt-3 mb-5 text-sm gp-italic" style="color:#5c4e3e">
         ${S.selectedPlant ? 'Tap inside the bed to plant — keep tapping to add more.' : 'Drag plants to rearrange · tap a plant to select and remove it'}
       </div>
       ${editPlant}
