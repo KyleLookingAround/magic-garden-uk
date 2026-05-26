@@ -17,6 +17,8 @@ export const S = {
   future: [],             // redo stack (states popped by undo)
   view: 'design',         // active top-level tab
   pickerMode: 'plants',   // 'plants' | 'objects'
+  pickerOpen: true,       // plant/object catalogue expanded on the design tab
+  canvasFocus: false,     // garden map opened in full-screen focus view
   selectedPlant: null,    // plant id armed for placing
   selectedItem: null,     // { type, id } currently selected on the canvas
   plantCategory: 'all',

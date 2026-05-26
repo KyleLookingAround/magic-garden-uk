@@ -2,6 +2,7 @@
 import { S } from '../store.js';
 import { ICON } from '../data/icons.js';
 import { esc } from '../lib/util.js';
+import { PLANTS_BY_ID } from '../data/plants.js';
 import { designViewHTML } from './design.js';
 import { bedDetailHTML } from './bedDetail.js';
 import { libraryHTML } from './library.js';
@@ -11,12 +12,16 @@ import { notesHTML } from './notes.js';
 import { infoModalHTML } from './infoModal.js';
 
 export function buildAppHTML() {
+  // The bed-detail screen is a focused drill-in with its own "Back to garden"
+  // affordance, so the global section tabs and backup/share row are hidden
+  // there — they were overlapping the bed canvas via the sticky tab strip.
+  const focusedBed = S.view === 'design' && !!S.bedDetailId;
   return `
     <div class="gp-paper gp-grain gp-body">
       <div class="gp-wrap relative">
         ${headerHTML()}
-        ${tabsHTML()}
-        ${toolsHTML()}
+        ${focusedBed ? '' : tabsHTML()}
+        ${focusedBed ? '' : toolsHTML()}
         ${
           S.view === 'design'
             ? (S.bedDetailId ? bedDetailHTML() : designViewHTML())
@@ -31,6 +36,7 @@ export function buildAppHTML() {
           <p class="gp-italic text-xs" style="color:#5c4e3e">Saved quietly in your browser · Works offline · Climate notes are for the UK</p>
         </footer>
       </div>
+      ${placingPillHTML()}
       ${S.flash ? `<div class="gp-toast gp-no-print ${S.flashAction ? 'gp-toast-action' : ''}" role="status">
         <span>${esc(S.flash)}</span>
         ${S.flashAction ? `<button class="gp-toast-btn" data-action="${esc(S.flashAction.action)}">${esc(S.flashAction.label)}</button>` : ''}
@@ -40,6 +46,23 @@ export function buildAppHTML() {
           <span>A new version is ready.</span>
           <button class="gp-update-btn" data-action="apply-update">Refresh</button>
         </div>` : ''}
+    </div>
+  `;
+}
+
+// A persistent indicator of the "armed for planting" mode, fixed to the bottom
+// of the viewport so it stays visible while the user scrolls or pans. The
+// inline banner near the canvas explains companion rings; this just guarantees
+// the armed state and a way out are always reachable.
+function placingPillHTML() {
+  if (!S.selectedPlant) return '';
+  const plant = PLANTS_BY_ID[S.selectedPlant];
+  if (!plant) return '';
+  return `
+    <div class="gp-placing-pill gp-no-print" role="status" aria-live="polite">
+      <span class="text-lg" aria-hidden="true">${plant.icon}</span>
+      <span>Placing <strong>${esc(plant.name)}</strong> — tap to plant</span>
+      <button class="gp-placing-clear" data-action="clear-selected-plant" aria-label="Stop placing">${ICON.x('gp-icon w3-5', '')}</button>
     </div>
   `;
 }

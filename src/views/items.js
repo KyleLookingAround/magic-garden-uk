@@ -40,6 +40,8 @@ export function rectHTML(item, kind) {
   return `
     <div class="gp-rect ${isSelected ? 'selected' : ''}"
          data-action="drag-start" data-type="${kind}" data-id="${item.id}" data-mode="move"
+         data-focus-key="cv-${kind}-${item.id}" tabindex="0" role="button"
+         aria-label="${labelTxt} (${kind === 'bed' ? 'bed' : esc(obj?.name || 'object')}). Press Enter to select, then arrow keys to move."
          title="${isSelected ? 'Drag to move' : 'Tap to select · drag to move'}"
          style="left:${cxPctX}%;top:${cxPctY}%;width:${lengthPx}px;height:${widthPx}px;transform:translate(-50%,-50%) rotate(${item.rotation || 0}deg);border-radius:${isCircle ? '50%' : '4px'};z-index:${z};background:${bg};border:${border};${sel}">
       ${svgVisual}
@@ -72,9 +74,11 @@ export function plantingHTML(p, opts) {
   return `
     <div class="gp-planting${isSelected ? ' selected' : ''}${dimmed}"
          ${dragAction} ${dragData}
+         data-focus-key="cv-plant-${p.id}" tabindex="0" role="button"
+         aria-label="${esc(plant.name)}${dim ? ', out of season' : ''}. Press Enter to select, then arrow keys to move."
          style="left:${leftPct}%;top:${topPct}%;width:${sizePx}px;height:${sizePx}px;background:${plant.color}66;border-color:${plant.color};font-size:${emoji}px;box-shadow:${sel}"
          title="${esc(plant.name)}">
-      <span style="pointer-events:none">${plant.icon}</span>
+      <span style="pointer-events:none" aria-hidden="true">${plant.icon}</span>
     </div>
   `;
 }

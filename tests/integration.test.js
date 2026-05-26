@@ -35,6 +35,7 @@ beforeEach(() => {
     pathDraftId: null, infoPlantId: null, notesBedId: null, viewMonth: 0,
     history: [], future: [], plantCategory: 'all', plantSearch: '', flash: null, flashAction: null,
     gardenSettingsOpen: false, editingName: false, drag: null, renderSuppressed: false, renderQueued: false,
+    pickerOpen: true, canvasFocus: false, pickerMode: 'plants',
   });
   load();
 });
@@ -209,5 +210,60 @@ describe('bindEvents wires listeners without throwing', () => {
     const tab = document.querySelector('[data-action="set-view"][data-view="library"]');
     tab.dispatchEvent(new window.MouseEvent('click', { bubbles: true }));
     expect(S.view).toBe('library');
+  });
+});
+
+describe('UX: focus view, collapsible picker, placing indicator', () => {
+  it('renders exactly one canvas, inside the focus overlay, when focus view is on', () => {
+    setView('design');
+    S.canvasFocus = true;
+    render();
+    expect(document.querySelectorAll('#gp-canvas')).toHaveLength(1);
+    const overlay = document.querySelector('.gp-canvas-focus');
+    expect(overlay).toBeTruthy();
+    expect(overlay.querySelector('#gp-canvas')).toBeTruthy();
+  });
+
+  it('hides the plant grid when the picker is collapsed and restores it when open', () => {
+    setView('design');
+    S.pickerOpen = false;
+    render();
+    expect(document.querySelector('[data-action="toggle-picker"]')).toBeTruthy();
+    expect(document.querySelector('.gp-plant-card')).toBeFalsy();
+    S.pickerOpen = true;
+    render();
+    expect(document.querySelector('.gp-plant-card')).toBeTruthy();
+  });
+
+  it('shows a persistent placing pill naming the armed plant', () => {
+    S.selectedPlant = 'tomato';
+    render();
+    const pill = document.querySelector('.gp-placing-pill');
+    expect(pill).toBeTruthy();
+    expect(pill.textContent).toContain('Tomato');
+  });
+});
+
+describe('keyboard accessibility', () => {
+  it('nudges the selected planting with arrow keys', () => {
+    S.state.plantings.push({ id: 'kp1', plantId: 'tomato', x: 2, y: 2 });
+    S.selectedItem = { type: 'planting', id: 'kp1' };
+    render();
+    bindEvents();
+    const before = S.state.plantings.find(p => p.id === 'kp1').x;
+    window.dispatchEvent(new window.KeyboardEvent('keydown', { key: 'ArrowRight' }));
+    const after = S.state.plantings.find(p => p.id === 'kp1').x;
+    expect(after).toBeGreaterThan(before);
+  });
+
+  it('selects a canvas item when Enter is pressed on it', () => {
+    const bed = S.state.beds[0];
+    S.selectedItem = null;
+    render();
+    bindEvents();
+    const el = document.querySelector(`.gp-rect[data-type="bed"][data-id="${bed.id}"]`);
+    expect(el.getAttribute('tabindex')).toBe('0');
+    el.dispatchEvent(new window.KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+    expect(S.selectedItem).toEqual({ type: 'bed', id: bed.id });
   });
 });
