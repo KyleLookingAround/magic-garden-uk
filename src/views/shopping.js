@@ -12,9 +12,9 @@ export function shoppingHTML() {
       <div class="gp-rise">
         <div class="mb-6">
           <h2 class="gp-display text-3xl mb-2">Shopping List</h2>
-          <p class="gp-italic" style="color:#6b5d4f">Everything in your plan, ready for the garden centre.</p>
+          <p class="gp-italic" style="color:#5c4e3e">Everything in your plan, ready for the garden centre.</p>
         </div>
-        <div class="p-6 rounded-xl text-center gp-italic" style="background:#fbf6ea;border:1px dashed rgba(107,93,79,.3);color:#6b5d4f">
+        <div class="p-6 rounded-xl text-center gp-italic" style="background:#fbf6ea;border:1px dashed rgba(107,93,79,.3);color:#5c4e3e">
           Nothing planted or placed yet — add some plants and objects in the Design view.
         </div>
       </div>
@@ -28,30 +28,30 @@ export function shoppingHTML() {
       <span class="text-xl">${leftIcon}</span>
       <div class="flex-1 min-w-0">
         <div class="gp-display text-base leading-tight" style="${checked ? 'text-decoration:line-through;opacity:.5' : ''}">${title}</div>
-        <div class="text-10" style="color:#6b5d4f">${sub}</div>
+        <div class="text-10" style="color:#5c4e3e">${sub}</div>
       </div>
-      ${rightLabel ? `<span class="text-10 uppercase tracking-wider px-2 py-1 rounded-full" style="background:${color}1f;color:#6b5d4f">${rightLabel}</span>` : ''}
+      ${rightLabel ? `<span class="text-10 uppercase tracking-wider px-2 py-1 rounded-full" style="background:${color}1f;color:#5c4e3e">${rightLabel}</span>` : ''}
     </div>
   `;
   return `
     <div class="gp-rise">
       <div class="mb-6">
         <h2 class="gp-display text-3xl mb-2">Shopping List</h2>
-        <p class="gp-italic" style="color:#6b5d4f">
+        <p class="gp-italic" style="color:#5c4e3e">
           Everything in your plan, ready for the garden centre. Plants are ordered by when to sow. Ticks are saved.
         </p>
       </div>
       <div class="space-y-6">
         ${plants.length > 0 ? `
           <div>
-            <h3 class="gp-display text-xl mb-3 row items-center gap-2"><span style="color:#87a878">${ICON.leaf('gp-icon w4', '')}</span>Plants &amp; seeds</h3>
+            <h3 class="gp-display text-xl mb-3 row items-center gap-2"><span style="color:#557049">${ICON.leaf('gp-icon w4', '')}</span>Plants &amp; seeds</h3>
             <div class="rounded-xl overflow-hidden" style="border:1px solid rgba(107,93,79,.2)">
               ${plants.map(({ plant, n, key }, i) => {
                 const checked = !!S.state.shopping[key];
                 return row(
                   key,
                   plant.icon,
-                  `${esc(plant.name)} <span class="gp-italic" style="color:#6b5d4f">×${n}</span>`,
+                  `${esc(plant.name)} <span class="gp-italic" style="color:#5c4e3e">×${n}</span>`,
                   `Sow ${esc(plant.sow !== '—' ? plant.sow : '—')} · Plant ${esc(plant.plant !== '—' ? plant.plant : '—')}`,
                   esc(plant.cat),
                   plant.color,
@@ -62,14 +62,14 @@ export function shoppingHTML() {
           </div>` : ''}
         ${materials.length > 0 ? `
           <div>
-            <h3 class="gp-display text-xl mb-3 row items-center gap-2"><span style="color:#87a878">${ICON.trees('gp-icon w4', '')}</span>Objects &amp; materials</h3>
+            <h3 class="gp-display text-xl mb-3 row items-center gap-2"><span style="color:#557049">${ICON.trees('gp-icon w4', '')}</span>Objects &amp; materials</h3>
             <div class="rounded-xl overflow-hidden" style="border:1px solid rgba(107,93,79,.2)">
               ${materials.map(({ obj, n, key }, i) => {
                 const checked = !!S.state.shopping[key];
                 return row(
                   key,
                   obj.icon,
-                  `${esc(obj.name)} <span class="gp-italic" style="color:#6b5d4f">×${n}</span>`,
+                  `${esc(obj.name)} <span class="gp-italic" style="color:#5c4e3e">×${n}</span>`,
                   esc(obj.tip),
                   '',
                   obj.color,

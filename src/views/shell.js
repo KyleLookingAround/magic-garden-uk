@@ -28,7 +28,7 @@ export function buildAppHTML() {
         }
         ${infoModalHTML()}
         <footer class="gp-no-print mt-12 sm:mt-16 pt-6 text-center" style="border-top:1px dashed rgba(107,93,79,.3)">
-          <p class="gp-italic text-xs" style="color:#6b5d4f">Saved quietly in your browser · Works offline · Climate notes are for the UK</p>
+          <p class="gp-italic text-xs" style="color:#5c4e3e">Saved quietly in your browser · Works offline · Climate notes are for the UK</p>
         </footer>
       </div>
       ${S.flash ? `<div class="gp-toast gp-no-print" role="status">${esc(S.flash)}</div>` : ''}
@@ -53,7 +53,7 @@ function toolsHTML() {
         ${tool('export-calendar', ICON.calendar('gp-icon w3-5', ''), 'Calendar (.ics)')}
         ${tool('print-plan', ICON.printer('gp-icon w3-5', ''), 'Print')}
       </div>
-      <p class="gp-italic text-xs mt-3" style="color:#6b5d4f">
+      <p class="gp-italic text-xs mt-3" style="color:#5c4e3e">
         Everything stays on your device. Export a <strong>backup</strong> to move your plan between devices, copy a <strong>share link</strong> to send it to someone, or download a <strong>calendar</strong> of sow &amp; plant-out reminders.
       </p>
     </div>` : '';
@@ -79,12 +79,12 @@ function headerHTML() {
        </button>`;
   return `
     <header class="gp-fade-in mb-7 sm:mb-10">
-      <div class="row items-center gap-2 mb-3" style="color:#87a878">
+      <div class="row items-center gap-2 mb-3" style="color:#557049">
         <div style="height:1px;width:24px;background:#87a878"></div>
         <span class="text-xs uppercase" style="letter-spacing:.25em">A Garden Journal</span>
       </div>
       ${headerName}
-      <p class="gp-italic mt-3 text-base" style="color:#6b5d4f">
+      <p class="gp-italic mt-3 text-base" style="color:#5c4e3e">
         ${S.state.gardenLengthM}m × ${S.state.gardenWidthM}m · ${(S.state.gardenLengthM * S.state.gardenWidthM).toFixed(1)} m² of green
       </p>
     </header>
@@ -94,12 +94,14 @@ function headerHTML() {
 function tabsHTML() {
   const T = (id, label, icon) => `<button class="gp-tab ${S.view === id ? 'active' : ''}" data-action="set-view" data-view="${id}">${icon}${label}</button>`;
   return `
-    <div class="gp-no-print row items-center gap-1 mb-6 overflow-x-auto gp-scroll" data-scroll-key="tabs">
-      ${T('design', 'Design', ICON.layers('gp-icon w3'))}
-      ${T('library', 'Plant library', ICON.book('gp-icon w3'))}
-      ${T('pollinators', 'Pollinators', ICON.sparkles('gp-icon w3'))}
-      ${T('shopping', 'Shopping list', ICON.basket('gp-icon w3'))}
-      ${T('notes', 'Notes & tasks', ICON.edit('gp-icon w3'))}
+    <div class="gp-no-print gp-tabstrip">
+      <div class="row items-center gap-1 overflow-x-auto gp-scroll" data-scroll-key="tabs">
+        ${T('design', 'Design', ICON.layers('gp-icon w3'))}
+        ${T('library', 'Plant library', ICON.book('gp-icon w3'))}
+        ${T('pollinators', 'Pollinators', ICON.sparkles('gp-icon w3'))}
+        ${T('shopping', 'Shopping list', ICON.basket('gp-icon w3'))}
+        ${T('notes', 'Notes & tasks', ICON.edit('gp-icon w3'))}
+      </div>
     </div>
   `;
 }

@@ -10,7 +10,7 @@ export function libraryHTML() {
     <div class="gp-rise">
       <div class="mb-6">
         <h2 class="gp-display text-3xl mb-2">The Plant Library</h2>
-        <p class="gp-italic" style="color:#6b5d4f">
+        <p class="gp-italic" style="color:#5c4e3e">
           Tap any plant for its full notes — including which neighbours it likes and which to keep apart.
         </p>
       </div>
@@ -24,10 +24,10 @@ export function libraryHTML() {
               <div class="w12 h12 rounded-md row items-center justify-center text-2xl flex-shrink-0" style="background:${p.color}1f">${p.icon}</div>
               <div class="flex-1 min-w-0">
                 <div class="gp-display text-lg leading-tight">${esc(p.name)}</div>
-                <div class="text-10 mt-0.5 uppercase tracking-wider" style="color:#6b5d4f">${p.cat}</div>
+                <div class="text-10 mt-0.5 uppercase tracking-wider" style="color:#5c4e3e">${p.cat}</div>
               </div>
             </div>
-            <div class="space-y-1.5 text-xs" style="color:#6b5d4f">
+            <div class="space-y-1.5 text-xs" style="color:#5c4e3e">
               <div class="row items-center gap-1.5">${ICON.sun('gp-icon w3', '')}${esc(p.sun)}</div>
               <div class="row items-center gap-1.5">${ICON.droplet('gp-icon w3', '')}${esc(p.water)}</div>
               <div class="row items-center gap-1.5"><span class="inline-block w3 text-center">↔</span> Spacing ${esc(p.space)}</div>

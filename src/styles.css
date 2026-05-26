@@ -102,6 +102,7 @@ img,svg{display:block;max-width:100%}
   .md\:text-6xl{font-size:60px}
 }
 @media(min-width:1024px){
+  .lg\:cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}
   .lg\:cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}
 }
 
@@ -144,11 +145,17 @@ img,svg{display:block;max-width:100%}
 
 .gp-divider{height:1px;background-image:linear-gradient(to right,transparent,rgba(107,93,79,.4),transparent);margin:24px 0}
 
-.gp-tab{letter-spacing:.05em;text-transform:uppercase;font-size:11px;font-weight:600;padding:8px 14px;border-radius:9999px;cursor:pointer;transition:all 180ms ease;color:#6b5d4f;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.gp-tab{letter-spacing:.05em;text-transform:uppercase;font-size:11px;font-weight:600;padding:8px 14px;border-radius:9999px;cursor:pointer;transition:all 180ms ease;color:#5c4e3e;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
 .gp-tab.active{background:#2d4a2e;color:#f4ecd8}
 @media (hover:hover){
   .gp-tab:hover{color:#2d4a2e}
 }
+
+/* Sticky tab strip: keeps the section nav reachable on long mobile lists, with
+   a fade at both edges hinting that the row scrolls horizontally. */
+.gp-tabstrip{position:sticky;top:0;z-index:20;background:#f4ecd8;margin:0 -16px 1.5rem;padding:9px 16px;border-bottom:1px solid rgba(107,93,79,.18)}
+@media(min-width:640px){.gp-tabstrip{margin-left:-24px;margin-right:-24px;padding-left:24px;padding-right:24px}}
+.gp-tabstrip>.gp-scroll{-webkit-mask-image:linear-gradient(to right,transparent 0,#000 16px,#000 calc(100% - 16px),transparent 100%);mask-image:linear-gradient(to right,transparent 0,#000 16px,#000 calc(100% - 16px),transparent 100%)}
 
 .gp-input{background:transparent;border:0;outline:0;border-bottom:1px dashed rgba(107,93,79,.5);font-family:'Fraunces',serif;color:#2a2419;padding:4px 2px;width:100%}
 .gp-input:focus{border-bottom-color:#2d4a2e;border-bottom-style:solid}
@@ -209,7 +216,7 @@ img,svg{display:block;max-width:100%}
 .gp-scale-bar::before{left:0}.gp-scale-bar::after{right:0}
 .gp-scale-label{position:absolute;bottom:14px;font-size:10px;font-family:'Manrope',sans-serif;color:rgba(74,56,38,.7);letter-spacing:.05em;pointer-events:none}
 
-.gp-plant-card{background:#fbf6ea;border:1px solid rgba(107,93,79,.18);transition:all 200ms ease;cursor:pointer;border-radius:14px;padding:12px;text-align:left;width:100%}
+.gp-plant-card{background:#fbf6ea;border:1px solid rgba(107,93,79,.18);transition:all 200ms ease;cursor:pointer;border-radius:14px;padding:10px;text-align:left;width:100%}
 .gp-plant-card.selected{border-color:#2d4a2e;background:#eee5cf;box-shadow:inset 0 0 0 1px #2d4a2e,0 4px 12px rgba(45,74,46,.15)}
 @media (hover:hover){
   .gp-plant-card:hover{border-color:rgba(45,74,46,.5);transform:translateY(-2px);box-shadow:0 6px 14px rgba(45,74,46,.08)}
@@ -232,7 +239,7 @@ img,svg{display:block;max-width:100%}
 .gp-pol-col{display:flex;flex-direction:column;align-items:stretch;gap:6px;min-width:0}
 .gp-pol-bar-wrap{height:100px;display:flex;align-items:flex-end;background:rgba(107,93,79,.08);border-radius:4px;overflow:hidden}
 .gp-pol-bar{width:100%;border-radius:4px 4px 0 0;transition:height 300ms ease}
-.gp-pol-month{font-size:10px;text-align:center;color:#6b5d4f;letter-spacing:.02em;text-transform:uppercase;font-weight:600}
+.gp-pol-month{font-size:10px;text-align:center;color:#5c4e3e;letter-spacing:.02em;text-transform:uppercase;font-weight:600}
 .gp-pol-month.current{color:#2d4a2e;text-decoration:underline;text-decoration-thickness:1.5px;text-underline-offset:3px}
 
 textarea.gp-notes{background:transparent;border:0;outline:0;font-family:'Fraunces',serif;color:#2a2419;font-size:16px;line-height:1.65em;width:100%;resize:none;background-image:linear-gradient(transparent calc(1.65em - 1px),rgba(107,93,79,.18) calc(1.65em - 1px),rgba(107,93,79,.18) 1.65em,transparent 1.65em);background-size:100% 1.65em}

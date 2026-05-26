@@ -12,16 +12,16 @@ export function infoModalHTML() {
   const nameOf = (id) => PLANTS_BY_ID[id]?.name || id;
   const detail = (icon, label, value) => `
     <div>
-      <div class="text-10 uppercase tracking-widest mb-0.5" style="color:#6b5d4f">${label}</div>
+      <div class="text-10 uppercase tracking-widest mb-0.5" style="color:#5c4e3e">${label}</div>
       <div class="row items-center gap-1.5 text-sm gp-display" style="color:#2a2419">
-        ${icon ? `<span style="color:#87a878">${icon}</span>` : ''}${esc(value)}
+        ${icon ? `<span style="color:#557049">${icon}</span>` : ''}${esc(value)}
       </div>
     </div>
   `;
   return `
     <div class="gp-modal-back" data-action="close-info">
       <div class="gp-modal gp-rise" data-stop>
-        <button class="absolute p-1.5 rounded-full gp-soft-hover" style="top:16px;right:16px;color:#6b5d4f" data-action="close-info">${ICON.x('gp-icon w4', '')}</button>
+        <button class="absolute p-1.5 rounded-full gp-soft-hover" style="top:16px;right:16px;color:#5c4e3e" data-action="close-info">${ICON.x('gp-icon w4', '')}</button>
         <div class="row items-center gap-4 mb-5">
           <div class="w16 h16 rounded-2xl row items-center justify-center" style="background:${p.color}25;font-size:36px">${p.icon}</div>
           <div>
@@ -78,14 +78,14 @@ export function infoModalHTML() {
                   const T = POLLINATOR_TYPE_BY_ID[t];
                   return `<span class="gp-chip" style="background:${T.color}14;color:${T.color}">${T.icon} ${esc(T.label)}</span>`;
                 }).join('')}
-                ${bloomLabel ? `<span class="gp-chip" style="background:rgba(107,93,79,.1);color:#6b5d4f">Blooms ${bloomLabel}</span>` : ''}
+                ${bloomLabel ? `<span class="gp-chip" style="background:rgba(107,93,79,.1);color:#5c4e3e">Blooms ${bloomLabel}</span>` : ''}
               </div>
-              ${pol.note ? `<p class="text-xs gp-italic mt-2" style="color:#6b5d4f">${esc(pol.note)}</p>` : ''}
+              ${pol.note ? `<p class="text-xs gp-italic mt-2" style="color:#5c4e3e">${esc(pol.note)}</p>` : ''}
             </div>
           `;
         })()}
         <div class="p-4 rounded-xl" style="background:rgba(45,74,46,.07)">
-          <p class="text-xs uppercase tracking-wider mb-2" style="color:#87a878">From the journal</p>
+          <p class="text-xs uppercase tracking-wider mb-2" style="color:#557049">From the journal</p>
           <p class="gp-italic text-base">&ldquo;${esc(p.tip)}&rdquo;</p>
         </div>
         <button class="gp-btn w-full mt-5 py-3 rounded-xl text-xs uppercase tracking-widest justify-center" data-action="plant-this" data-plant-id="${p.id}">Plant this</button>

@@ -10,7 +10,7 @@ export function notesHTML() {
         <div class="mb-6">
           <h2 class="gp-display text-3xl mb-2">Notes &amp; Tasks</h2>
         </div>
-        <div class="p-6 rounded-xl text-center gp-italic" style="background:#fbf6ea;border:1px dashed rgba(107,93,79,.3);color:#6b5d4f">
+        <div class="p-6 rounded-xl text-center gp-italic" style="background:#fbf6ea;border:1px dashed rgba(107,93,79,.3);color:#5c4e3e">
           Add a bed in the Design view to start keeping notes.
         </div>
       </div>
@@ -22,7 +22,7 @@ export function notesHTML() {
     <div class="gp-rise">
       <div class="mb-6">
         <h2 class="gp-display text-3xl mb-2">Notes &amp; Tasks</h2>
-        <p class="gp-italic" style="color:#6b5d4f">
+        <p class="gp-italic" style="color:#5c4e3e">
           Seed orders, what worked last year, and a running to-do list for each bed.
         </p>
       </div>
@@ -33,7 +33,7 @@ export function notesHTML() {
                    style="background:${active ? '#2d4a2e' : 'transparent'};color:${active ? '#f4ecd8' : '#2a2419'};border:1px solid ${active ? '#2d4a2e' : 'rgba(45,74,46,.25)'}">${esc(b.name)}</button>`;
         }).join('')}
       </div>
-      <div class="space-y-5">
+      <div class="grid cols-1 lg:cols-2 gap-5 items-start">
         <div class="rounded-2xl p-6" style="background:#fbf6ea;border:1px solid rgba(107,93,79,.18)">
           <div class="gp-display text-xl mb-4">${esc(bed.name)} — tasks</div>
           ${bed.tasks.length > 0 ? `

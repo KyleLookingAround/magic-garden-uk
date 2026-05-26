@@ -71,7 +71,7 @@ export function pollinatorsHTML() {
     <div>
       <div class="mb-6">
         <h2 class="gp-display text-3xl mb-2">For the Pollinators</h2>
-        <p class="gp-italic" style="color:#6b5d4f">
+        <p class="gp-italic" style="color:#5c4e3e">
           A view of your garden through the eyes of bees, butterflies and hoverflies — what's in bloom, and when.
         </p>
       </div>
@@ -92,9 +92,9 @@ export function pollinatorsHTML() {
             return `
               <div class="p-4 rounded-xl" style="background:${t.color}14;border:1px solid ${t.color}33">
                 <div class="text-2xl mb-1">${t.icon}</div>
-                <div class="text-10 uppercase tracking-widest" style="color:#6b5d4f">${t.label}</div>
+                <div class="text-10 uppercase tracking-widest" style="color:#5c4e3e">${t.label}</div>
                 <div class="gp-display text-2xl mt-1" style="color:${t.color}">${n}</div>
-                <div class="text-10" style="color:#6b5d4f">plant${n === 1 ? '' : 's'} feeding them</div>
+                <div class="text-10" style="color:#5c4e3e">plant${n === 1 ? '' : 's'} feeding them</div>
               </div>
             `;
           }).join('')}
@@ -104,7 +104,7 @@ export function pollinatorsHTML() {
         <div class="mb-6 p-4 rounded-xl" style="background:#fbf6ea;border:1px solid rgba(107,93,79,.25)">
           <div class="row items-baseline justify-between mb-1">
             <h3 class="gp-display text-lg">Seasonal forage</h3>
-            <span class="text-xs gp-italic" style="color:#6b5d4f">when your garden's in bloom</span>
+            <span class="text-xs gp-italic" style="color:#5c4e3e">when your garden's in bloom</span>
           </div>
           <div class="gp-pol-chart mt-3">${chartCols}</div>
           ${lowMonths.length ? `
@@ -126,13 +126,13 @@ export function pollinatorsHTML() {
                     <div class="flex-1 min-w-0">
                       <div class="row items-baseline gap-2">
                         <div class="gp-display text-base">${esc(b.plant.name)}</div>
-                        <span class="text-10" style="color:#6b5d4f">×${b.count}</span>
+                        <span class="text-10" style="color:#5c4e3e">×${b.count}</span>
                       </div>
-                      <div class="text-10 mt-0.5" style="color:#6b5d4f">
+                      <div class="text-10 mt-0.5" style="color:#5c4e3e">
                         <span style="color:#3e6b36;letter-spacing:.05em">${stars}</span>
                         · ${b.info.pollinators.map(t => POLLINATOR_TYPE_BY_ID[t]?.icon || '').join(' ') || '—'}
                       </div>
-                      ${b.info.note ? `<div class="text-10 gp-italic mt-1" style="color:#6b5d4f">${esc(b.info.note)}</div>` : ''}
+                      ${b.info.note ? `<div class="text-10 gp-italic mt-1" style="color:#5c4e3e">${esc(b.info.note)}</div>` : ''}
                     </div>
                   </div>
                 `;
@@ -146,7 +146,7 @@ export function pollinatorsHTML() {
       ${suggestions.length ? `
         <div class="mb-6">
           <h3 class="gp-display text-lg mb-1">Add more for pollinators</h3>
-          <p class="text-xs gp-italic mb-3" style="color:#6b5d4f">
+          <p class="text-xs gp-italic mb-3" style="color:#5c4e3e">
             ${empty ? 'Top-value plants for UK pollinators.' : `Three-star plants you haven't planted yet${lowMonths.length ? ', favouring the quiet months' : ''}.`}
           </p>
           <div class="grid cols-2 sm:cols-3 gap-2">
@@ -161,7 +161,7 @@ export function pollinatorsHTML() {
                     <div class="w8 h8 rounded-md row items-center justify-center text-base" style="background:${p.color}1f">${p.icon}</div>
                     <div class="gp-display text-sm flex-1 min-w-0 truncate">${esc(p.name)}</div>
                   </div>
-                  <div class="text-10" style="color:#6b5d4f">
+                  <div class="text-10" style="color:#5c4e3e">
                     Blooms ${months} · ${info.pollinators.map(t => POLLINATOR_TYPE_BY_ID[t]?.icon || '').join(' ')}
                   </div>
                 </div>
@@ -172,20 +172,13 @@ export function pollinatorsHTML() {
       ` : ''}
 
       <!-- Pollinator Pathmaker link -->
-      <div class="mt-8 p-5 rounded-xl" style="background:rgba(122,78,163,.06);border:1px solid rgba(122,78,163,.25)">
-        <div class="row items-center gap-2 mb-2">
-          <span class="text-xl">🌸</span>
-          <span class="text-xs uppercase tracking-widest" style="color:#7a4ea3">A garden designed for pollinators</span>
-        </div>
-        <p class="text-sm mb-3" style="color:#3a2e44">
-          For a planting plan designed by an algorithm to support the maximum number of pollinator species,
-          try <span class="gp-italic">Pollinator Pathmaker</span> — a living artwork by Alexandra Daisy Ginsberg,
-          originally commissioned by the Eden Project. The tool is free to use and produces a downloadable
-          plan with plant list and certificate of authenticity.
+      <div class="mt-6 p-4 rounded-lg" style="background:rgba(122,78,163,.05);border:1px solid rgba(122,78,163,.18)">
+        <p class="text-sm" style="color:#3a2e44">
+          <span class="gp-italic">Want to go further?</span>
+          <a href="https://pollinator.art/" target="_blank" rel="noopener" class="font-semibold" style="color:#7a4ea3;text-decoration:underline">Pollinator Pathmaker</a>
+          — a free living-artwork tool by Alexandra Daisy Ginsberg (Eden Project) — generates a planting plan
+          designed to support the widest range of pollinator species.
         </p>
-        <a href="https://pollinator.art/" target="_blank" rel="noopener" class="gp-btn" style="text-decoration:none">
-          Open pollinator.art →
-        </a>
       </div>
     </div>
   `;

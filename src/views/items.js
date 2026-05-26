@@ -18,7 +18,7 @@ export function rectHTML(item, kind) {
 
   let bg, border;
   if (kind === 'bed') {
-    bg = 'rgba(139,111,71,.18)'; border = '2px dashed rgba(107,93,79,.55)';
+    bg = 'rgba(150,112,66,.32)'; border = '2px dashed rgba(90,72,50,.8)';
   } else if (obj.cat === 'ground') {
     bg = 'transparent'; border = 'none';
   } else {
