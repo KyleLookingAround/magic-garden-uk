@@ -5,6 +5,7 @@
 // the browser's implicit pointer capture keeps working. A single history snapshot
 // is taken at drag start and committed on pointer-up only if the item actually moved.
 import { S, saveSoon } from './store.js';
+import { pushHistory } from './history.js';
 import { rotateVec, angleBetween, bedLocalToWorld, worldToBedLocal } from './lib/geometry.js';
 import { clamp } from './lib/util.js';
 import { updateBed, updateObject, updatePlanting, updatePathPoint, placePlantAt } from './actions.js';
@@ -225,9 +226,8 @@ export function onPointerMove(e) {
 export function onPointerUp() {
   if (!S.drag) return;
   if (S.drag.moved) {
-    // commit history snapshot taken at drag start
-    S.history.push(S.drag.preDragState);
-    if (S.history.length > 50) S.history.shift();
+    // commit the history snapshot taken at drag start (clears any redo stack)
+    pushHistory(S.drag.preDragState);
   }
   S.drag = null;
   S.renderSuppressed = false;

@@ -77,16 +77,20 @@ export function designViewHTML() {
     </div>
   ` : '');
 
+  const monthCaption = S.viewMonth === 0
+    ? 'Pick a month to dim out-of-season plants on the plan and filter the picker to what you can sow or plant out then.'
+    : `Out-of-season plants are dimmed below; the picker shows what to sow or plant out in ${MONTHS[S.viewMonth - 1]}.`;
   const monthBar = `
     <div class="gp-no-print gp-month-bar gp-rise">
       ${ICON.caldays('gp-icon w4', 'flex-shrink-0')}
       <span class="text-sm font-semibold" style="color:#2d4a2e;min-width:64px">${S.viewMonth === 0 ? 'All year' : MONTHS[S.viewMonth - 1]}</span>
-      <input type="range" min="0" max="12" step="1" value="${S.viewMonth}" class="gp-range" data-action="set-month">
+      <input type="range" min="0" max="12" step="1" value="${S.viewMonth}" class="gp-range" data-action="set-month" aria-label="Month filter">
       ${S.viewMonth !== 0 ? `
         <span class="gp-italic text-xs" style="color:#5c4e3e">
-          ${S.state.plantings.filter(p => PLANTS_BY_ID[p.plantId]?.months.includes(S.viewMonth)).length} of ${S.state.plantings.length} in the ground
+          ${S.state.plantings.filter(p => PLANTS_BY_ID[p.plantId]?.months.includes(S.viewMonth)).length} of ${S.state.plantings.length} in season
         </span>
         <button class="text-xs" style="color:#2d4a2e;text-decoration:underline" data-action="set-month-zero">show all</button>` : ''}
+      <span class="gp-italic text-xs" style="color:#5c4e3e;flex-basis:100%;margin:0">${monthCaption}</span>
     </div>
   `;
 
@@ -223,8 +227,11 @@ export function designViewHTML() {
         <button class="gp-btn-ghost ${S.pathDraftId ? 'active-draft' : ''}" data-action="start-path-draft" data-style="gravel" ${S.pathDraftId ? 'disabled' : ''}>${ICON.plus('gp-icon w3-5', '')}Draw path</button>
         <button class="gp-btn-ghost" data-action="toggle-garden-settings">${ICON.settings('gp-icon w3-5', '')}Garden size</button>
         <div class="flex-1"></div>
-        <button class="gp-btn-ghost" data-action="undo" ${S.history.length === 0 ? 'disabled' : ''} title="Undo last change">
+        <button class="gp-btn-ghost" data-action="undo" ${S.history.length === 0 ? 'disabled' : ''} title="Undo last change (Ctrl+Z)">
           ${ICON.undo('gp-icon w3-5', '')}Undo ${S.history.length > 0 ? `<span class="gp-italic opacity-70">(${S.history.length})</span>` : ''}
+        </button>
+        <button class="gp-btn-ghost" data-action="redo" ${S.future.length === 0 ? 'disabled' : ''} title="Redo (Ctrl+Shift+Z)">
+          ${ICON.redo('gp-icon w3-5', '')}Redo
         </button>
       </div>
       ${settingsPanel}
@@ -238,9 +245,9 @@ export function designViewHTML() {
       </div>
       <div class="gp-no-print text-center mt-3 mb-5 text-sm gp-italic" style="color:#5c4e3e">
         ${S.selectedPlant
-          ? 'Tap in the garden to plant — keep tapping to plant more.'
+          ? 'Tap in the garden to plant — keep tapping to plant more. Press Esc when you’re done.'
           : S.selectedItem
-            ? 'Drag to move · green dot rotates · brown dot resizes · edit details below'
+            ? 'Drag to move · green dot rotates · brown dot resizes · Del removes · Esc deselects'
             : 'Drag beds, plants and objects to rearrange · they snap to edges as you go'}
       </div>
       ${editPanel}
@@ -272,21 +279,62 @@ function whatsPlantedHTML(stats) {
   `;
 }
 
+/** A rounded search field bound to S.plantSearch, with a clear button. */
+export function searchBoxHTML(placeholder) {
+  const v = S.plantSearch || '';
+  return `
+    <div class="gp-search mb-3">
+      ${ICON.search('gp-icon w4', 'gp-search-icon')}
+      <input type="text" class="gp-search-input" placeholder="${esc(placeholder)}"
+             value="${esc(v)}" data-action="plant-search" data-focus-key="plant-search"
+             autocomplete="off" autocapitalize="none" spellcheck="false" aria-label="${esc(placeholder)}">
+      ${v ? `<button class="gp-search-clear" data-action="clear-search" title="Clear search" aria-label="Clear search">${ICON.x('gp-icon w3-5', '')}</button>` : ''}
+    </div>
+  `;
+}
+
+/** Friendly placeholder when a filter combination matches nothing. */
+export function emptyPickerHTML({ search = false, month = false } = {}) {
+  const resets = [
+    search ? `<button class="text-xs" style="color:#2d4a2e;text-decoration:underline" data-action="clear-search">clear the search</button>` : '',
+    month ? `<button class="text-xs" style="color:#2d4a2e;text-decoration:underline" data-action="set-month-zero">show every month</button>` : '',
+  ].filter(Boolean);
+  return `
+    <div class="text-center py-8 px-4 gp-italic text-sm" style="color:#5c4e3e;border:1px dashed rgba(107,93,79,.3);border-radius:12px">
+      Nothing matches.${resets.length ? ` Try to ${resets.join(' or ')}.` : ''}
+    </div>
+  `;
+}
+
 export function pickerHTML() {
-  const cats = S.pickerMode === 'plants' ? PLANT_CATEGORIES : OBJECT_CATEGORIES;
-  const active = S.pickerMode === 'plants' ? S.plantCategory : S.objectCategory;
+  const isPlants = S.pickerMode === 'plants';
+  const cats = isPlants ? PLANT_CATEGORIES : OBJECT_CATEGORIES;
+  const active = isPlants ? S.plantCategory : S.objectCategory;
+  const monthActive = isPlants && S.viewMonth !== 0;
+  const list = isPlants
+    ? filteredPlants({ month: S.viewMonth, search: S.plantSearch })
+    : filteredObjects({ search: S.plantSearch });
+  const grid = list.length === 0
+    ? emptyPickerHTML({ search: !!S.plantSearch.trim(), month: monthActive })
+    : (isPlants ? plantsGridHTML(list) : objectsGridHTML(list));
   return `
     <div class="gp-no-print mb-6">
       <div class="row items-center justify-between mb-3 flex-wrap gap-2">
         <div class="row items-center gap-2">
-          <button class="gp-tab ${S.pickerMode === 'plants' ? 'active' : ''}" data-action="set-picker" data-picker="plants">${ICON.sprout('gp-icon w3', '')}Plants</button>
-          <button class="gp-tab ${S.pickerMode === 'objects' ? 'active' : ''}" data-action="set-picker" data-picker="objects">${ICON.trees('gp-icon w3', '')}Objects</button>
+          <button class="gp-tab ${isPlants ? 'active' : ''}" data-action="set-picker" data-picker="plants">${ICON.sprout('gp-icon w3', '')}Plants</button>
+          <button class="gp-tab ${!isPlants ? 'active' : ''}" data-action="set-picker" data-picker="objects">${ICON.trees('gp-icon w3', '')}Objects</button>
         </div>
         <div class="row gap-1 overflow-x-auto gp-scroll" data-scroll-key="picker-cats">
           ${cats.map(c => `<button class="gp-tab ${active === c.id ? 'active' : ''}" data-action="set-category" data-cat="${c.id}">${esc(c.label)}</button>`).join('')}
         </div>
       </div>
-      ${S.pickerMode === 'plants' ? plantsGridHTML(filteredPlants()) : objectsGridHTML(filteredObjects())}
+      ${searchBoxHTML(isPlants ? 'Search plants by name…' : 'Search objects by name…')}
+      ${monthActive ? `
+        <p class="text-xs gp-italic mb-3 row items-center gap-1.5 flex-wrap" style="color:#557049">
+          ${ICON.caldays('gp-icon w3-5', '')}Showing plants to sow or plant out in ${MONTHS[S.viewMonth - 1]} ·
+          <button class="text-xs" style="color:#2d4a2e;text-decoration:underline" data-action="set-month-zero">show all plants</button>
+        </p>` : ''}
+      ${grid}
     </div>
   `;
 }

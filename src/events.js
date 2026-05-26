@@ -2,7 +2,7 @@
 // attributes; a handful of listeners on #root dispatch to the right action.
 import { S } from './store.js';
 import { scheduleRender } from './render.js';
-import { snap, undo } from './history.js';
+import { snap, undo, redo } from './history.js';
 import { clamp } from './lib/util.js';
 import {
   setView, addBed, addObject, duplicateSelected, deleteSelected,
@@ -93,7 +93,9 @@ export function bindEvents() {
       case 'edit-garden-name': S.editingName = true; scheduleRender(); break;
       case 'toggle-garden-settings': S.gardenSettingsOpen = !S.gardenSettingsOpen; scheduleRender(); break;
       case 'add-bed': addBed(); break;
-      case 'undo': undo(); break;
+      case 'undo': undo(); dismissFlash(); break;
+      case 'redo': redo(); break;
+      case 'clear-search': S.plantSearch = ''; scheduleRender(); break;
       case 'clear-selected-plant': S.selectedPlant = null; scheduleRender(); break;
       case 'clear-selected-item': S.selectedItem = null; scheduleRender(); break;
       case 'set-month-zero': S.viewMonth = 0; scheduleRender(); break;
@@ -184,6 +186,8 @@ export function bindEvents() {
       }
       case 'set-month':
         S.viewMonth = clamp(+v || 0, 0, 12); scheduleRender(); break;
+      case 'plant-search':
+        S.plantSearch = v; scheduleRender(); break;
       case 'set-path-width': {
         const w = clamp(+v || 0.6, 0.2, 5);
         updatePath(t.dataset.id, { widthM: w });
@@ -226,4 +230,39 @@ export function bindEvents() {
       t.blur();
     }
   });
+
+  // App-wide keyboard shortcuts. We bind on window so they work regardless of
+  // focus, but we bow out entirely while the user is typing in a field so the
+  // browser's own text editing (incl. native undo) is never hijacked.
+  window.addEventListener('keydown', (e) => {
+    const tgt = /** @type {any} */ (e.target);
+    if (tgt && (tgt.tagName === 'INPUT' || tgt.tagName === 'TEXTAREA' || tgt.isContentEditable)) return;
+    const mod = e.ctrlKey || e.metaKey;
+    if (mod && (e.key === 'z' || e.key === 'Z')) {
+      e.preventDefault();
+      if (e.shiftKey) redo(); else { undo(); dismissFlash(); }
+      return;
+    }
+    if (mod && (e.key === 'y' || e.key === 'Y')) { e.preventDefault(); redo(); return; }
+    if (mod) return; // leave other Ctrl/Cmd combos to the browser
+    if (e.key === 'Escape') {
+      if (S.infoPlantId) { S.infoPlantId = null; scheduleRender(); }
+      else if (S.pathDraftId) cancelPathDraft();
+      else if (S.selectedPlant) { S.selectedPlant = null; scheduleRender(); }
+      else if (S.selectedItem) { S.selectedItem = null; scheduleRender(); }
+      return;
+    }
+    if ((e.key === 'Delete' || e.key === 'Backspace') && S.selectedItem) {
+      e.preventDefault();
+      deleteSelected();
+    }
+  });
+}
+
+/** Clear any visible toast (e.g. after the user takes its undo action). */
+function dismissFlash() {
+  if (!S.flash && !S.flashAction) return;
+  S.flash = null;
+  S.flashAction = null;
+  scheduleRender();
 }

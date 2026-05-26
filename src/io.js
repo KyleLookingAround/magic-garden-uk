@@ -7,12 +7,17 @@ import { snap } from './history.js';
 import { serializePlan, parsePlan, encodePlanToHash, decodePlanFromHash } from './lib/transfer.js';
 import { buildICS } from './lib/calendar.js';
 
-/** Show a brief, self-dismissing toast message (rendered by the shell). */
-export function flash(msg) {
+/**
+ * Show a brief, self-dismissing toast message (rendered by the shell).
+ * Pass `action` as `{ label, action }` to add a button wired to a data-action
+ * (e.g. an "Undo" button after a delete).
+ */
+export function flash(msg, action = null) {
   S.flash = msg;
+  S.flashAction = action;
   scheduleRender();
   clearTimeout(S.flashTimer);
-  S.flashTimer = setTimeout(() => { if (S.flash === msg) { S.flash = null; scheduleRender(); } }, 2800);
+  S.flashTimer = setTimeout(() => { if (S.flash === msg) { S.flash = null; S.flashAction = null; scheduleRender(); } }, action ? 6000 : 2800);
 }
 
 /** Filesystem-safe slug from the garden name, for download filenames. */
@@ -74,9 +79,20 @@ export function importPlan() {
 
 export async function sharePlan() {
   const url = `${location.origin}${location.pathname}#plan=${encodePlanToHash(S.state)}`;
+  const long = url.length > 8000;
+  // Prefer the native share sheet where available (great on mobile) so the user
+  // can send straight to Messages/Mail/etc. Fall back to clipboard, then prompt.
+  if (navigator.share) {
+    try {
+      await navigator.share({ title: S.state.gardenName || 'My garden', text: 'My garden plan', url });
+      return;
+    } catch (err) {
+      if (err && err.name === 'AbortError') return; // user dismissed the sheet
+    }
+  }
   try {
     await navigator.clipboard.writeText(url);
-    flash(url.length > 8000 ? 'Link copied (large plan — may be long)' : 'Share link copied');
+    flash(long ? 'Link copied (large plan — may be long)' : 'Share link copied');
   } catch {
     window.prompt('Copy this share link', url);
   }

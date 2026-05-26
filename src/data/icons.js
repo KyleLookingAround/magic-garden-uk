@@ -16,6 +16,8 @@ export const ICON = {
   book: (c, e) => _S('<path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/>', c, e),
   layers: (c, e) => _S('<polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/>', c, e),
   undo: (c, e) => _S('<path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5v0a5.5 5.5 0 0 1-5.5 5.5H11"/>', c, e),
+  redo: (c, e) => _S('<path d="m15 14 5-5-5-5"/><path d="M20 9H9.5A5.5 5.5 0 0 0 4 14.5v0A5.5 5.5 0 0 0 9.5 20H13"/>', c, e),
+  search: (c, e) => _S('<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>', c, e),
   movediag: (c, e) => _S('<polyline points="13 11 22 2"/><polyline points="11 13 2 22"/><polyline points="22 8 22 2 16 2"/><polyline points="2 16 2 22 8 22"/>', c, e),
   rotate: (c, e) => _S('<path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/>', c, e),
   trees: (c, e) => _S('<path d="M10 10v.2A3 3 0 0 1 8.9 16v0H5v0h0a3 3 0 0 1-1-5.8V10a3 3 0 0 1 6 0Z"/><path d="M7 16v6"/><path d="M13 19h6"/><path d="M16 19v3"/><path d="M14.5 4a2 2 0 0 1 2 2v0a2.5 2.5 0 0 1-2.5 2.5h-1a2.5 2.5 0 0 1 0-5 2 2 0 0 1 1.5.5Z"/><path d="M19 14a2 2 0 0 1 2 2v0a2.5 2.5 0 0 1-2.5 2.5h-2a2.5 2.5 0 0 1 0-5Z"/>', c, e),

@@ -10,7 +10,8 @@ import {
   addBed, addObject, duplicateSelected, deleteSelected, toggleShopping,
   addBedTask, startPathDraft, appendPathPoint, finishPathDraft, setView,
 } from '../src/actions.js';
-import { undo } from '../src/history.js';
+import { undo, redo } from '../src/history.js';
+import { filteredPlants } from '../src/selectors.js';
 import { startDrag, onPointerMove, onPointerUp } from '../src/drag.js';
 
 beforeAll(() => {
@@ -32,6 +33,7 @@ beforeEach(() => {
   Object.assign(S, {
     view: 'design', selectedPlant: null, selectedItem: null, bedDetailId: null,
     pathDraftId: null, infoPlantId: null, notesBedId: null, viewMonth: 0,
+    history: [], future: [], plantCategory: 'all', plantSearch: '', flash: null, flashAction: null,
     gardenSettingsOpen: false, editingName: false, drag: null, renderSuppressed: false, renderQueued: false,
   });
   load();
@@ -68,6 +70,31 @@ describe('every view renders without throwing', () => {
     S.infoPlantId = 'tomato';
     render();
     expect(document.querySelector('.gp-modal-back')).toBeTruthy();
+  });
+
+  it('shows an empty-state when the search matches nothing', () => {
+    S.plantSearch = 'zzzzzz';
+    for (const v of ['design', 'library']) {
+      setView(v);
+      render();
+      expect(document.getElementById('root').textContent).toContain('Nothing matches');
+    }
+  });
+
+  it('shows the month picker hint when a month is selected', () => {
+    setView('design');
+    S.viewMonth = 5;
+    render();
+    expect(document.getElementById('root').textContent).toContain('sow or plant out in May');
+  });
+
+  it('renders an action button inside the toast', () => {
+    S.flash = 'Plant removed';
+    S.flashAction = { label: 'Undo', action: 'undo' };
+    render();
+    const btn = document.querySelector('.gp-toast-btn[data-action="undo"]');
+    expect(btn).toBeTruthy();
+    expect(btn.textContent).toContain('Undo');
   });
 });
 
@@ -120,6 +147,38 @@ describe('actions mutate state and re-render', () => {
     expect(S.state.beds.length).toBe(before + 1);
     undo();
     expect(S.state.beds.length).toBe(before);
+  });
+
+  it('redoes an undone change, and a fresh change clears the redo stack', () => {
+    const before = S.state.beds.length;
+    addBed();
+    undo();
+    expect(S.state.beds.length).toBe(before);
+    redo();
+    expect(S.state.beds.length).toBe(before + 1);
+    // A new structural change should invalidate any further redo.
+    undo();
+    addObject('shed');
+    expect(S.future.length).toBe(0);
+  });
+});
+
+describe('plant picker filtering', () => {
+  it('filters by free-text search across name', () => {
+    const all = filteredPlants();
+    const tom = filteredPlants({ search: 'tom' });
+    expect(tom.length).toBeLessThan(all.length);
+    expect(tom.every(p => p.name.toLowerCase().includes('tom') || p.cat.includes('tom'))).toBe(true);
+    expect(tom.some(p => p.id === 'tomato')).toBe(true);
+  });
+
+  it('filters by sow/plant-out month, and only shows in-season plants', () => {
+    // Tomato sows Mar–Apr / plants late May–Jun: present in May, absent in December.
+    const may = filteredPlants({ month: 5 });
+    const dec = filteredPlants({ month: 12 });
+    expect(may.some(p => p.id === 'tomato')).toBe(true);
+    expect(dec.some(p => p.id === 'tomato')).toBe(false);
+    expect(may.length).toBeGreaterThan(dec.length);
   });
 });
 

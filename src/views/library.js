@@ -2,10 +2,12 @@
 import { S } from '../store.js';
 import { PLANT_CATEGORIES } from '../data/plants.js';
 import { filteredPlants } from '../selectors.js';
+import { searchBoxHTML, emptyPickerHTML } from './design.js';
 import { ICON } from '../data/icons.js';
 import { esc } from '../lib/util.js';
 
 export function libraryHTML() {
+  const plants = filteredPlants({ search: S.plantSearch });
   return `
     <div class="gp-rise">
       <div class="mb-6">
@@ -14,11 +16,13 @@ export function libraryHTML() {
           Tap any plant for its full notes — including which neighbours it likes and which to keep apart.
         </p>
       </div>
-      <div class="row gap-1 mb-6 overflow-x-auto gp-scroll" data-scroll-key="lib-cats">
+      <div class="row gap-1 mb-3 overflow-x-auto gp-scroll" data-scroll-key="lib-cats">
         ${PLANT_CATEGORIES.map(c => `<button class="gp-tab ${S.plantCategory === c.id ? 'active' : ''}" data-action="set-category" data-cat="${c.id}">${esc(c.label)}</button>`).join('')}
       </div>
+      ${searchBoxHTML('Search plants by name…')}
+      ${plants.length === 0 ? emptyPickerHTML({ search: !!S.plantSearch.trim() }) : `
       <div class="grid cols-1 sm:cols-2 lg:cols-3 gap-4">
-        ${filteredPlants().map(p => `
+        ${plants.map(p => `
           <div class="gp-plant-card" data-action="open-info" data-plant-id="${p.id}">
             <div class="row items-start gap-3 mb-3">
               <div class="w12 h12 rounded-md row items-center justify-center text-2xl flex-shrink-0" style="background:${p.color}1f">${p.icon}</div>
@@ -39,7 +43,7 @@ export function libraryHTML() {
             </p>
           </div>
         `).join('')}
-      </div>
+      </div>`}
     </div>
   `;
 }

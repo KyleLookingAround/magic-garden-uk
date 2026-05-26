@@ -3,6 +3,7 @@
 import { S, saveSoon } from './store.js';
 import { snap } from './history.js';
 import { scheduleRender } from './render.js';
+import { flash } from './io.js';
 import { clamp, newId } from './lib/util.js';
 import { newBed, newPlanting, newObjectInst, newTask } from './lib/factory.js';
 import { OBJECT_BY_ID } from './data/objects.js';
@@ -69,16 +70,20 @@ export function addObject(typeId) {
   scheduleRender();
 }
 
+const DELETE_LABELS = { bed: 'Bed', object: 'Object', planting: 'Plant', path: 'Path' };
+
 export function deleteSelected() {
   if (!S.selectedItem) return;
+  const type = S.selectedItem.type;
   snap();
-  if (S.selectedItem.type === 'bed') S.state.beds = S.state.beds.filter(b => b.id !== S.selectedItem.id);
-  else if (S.selectedItem.type === 'object') S.state.objects = S.state.objects.filter(o => o.id !== S.selectedItem.id);
-  else if (S.selectedItem.type === 'planting') S.state.plantings = S.state.plantings.filter(p => p.id !== S.selectedItem.id);
-  else if (S.selectedItem.type === 'path') S.state.paths = S.state.paths.filter(p => p.id !== S.selectedItem.id);
+  if (type === 'bed') S.state.beds = S.state.beds.filter(b => b.id !== S.selectedItem.id);
+  else if (type === 'object') S.state.objects = S.state.objects.filter(o => o.id !== S.selectedItem.id);
+  else if (type === 'planting') S.state.plantings = S.state.plantings.filter(p => p.id !== S.selectedItem.id);
+  else if (type === 'path') S.state.paths = S.state.paths.filter(p => p.id !== S.selectedItem.id);
   S.selectedItem = null;
   saveSoon();
   scheduleRender();
+  flash(`${DELETE_LABELS[type] || 'Item'} removed`, { label: 'Undo', action: 'undo' });
 }
 
 export function duplicateSelected() {
@@ -243,6 +248,7 @@ export function deleteBedTask(bedId, taskId) {
   if (b) b.tasks = b.tasks.filter(t => t.id !== taskId);
   saveSoon();
   scheduleRender();
+  flash('Task removed', { label: 'Undo', action: 'undo' });
 }
 
 export function toggleShopping(key) {
