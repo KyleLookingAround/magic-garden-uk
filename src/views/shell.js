@@ -31,7 +31,10 @@ export function buildAppHTML() {
           <p class="gp-italic text-xs" style="color:#5c4e3e">Saved quietly in your browser · Works offline · Climate notes are for the UK</p>
         </footer>
       </div>
-      ${S.flash ? `<div class="gp-toast gp-no-print" role="status">${esc(S.flash)}</div>` : ''}
+      ${S.flash ? `<div class="gp-toast gp-no-print ${S.flashAction ? 'gp-toast-action' : ''}" role="status">
+        <span>${esc(S.flash)}</span>
+        ${S.flashAction ? `<button class="gp-toast-btn" data-action="${esc(S.flashAction.action)}">${esc(S.flashAction.label)}</button>` : ''}
+      </div>` : ''}
       ${S.swUpdateReady ? `
         <div class="gp-toast gp-update-toast gp-no-print" role="status">
           <span>A new version is ready.</span>

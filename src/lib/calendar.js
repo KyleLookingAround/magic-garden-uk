@@ -3,7 +3,7 @@
 // when to sow and when to plant out, derived from the free-text timing fields
 // in the plant library. Pure: returns a string, touches no DOM or network.
 import { PLANTS_BY_ID } from '../data/plants.js';
-import { MONTHS } from './util.js';
+import { MONTHS, mrange } from './util.js';
 
 /** First month named in a free-text timing string ("Late May–Jun" -> 5), or null. */
 export function monthStartFromText(text) {
@@ -14,6 +14,30 @@ export function monthStartFromText(text) {
     if (idx !== -1 && (best === null || idx < best.idx)) best = { idx, month: i + 1 };
   }
   return best ? best.month : null;
+}
+
+/**
+ * All months (1-indexed) covered by a free-text timing string. Handles ranges
+ * ("Mar–Aug" -> 3..8), alternatives ("Oct or Feb–Mar" -> 10,2,3) and split
+ * seasons ("Mar–Apr / Aug–Sep"). Returns a sorted, de-duplicated array.
+ */
+export function monthsFromTiming(text) {
+  if (!text || text === '—') return [];
+  const out = new Set();
+  for (const seg of String(text).split(/\s*\/\s*|\s+or\s+/i)) {
+    const found = [];
+    for (let i = 0; i < MONTHS.length; i++) {
+      if (seg.indexOf(MONTHS[i]) !== -1) found.push({ idx: seg.indexOf(MONTHS[i]), month: i + 1 });
+    }
+    if (!found.length) continue;
+    found.sort((a, b) => a.idx - b.idx);
+    if (found.length >= 2 && /[–-]/.test(seg)) {
+      for (const m of mrange(found[0].month, found[found.length - 1].month)) out.add(m);
+    } else {
+      for (const f of found) out.add(f.month);
+    }
+  }
+  return [...out].sort((a, b) => a - b);
 }
 
 // Escape per RFC 5545 text rules.

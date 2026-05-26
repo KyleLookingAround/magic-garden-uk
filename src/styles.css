@@ -166,6 +166,14 @@ img,svg{display:block;max-width:100%}
 .gp-text{background:#fbf6ea;border:1px solid rgba(107,93,79,.25);font-family:'Manrope',sans-serif;padding:8px 10px;border-radius:6px;outline:0;width:100%;font-size:13px}
 .gp-text:focus{border-color:#2d4a2e}
 
+.gp-search{position:relative;display:flex;align-items:center}
+.gp-search-icon{position:absolute;left:13px;color:#5c4e3e;pointer-events:none}
+.gp-search-input{width:100%;background:#fbf6ea;border:1px solid rgba(107,93,79,.25);font-family:'Manrope',sans-serif;font-size:14px;padding:9px 38px;border-radius:9999px;outline:0;color:#2a2419}
+.gp-search-input:focus{border-color:#2d4a2e;box-shadow:0 0 0 2px rgba(45,74,46,.12)}
+.gp-search-input::placeholder{color:#9a8c78}
+.gp-search-clear{position:absolute;right:8px;display:flex;align-items:center;justify-content:center;color:#5c4e3e;padding:5px;border-radius:9999px}
+@media (hover:hover){.gp-search-clear:hover{background:rgba(0,0,0,.06);color:#2d4a2e}}
+
 .gp-scroll::-webkit-scrollbar{height:6px;width:6px}
 .gp-scroll::-webkit-scrollbar-track{background:transparent}
 .gp-scroll::-webkit-scrollbar-thumb{background:rgba(107,93,79,.3);border-radius:3px}
@@ -191,6 +199,7 @@ img,svg{display:block;max-width:100%}
 
 .gp-rect{position:absolute;cursor:grab;transition:box-shadow 200ms;touch-action:none;overflow:hidden}
 .gp-rect:active{cursor:grabbing}
+@media (hover:hover){.gp-rect:not(.selected):hover{box-shadow:0 0 0 2px rgba(45,74,46,.3)}}
 .gp-rect-label{position:absolute;top:4px;left:6px;font-family:'Fraunces',serif;font-style:italic;font-size:11px;line-height:1;color:rgba(74,56,38,.85);pointer-events:none;letter-spacing:.02em;background:rgba(244,236,216,.7);padding:2px 6px;border-radius:3px;backdrop-filter:blur(2px);white-space:nowrap;max-width:calc(100% - 12px);overflow:hidden;text-overflow:ellipsis;z-index:2}
 .gp-obj-svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;display:block}
 
@@ -208,6 +217,7 @@ img,svg{display:block;max-width:100%}
 
 .gp-planting{position:absolute;border-radius:50%;border:2px solid;transform:translate(-50%,-50%);display:flex;align-items:center;justify-content:center;cursor:grab;transition:box-shadow 180ms,opacity 200ms,filter 200ms;z-index:12;line-height:1;touch-action:none}
 .gp-planting:active{cursor:grabbing}
+@media (hover:hover){.gp-planting:not(.selected):hover{box-shadow:0 0 0 3px rgba(45,74,46,.35)}}
 .gp-planting.selected{box-shadow:0 0 0 3px rgba(45,74,46,.55),0 6px 14px rgba(45,74,46,.28);z-index:30}
 .gp-planting.dimmed{opacity:.22;filter:grayscale(.6)}
 
@@ -261,7 +271,8 @@ textarea.gp-notes{background:transparent;border:0;outline:0;font-family:'Fraunce
 /* Transient toast for backup / share feedback */
 .gp-toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:60;background:#2d4a2e;color:#f4ecd8;padding:10px 18px;border-radius:9999px;font-size:14px;box-shadow:0 6px 20px rgba(45,74,46,.3);animation:gpRise 200ms ease both;max-width:90vw;text-align:center}
 .gp-update-toast{display:flex;align-items:center;gap:14px}
-.gp-update-btn{background:#f4ecd8;color:#2d4a2e;border:none;border-radius:9999px;padding:4px 14px;font-size:13px;font-weight:600;cursor:pointer}
+.gp-toast-action{display:flex;align-items:center;gap:14px}
+.gp-update-btn,.gp-toast-btn{background:#f4ecd8;color:#2d4a2e;border:none;border-radius:9999px;padding:4px 14px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap}
 
 /* Print: drop the interactive chrome and the textured background so the garden
    map (or the active list) prints cleanly on white. */

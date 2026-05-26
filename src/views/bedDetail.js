@@ -6,7 +6,7 @@ import { PLANTS_BY_ID, PLANT_CATEGORIES } from '../data/plants.js';
 import { ICON } from '../data/icons.js';
 import { esc } from '../lib/util.js';
 import { plantingHTML } from './items.js';
-import { plantsGridHTML } from './design.js';
+import { plantsGridHTML, searchBoxHTML, emptyPickerHTML } from './design.js';
 
 export function bedDetailHTML() {
   const bed = S.state.beds.find(b => b.id === S.bedDetailId);
@@ -98,7 +98,8 @@ export function bedDetailHTML() {
             ${PLANT_CATEGORIES.map(c => `<button class="gp-tab ${S.plantCategory === c.id ? 'active' : ''}" data-action="set-category" data-cat="${c.id}">${esc(c.label)}</button>`).join('')}
           </div>
         </div>
-        ${plantsGridHTML(filteredPlants())}
+        ${searchBoxHTML('Search plants by name…')}
+        ${(() => { const list = filteredPlants({ search: S.plantSearch }); return list.length ? plantsGridHTML(list) : emptyPickerHTML({ search: !!S.plantSearch.trim() }); })()}
       </div>
     </div>
   `;

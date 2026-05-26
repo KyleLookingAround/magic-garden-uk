@@ -14,12 +14,14 @@ const LEGACY_KEYS = ['garden-planner:v3', 'garden-planner:v2', 'garden-planner:v
 export const S = {
   state: null,            // persisted garden document
   history: [],            // undo stack (deep snapshots)
+  future: [],             // redo stack (states popped by undo)
   view: 'design',         // active top-level tab
   pickerMode: 'plants',   // 'plants' | 'objects'
   selectedPlant: null,    // plant id armed for placing
   selectedItem: null,     // { type, id } currently selected on the canvas
   plantCategory: 'all',
   objectCategory: 'all',
+  plantSearch: '',        // free-text filter for the plant/object pickers
   editingName: false,
   gardenSettingsOpen: false,
   infoPlantId: null,
@@ -39,6 +41,7 @@ export const S = {
   renderSuppressed: false, // true while a drag is in progress
   toolsOpen: false,        // backup & share panel expanded
   flash: null,             // transient toast message
+  flashAction: null,       // optional { label, action } button shown in the toast
   flashTimer: null,
   swUpdateReady: false,    // a new app version is waiting to activate
   applyUpdate: null,       // () => void: activate the waiting service worker

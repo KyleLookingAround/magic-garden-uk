@@ -40,6 +40,7 @@ export function rectHTML(item, kind) {
   return `
     <div class="gp-rect ${isSelected ? 'selected' : ''}"
          data-action="drag-start" data-type="${kind}" data-id="${item.id}" data-mode="move"
+         title="${isSelected ? 'Drag to move' : 'Tap to select · drag to move'}"
          style="left:${cxPctX}%;top:${cxPctY}%;width:${lengthPx}px;height:${widthPx}px;transform:translate(-50%,-50%) rotate(${item.rotation || 0}deg);border-radius:${isCircle ? '50%' : '4px'};z-index:${z};background:${bg};border:${border};${sel}">
       ${svgVisual}
       ${showLabel ? `<span class="gp-rect-label">${labelTxt}</span>` : ''}

@@ -3,6 +3,7 @@ import { S } from './store.js';
 import { PLANTS_BY_ID, ENRICHED_PLANTS } from './data/plants.js';
 import { OBJECT_BY_ID, OBJECTS } from './data/objects.js';
 import { pointInBed } from './lib/geometry.js';
+import { monthsFromTiming } from './lib/calendar.js';
 
 /** Plant counts across the garden, richest first. */
 export function computeStats() {
@@ -43,10 +44,30 @@ export function bedCapacity(bed) {
   return { cap: Math.max(1, Math.floor(area / avgCell)), planted: inside.length };
 }
 
-export function filteredPlants() {
-  return S.plantCategory === 'all' ? ENRICHED_PLANTS : ENRICHED_PLANTS.filter(p => p.cat === S.plantCategory);
+/** Cached per-plant set of months in which it can be sown or planted out. */
+const SEASON_MONTHS = {};
+export function plantSeasonMonths(plant) {
+  if (!SEASON_MONTHS[plant.id]) {
+    SEASON_MONTHS[plant.id] = new Set([...monthsFromTiming(plant.sow), ...monthsFromTiming(plant.plant)]);
+  }
+  return SEASON_MONTHS[plant.id];
 }
 
-export function filteredObjects() {
-  return S.objectCategory === 'all' ? OBJECTS : OBJECTS.filter(o => o.cat === S.objectCategory);
+/**
+ * Plants for the picker/library, filtered by the active category and optionally
+ * by a 1-indexed month (sow/plant-out window) and a free-text search.
+ */
+export function filteredPlants({ month = 0, search = '' } = {}) {
+  let list = S.plantCategory === 'all' ? ENRICHED_PLANTS : ENRICHED_PLANTS.filter(p => p.cat === S.plantCategory);
+  if (month) list = list.filter(p => plantSeasonMonths(p).has(month));
+  const q = search.trim().toLowerCase();
+  if (q) list = list.filter(p => p.name.toLowerCase().includes(q) || p.cat.toLowerCase().includes(q));
+  return list;
+}
+
+export function filteredObjects({ search = '' } = {}) {
+  let list = S.objectCategory === 'all' ? OBJECTS : OBJECTS.filter(o => o.cat === S.objectCategory);
+  const q = search.trim().toLowerCase();
+  if (q) list = list.filter(o => o.name.toLowerCase().includes(q) || o.cat.toLowerCase().includes(q));
+  return list;
 }

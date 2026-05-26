@@ -3,9 +3,12 @@ import { readFile } from 'node:fs/promises';
 
 test.beforeEach(async ({ page }) => {
   // Stub the clipboard write so the share test is robust in headless Chromium.
+  // Also neutralise the Web Share API so we deterministically exercise the
+  // clipboard fallback (navigator.share is platform-dependent in headless mode).
   await page.addInitScript(() => {
     window.__copied = null;
     navigator.clipboard.writeText = async (t) => { window.__copied = t; };
+    try { Object.defineProperty(navigator, 'share', { value: undefined, configurable: true }); } catch {}
   });
   await page.goto('/');
   await expect(page.locator('#root .gp-wrap')).toBeVisible();

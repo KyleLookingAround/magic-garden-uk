@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { buildICS, monthStartFromText } from '../src/lib/calendar.js';
+import { buildICS, monthStartFromText, monthsFromTiming } from '../src/lib/calendar.js';
 
 describe('monthStartFromText', () => {
   it('reads the first named month from a range', () => {
@@ -11,6 +11,27 @@ describe('monthStartFromText', () => {
     expect(monthStartFromText('—')).toBeNull();
     expect(monthStartFromText('Year-round')).toBeNull();
     expect(monthStartFromText('')).toBeNull();
+  });
+});
+
+describe('monthsFromTiming', () => {
+  it('expands an en-dash range into every month it covers', () => {
+    expect(monthsFromTiming('Mar–Apr indoors')).toEqual([3, 4]);
+    expect(monthsFromTiming('Mar–Aug direct')).toEqual([3, 4, 5, 6, 7, 8]);
+    expect(monthsFromTiming('Late May–Jun')).toEqual([5, 6]);
+  });
+  it('handles alternatives and split seasons', () => {
+    expect(monthsFromTiming('Oct or Feb–Mar')).toEqual([2, 3, 10]);
+    expect(monthsFromTiming('Mar–Apr / Aug–Sep')).toEqual([3, 4, 8, 9]);
+  });
+  it('wraps ranges that cross the year end (raspberry plants Nov–Mar)', () => {
+    expect(monthsFromTiming('Oct–Nov')).toEqual([10, 11]);
+    expect(monthsFromTiming('Nov–Mar')).toEqual([1, 2, 3, 11, 12]);
+  });
+  it('returns empty for no named month', () => {
+    expect(monthsFromTiming('—')).toEqual([]);
+    expect(monthsFromTiming('Year-round')).toEqual([]);
+    expect(monthsFromTiming('')).toEqual([]);
   });
 });
 
