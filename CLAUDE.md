@@ -49,6 +49,21 @@ A framework-free, offline-first single-page app bundled by Vite. There is no bac
 - **Type-checking is `tsc --checkJs`** with `types: []`. When a value's type isn't expressible in JS, cast with `/** @type {any} */ (...)` as existing code does; declare virtual/ambient modules in a `src/*.d.ts` (included via `jsconfig.json`).
 - Comments: explain *why*, not *what*; the codebase keeps them sparse and purposeful.
 
+## Verifying UI changes (Claude Code on the web)
+
+The remote/web execution environment's network policy **blocks the Playwright
+browser download**, so `npm run test:e2e` and any local screenshot/visual check
+can't run here — don't waste time on `npx playwright install`. Standard workflow
+for any UI/UX change:
+
+1. Verify locally with what *does* run: `npm run typecheck`, `npm test`, `npm run build`.
+2. Push the branch and open a PR. CI runs the full Playwright E2E (desktop +
+   mobile) and posts a sticky comment with desktop+mobile screenshots (see CI/CD
+   below) — that comment is the visual verification. Pull those screenshots to
+   eyeball the change.
+3. Offer to watch the PR (`subscribe_pr_activity`) to react to CI results and
+   review comments.
+
 ## CI/CD
 
 `.github/workflows/ci.yml` runs on every push and PR: typecheck → unit tests → Playwright E2E (desktop + mobile Chromium) → uploads the report/screenshots as artifacts. On PRs it also publishes the captured UI screenshots to a dedicated `ci-screenshots` branch (per-PR folder, kept out of `main`) and upserts a sticky PR comment embedding them — that branch is excluded from the push trigger to avoid a CI loop. Netlify builds `dist/` and posts a deploy preview; `PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1` keeps Netlify installs from fetching browsers.

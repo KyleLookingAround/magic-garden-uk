@@ -6,7 +6,7 @@ import { snap, undo, redo } from './history.js';
 import { clamp } from './lib/util.js';
 import {
   setView, addBed, addObject, duplicateSelected, deleteSelected,
-  updateBed, updateObject, updatePath, insertPathPoint, deletePathPoint,
+  updateBed, updateObject, updatePlanting, updatePath, insertPathPoint, deletePathPoint,
   toggleBedTask, deleteBedTask, addBedTask, toggleShopping,
   startPathDraft, finishPathDraft, cancelPathDraft, appendPathPoint,
   setGardenName, setGardenSize, setBedNotes,
@@ -105,10 +105,22 @@ export function bindEvents() {
         else S.objectCategory = t.dataset.cat;
         scheduleRender();
         break;
-      case 'pick-plant':
-        S.selectedPlant = (S.selectedPlant === t.dataset.plantId) ? null : t.dataset.plantId;
+      case 'pick-plant': {
+        const arming = S.selectedPlant !== t.dataset.plantId;
+        S.selectedPlant = arming ? t.dataset.plantId : null;
+        // On arming, collapse the catalogue and bring the map forward so the
+        // next tap-to-plant target is visible (a real win on small screens).
+        if (arming && !S.bedDetailId) {
+          S.pickerOpen = false;
+          requestAnimationFrame(() => requestAnimationFrame(() => {
+            document.getElementById('gp-canvas')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }));
+        }
         scheduleRender();
         break;
+      }
+      case 'toggle-picker': S.pickerOpen = (S.pickerOpen === false); scheduleRender(); break;
+      case 'toggle-canvas-focus': S.canvasFocus = !S.canvasFocus; scheduleRender(); break;
       case 'add-object': addObject(t.dataset.objectId); break;
       case 'open-info': e.stopPropagation(); S.infoPlantId = t.dataset.plantId; scheduleRender(); break;
       case 'close-info':
@@ -217,17 +229,19 @@ export function bindEvents() {
     if (t.dataset.action === 'garden-name-input') { S.editingName = false; scheduleRender(); }
   });
 
-  // Enter key to add task / finish editing name
+  // Enter to add task / finish editing name, plus Enter/Space activation for
+  // keyboard-focusable custom controls (canvas items and role=button divs that
+  // aren't native <button>s and so don't activate on their own).
   root.addEventListener('keydown', (e) => {
-    if (e.key !== 'Enter') return;
     const t = /** @type {any} */ (e.target).closest('[data-action]');
     if (!t) return;
     const a = t.dataset.action;
-    if (a === 'task-input') {
-      e.preventDefault();
-      addBedTask(t.dataset.bedId, S.newTaskText);
-    } else if (a === 'garden-name-input') {
-      t.blur();
+    if (e.key === 'Enter' && a === 'task-input') { e.preventDefault(); addBedTask(t.dataset.bedId, S.newTaskText); return; }
+    if (e.key === 'Enter' && a === 'garden-name-input') { t.blur(); return; }
+    if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') {
+      if (a === 'drag-start') { e.preventDefault(); S.selectedPlant = null; S.selectedItem = { type: t.dataset.type, id: t.dataset.id }; scheduleRender(); return; }
+      if (a === 'detail-drag-start') { e.preventDefault(); S.selectedItem = { type: 'planting', id: t.dataset.id }; scheduleRender(); return; }
+      if (t.getAttribute('role') === 'button' && t.tagName !== 'BUTTON') { e.preventDefault(); t.click(); return; }
     }
   });
 
@@ -250,13 +264,52 @@ export function bindEvents() {
       else if (S.pathDraftId) cancelPathDraft();
       else if (S.selectedPlant) { S.selectedPlant = null; scheduleRender(); }
       else if (S.selectedItem) { S.selectedItem = null; scheduleRender(); }
+      else if (S.canvasFocus) { S.canvasFocus = false; scheduleRender(); }
       return;
     }
     if ((e.key === 'Delete' || e.key === 'Backspace') && S.selectedItem) {
       e.preventDefault();
       deleteSelected();
+      return;
+    }
+    const dir = NUDGE_KEYS[e.key];
+    if (dir && S.selectedItem && (S.selectedItem.type === 'planting' || S.selectedItem.type === 'bed' || S.selectedItem.type === 'object')) {
+      e.preventDefault();
+      nudgeSelected(dir[0], dir[1], e.shiftKey);
     }
   });
+}
+
+const NUDGE_KEYS = { ArrowUp: [0, -1], ArrowDown: [0, 1], ArrowLeft: [-1, 0], ArrowRight: [1, 0] };
+
+// Move the selected canvas item with the keyboard. Rapid presses are grouped
+// into a single undo entry via a short idle timer.
+function nudgeSelected(dx, dy, big) {
+  const it = S.selectedItem;
+  if (!it) return;
+  const step = big ? 0.5 : 0.1;
+  if (!S._nudgeTimer) snap();
+  clearTimeout(S._nudgeTimer);
+  S._nudgeTimer = setTimeout(() => { S._nudgeTimer = null; }, 500);
+  if (it.type === 'planting') {
+    const p = S.state.plantings.find(x => x.id === it.id);
+    if (!p) return;
+    updatePlanting(it.id, {
+      x: clamp(p.x + dx * step, 0, S.state.gardenLengthM),
+      y: clamp(p.y + dy * step, 0, S.state.gardenWidthM),
+    });
+  } else {
+    const arr = it.type === 'bed' ? S.state.beds : S.state.objects;
+    const m = arr.find(x => x.id === it.id);
+    if (!m) return;
+    const L = m.lengthM, W = m.widthM;
+    const patch = {
+      x: clamp(m.x + dx * step, -L * 0.3, S.state.gardenLengthM - L * 0.7),
+      y: clamp(m.y + dy * step, -W * 0.3, S.state.gardenWidthM - W * 0.7),
+    };
+    if (it.type === 'bed') updateBed(it.id, patch); else updateObject(it.id, patch);
+  }
+  scheduleRender();
 }
 
 /** Clear any visible toast (e.g. after the user takes its undo action). */

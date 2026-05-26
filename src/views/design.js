@@ -9,6 +9,20 @@ import { computeStats, bedCapacity, filteredPlants, filteredObjects } from '../s
 import { rectHTML, plantingHTML } from './items.js';
 import { pathsSVG } from './paths.js';
 
+// Pixel width for the focus-view canvas: fit the garden's aspect ratio inside
+// the viewport (minus the top bar), computed at render time from the real
+// window so the map fills as much of a phone screen as possible.
+function focusCanvasWidth() {
+  const ratio = S.state.gardenLengthM / S.state.gardenWidthM;
+  const vw = (typeof window !== 'undefined' ? window.innerWidth : 1024);
+  const vh = (typeof window !== 'undefined' ? window.innerHeight : 768);
+  const availW = vw - 24;
+  const availH = vh - 64 - 24; // top bar + padding
+  let w = availW;
+  if (w / ratio > availH) w = availH * ratio;
+  return Math.max(200, Math.round(w));
+}
+
 export function designViewHTML() {
   const maxCanvasHeight = 540;
   const maxCanvasWidth = (maxCanvasHeight * S.state.gardenLengthM) / S.state.gardenWidthM;
@@ -135,6 +149,42 @@ export function designViewHTML() {
     <span class="gp-scale-label" style="left:10px">1m</span>
   `;
 
+  const nBeds = S.state.beds.length, nPlants = S.state.plantings.length;
+  const canvasAria = `Garden plan: ${nBeds} bed${nBeds === 1 ? '' : 's'}, ${nPlants} plant${nPlants === 1 ? '' : 's'}. `
+    + `Tab to reach an item, Enter to select it, then arrow keys to move it.`;
+  const canvasEl = `
+    <div id="gp-canvas" class="gp-canvas ${S.selectedPlant ? 'planting-mode' : ''}" data-action="canvas-tap"
+         role="group" aria-label="${esc(canvasAria)}"
+         style="width:100%;aspect-ratio:${S.state.gardenLengthM} / ${S.state.gardenWidthM}">
+      ${canvasInner}
+    </div>`;
+
+  // The map can open in a full-screen focus view for precise placement on small
+  // screens. The same #gp-canvas (and all its drag/tap handlers) is simply
+  // rendered larger inside a fixed overlay — there must only ever be one of them.
+  const canvasBlock = S.canvasFocus ? `
+    <div class="gp-canvas-placeholder gp-no-print mx-auto" style="max-width:${maxCanvasWidth}px">
+      <span class="gp-italic text-sm" style="color:#5c4e3e">The garden map is open in focus view.</span>
+      <button class="gp-btn" data-action="toggle-canvas-focus">${ICON.maximize('gp-icon w3-5', '')}Reopen focus view</button>
+    </div>
+    <div class="gp-canvas-focus gp-no-print" role="dialog" aria-modal="true" aria-label="Garden map, focus view">
+      <div class="gp-canvas-focus-bar">
+        <button class="gp-btn-ghost" data-action="toggle-canvas-focus">${ICON.arrowleft('gp-icon w3-5', '')}Done</button>
+        <span class="gp-display text-lg flex-1 min-w-0 truncate" style="color:#2d4a2e">${esc(S.state.gardenName)}</span>
+        <span class="gp-italic text-xs flex-shrink-0" style="color:#5c4e3e">Esc to close</span>
+      </div>
+      <div class="gp-canvas-focus-stage">
+        <div style="width:${focusCanvasWidth()}px;max-width:100%">${canvasEl}</div>
+      </div>
+    </div>
+  ` : `
+    <div class="mx-auto relative" style="max-width:${maxCanvasWidth}px">
+      ${canvasEl}
+      <button class="gp-canvas-expand gp-no-print" data-action="toggle-canvas-focus"
+              title="Open a larger full-screen view" aria-label="Open full-screen focus view">${ICON.maximize('gp-icon w4', '')}</button>
+    </div>
+  `;
+
   // Edit panels
   let editPanel = '';
   const selectedPath = S.selectedItem?.type === 'path' ? S.state.paths.find(p => p.id === S.selectedItem.id) : null;
@@ -226,6 +276,7 @@ export function designViewHTML() {
         <button class="gp-btn-ghost" data-action="add-bed">${ICON.plus('gp-icon w3-5', '')}Add bed</button>
         <button class="gp-btn-ghost ${S.pathDraftId ? 'active-draft' : ''}" data-action="start-path-draft" data-style="gravel" ${S.pathDraftId ? 'disabled' : ''}>${ICON.plus('gp-icon w3-5', '')}Draw path</button>
         <button class="gp-btn-ghost" data-action="toggle-garden-settings">${ICON.settings('gp-icon w3-5', '')}Garden size</button>
+        <button class="gp-btn-ghost" data-action="toggle-canvas-focus" title="Open a larger full-screen view of the garden">${ICON.maximize('gp-icon w3-5', '')}Focus view</button>
         <div class="flex-1"></div>
         <button class="gp-btn-ghost" data-action="undo" ${S.history.length === 0 ? 'disabled' : ''} title="Undo last change (Ctrl+Z)">
           ${ICON.undo('gp-icon w3-5', '')}Undo ${S.history.length > 0 ? `<span class="gp-italic opacity-70">(${S.history.length})</span>` : ''}
@@ -237,17 +288,12 @@ export function designViewHTML() {
       ${settingsPanel}
       ${banner}
       ${monthBar}
-      <div class="mx-auto" style="max-width:${maxCanvasWidth}px">
-        <div id="gp-canvas" class="gp-canvas ${S.selectedPlant ? 'planting-mode' : ''}" data-action="canvas-tap"
-             style="width:100%;aspect-ratio:${S.state.gardenLengthM} / ${S.state.gardenWidthM}">
-          ${canvasInner}
-        </div>
-      </div>
+      ${canvasBlock}
       <div class="gp-no-print text-center mt-3 mb-5 text-sm gp-italic" style="color:#5c4e3e">
         ${S.selectedPlant
           ? 'Tap in the garden to plant — keep tapping to plant more. Press Esc when you’re done.'
           : S.selectedItem
-            ? 'Drag to move · green dot rotates · brown dot resizes · Del removes · Esc deselects'
+            ? 'Drag to move · arrow keys nudge · green dot rotates · brown dot resizes · Del removes · Esc deselects'
             : 'Drag beds, plants and objects to rearrange · they snap to edges as you go'}
       </div>
       ${editPanel}
@@ -317,6 +363,7 @@ export function pickerHTML() {
   const grid = list.length === 0
     ? emptyPickerHTML({ search: !!S.plantSearch.trim(), month: monthActive })
     : (isPlants ? plantsGridHTML(list) : objectsGridHTML(list));
+  const open = S.pickerOpen !== false;
   return `
     <div class="gp-no-print mb-6">
       <div class="row items-center justify-between mb-3 flex-wrap gap-2">
@@ -324,17 +371,26 @@ export function pickerHTML() {
           <button class="gp-tab ${isPlants ? 'active' : ''}" data-action="set-picker" data-picker="plants">${ICON.sprout('gp-icon w3', '')}Plants</button>
           <button class="gp-tab ${!isPlants ? 'active' : ''}" data-action="set-picker" data-picker="objects">${ICON.trees('gp-icon w3', '')}Objects</button>
         </div>
-        <div class="row gap-1 overflow-x-auto gp-scroll" data-scroll-key="picker-cats">
-          ${cats.map(c => `<button class="gp-tab ${active === c.id ? 'active' : ''}" data-action="set-category" data-cat="${c.id}">${esc(c.label)}</button>`).join('')}
+        <div class="row items-center gap-2 min-w-0">
+          ${open
+            ? `<div class="row gap-1 overflow-x-auto gp-scroll" data-scroll-key="picker-cats">
+                 ${cats.map(c => `<button class="gp-tab ${active === c.id ? 'active' : ''}" data-action="set-category" data-cat="${c.id}">${esc(c.label)}</button>`).join('')}
+               </div>`
+            : `<span class="gp-italic text-xs" style="color:#5c4e3e">${list.length} ${isPlants ? 'plants' : 'objects'}</span>`}
+          <button class="gp-btn-ghost flex-shrink-0" data-action="toggle-picker" aria-expanded="${open}">
+            ${open ? 'Hide' : `${ICON.maximize('gp-icon w3', '')}Browse`}
+          </button>
         </div>
       </div>
-      ${searchBoxHTML(isPlants ? 'Search plants by name…' : 'Search objects by name…')}
-      ${monthActive ? `
-        <p class="text-xs gp-italic mb-3 row items-center gap-1.5 flex-wrap" style="color:#557049">
-          ${ICON.caldays('gp-icon w3-5', '')}Showing plants to sow or plant out in ${MONTHS[S.viewMonth - 1]} ·
-          <button class="text-xs" style="color:#2d4a2e;text-decoration:underline" data-action="set-month-zero">show all plants</button>
-        </p>` : ''}
-      ${grid}
+      ${open ? `
+        ${searchBoxHTML(isPlants ? 'Search plants by name…' : 'Search objects by name…')}
+        ${monthActive ? `
+          <p class="text-xs gp-italic mb-3 row items-center gap-1.5 flex-wrap" style="color:#557049">
+            ${ICON.caldays('gp-icon w3-5', '')}Showing plants to sow or plant out in ${MONTHS[S.viewMonth - 1]} ·
+            <button class="text-xs" style="color:#2d4a2e;text-decoration:underline" data-action="set-month-zero">show all plants</button>
+          </p>` : ''}
+        ${grid}
+      ` : ''}
     </div>
   `;
 }
